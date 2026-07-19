@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0f2e"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c9b6ff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffd1e8" stop-opacity="0.15"/>
+    </linearGradient>
+    <radialGradient id="g3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c9b6ff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g1)"/>
+  <circle cx="400" cy="300" r="180" fill="none" stroke="url(#g2)" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="400" cy="300" r="140" fill="none" stroke="url(#g2)" stroke-width="1" opacity="0.4"/>
+  <circle cx="400" cy="300" r="100" fill="none" stroke="url(#g2)" stroke-width="0.8" opacity="0.3"/>
+  <circle cx="400" cy="300" r="220" fill="url(#g3)"/>
+  <text x="400" y="320" text-anchor="middle" fill="#c9b6ff" font-family="system-ui, sans-serif" font-size="18" font-weight="300" letter-spacing="4" opacity="0.5">DIGITAL ART</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="tg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1420"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </linearGradient>
+    <linearGradient id="tg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7ec8e3" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#c9b6ff" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#tg1)"/>
+  <path d="M400 180 L520 250 L520 380 L400 450 L280 380 L280 250 Z" fill="none" stroke="url(#tg2)" stroke-width="1.5" opacity="0.5"/>
+  <path d="M400 180 L400 300" fill="none" stroke="url(#tg2)" stroke-width="1" opacity="0.3"/>
+  <path d="M280 250 L400 300 L520 250" fill="none" stroke="url(#tg2)" stroke-width="1" opacity="0.3"/>
+  <path d="M400 300 L400 450" fill="none" stroke="url(#tg2)" stroke-width="1" opacity="0.3"/>
+  <circle cx="400" cy="300" r="4" fill="url(#tg2)" opacity="0.6"/>
+  <circle cx="280" cy="250" r="3" fill="url(#tg2)" opacity="0.4"/>
+  <circle cx="520" cy="250" r="3" fill="url(#tg2)" opacity="0.4"/>
+  <circle cx="280" cy="380" r="3" fill="url(#tg2)" opacity="0.4"/>
+  <circle cx="520" cy="380" r="3" fill="url(#tg2)" opacity="0.4"/>
+  <circle cx="400" cy="180" r="3" fill="url(#tg2)" opacity="0.4"/>
+  <circle cx="400" cy="450" r="3" fill="url(#tg2)" opacity="0.4"/>
+  <text x="400" y="520" text-anchor="middle" fill="#7ec8e3" font-family="system-ui, sans-serif" font-size="16" font-weight="300" letter-spacing="8" opacity="0.4">3D ART</text>
+</svg>

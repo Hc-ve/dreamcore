@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="ag1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#120a1f"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </linearGradient>
+    <linearGradient id="ag2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c9b6ff" stop-opacity="0.2"/>
+      <stop offset="50%" stop-color="#ffd1e8" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#7ec8e3" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#ag1)"/>
+  <ellipse cx="300" cy="350" rx="180" ry="120" fill="none" stroke="url(#ag2)" stroke-width="1.5" transform="rotate(-20 300 350)" opacity="0.4"/>
+  <ellipse cx="500" cy="280" rx="150" ry="90" fill="none" stroke="url(#ag2)" stroke-width="1.2" transform="rotate(15 500 280)" opacity="0.3"/>
+  <ellipse cx="400" cy="400" rx="200" ry="80" fill="none" stroke="url(#ag2)" stroke-width="1" transform="rotate(-10 400 400)" opacity="0.25"/>
+  <circle cx="400" cy="300" r="4" fill="url(#ag2)" opacity="0.5"/>
+  <text x="400" y="520" text-anchor="middle" fill="#c9b6ff" font-family="system-ui, sans-serif" font-size="16" font-weight="300" letter-spacing="8" opacity="0.4">ABSTRACT</text>
+</svg>

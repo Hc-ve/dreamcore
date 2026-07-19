@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="allg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#150d24"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </linearGradient>
+    <radialGradient id="allg2" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#c9b6ff" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#ffd1e8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#allg1)"/>
+  <circle cx="400" cy="280" r="200" fill="url(#allg2)"/>
+  <circle cx="400" cy="280" r="160" fill="none" stroke="#c9b6ff" stroke-width="0.8" opacity="0.15"/>
+  <circle cx="400" cy="280" r="120" fill="none" stroke="#ffd1e8" stroke-width="0.6" opacity="0.12"/>
+  <circle cx="400" cy="280" r="80" fill="none" stroke="#7ec8e3" stroke-width="0.5" opacity="0.1"/>
+  <text x="400" y="295" text-anchor="middle" fill="#c9b6ff" font-family="system-ui, sans-serif" font-size="20" font-weight="300" letter-spacing="6" opacity="0.35">DREAMCORE</text>
+  <text x="400" y="325" text-anchor="middle" fill="#ffd1e8" font-family="system-ui, sans-serif" font-size="12" font-weight="300" letter-spacing="3" opacity="0.25">梦境数字艺术平台</text>
+</svg>
