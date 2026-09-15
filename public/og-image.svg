@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0612"/>
+      <stop offset="50%" style="stop-color:#1a1033"/>
+      <stop offset="100%" style="stop-color:#0a0612"/>
+    </linearGradient>
+    <linearGradient id="dreamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd1e8"/>
+      <stop offset="50%" style="stop-color:#c9b6ff"/>
+      <stop offset="100%" style="stop-color:#a8d8ff"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <circle cx="200" cy="150" r="80" fill="rgba(255,209,232,0.15)"/>
+  <circle cx="1000" cy="500" r="100" fill="rgba(201,182,255,0.15)"/>
+  <circle cx="600" cy="350" r="120" fill="rgba(168,216,255,0.1)"/>
+  
+  <g opacity="0.4">
+    <circle cx="300" cy="200" r="2" fill="#ffd1e8" filter="url(#glow)"/>
+    <circle cx="400" cy="280" r="1.5" fill="#c9b6ff" filter="url(#glow)"/>
+    <circle cx="500" cy="180" r="2" fill="#a8d8ff" filter="url(#glow)"/>
+    <circle cx="700" cy="320" r="1.5" fill="#ffd1e8" filter="url(#glow)"/>
+    <circle cx="800" cy="250" r="2" fill="#c9b6ff" filter="url(#glow)"/>
+    <circle cx="900" cy="380" r="1.5" fill="#a8d8ff" filter="url(#glow)"/>
+    <circle cx="350" cy="400" r="2" fill="#ffd1e8" filter="url(#glow)"/>
+    <circle cx="550" cy="450" r="1.5" fill="#c9b6ff" filter="url(#glow)"/>
+    <circle cx="750" cy="500" r="2" fill="#a8d8ff" filter="url(#glow)"/>
+    <circle cx="850" cy="150" r="1.5" fill="#ffd1e8" filter="url(#glow)"/>
+    <circle cx="450" cy="100" r="2" fill="#c9b6ff" filter="url(#glow)"/>
+    <circle cx="650" cy="80" r="1.5" fill="#a8d8ff" filter="url(#glow)"/>
+    <circle cx="250" cy="500" r="2" fill="#ffd1e8" filter="url(#glow)"/>
+    <circle cx="950" cy="200" r="1.5" fill="#c9b6ff" filter="url(#glow)"/>
+    <circle cx="150" cy="300" r="2" fill="#a8d8ff" filter="url(#glow)"/>
+    <circle cx="1050" cy="350" r="1.5" fill="#ffd1e8" filter="url(#glow)"/>
+  </g>
+  
+  <g transform="translate(600, 315)">
+    <rect x="-70" y="-70" width="140" height="140" rx="24" fill="rgba(255,255,255,0.05)" stroke="url(#dreamGrad)" stroke-width="2"/>
+    <text x="0" y="15" font-family="serif" font-size="72" text-anchor="middle" fill="url(#dreamGrad)" filter="url(#textGlow)">🌙</text>
+  </g>
+  
+  <text x="600" y="430" font-family="serif" font-size="48" text-anchor="middle" fill="url(#dreamGrad)" filter="url(#textGlow)">Dreamcore</text>
+  <text x="600" y="480" font-family="sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.8)">梦境数字艺术社交平台</text>
+  
+  <rect x="100" y="550" width="1000" height="1" fill="rgba(255,255,255,0.1)"/>
+  
+  <text x="600" y="595" font-family="sans-serif" font-size="14" text-anchor="middle" fill="rgba(255,255,255,0.5)">Explore the dream world of digital art</text>
+</svg>

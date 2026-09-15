@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="ig1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1025"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </linearGradient>
+    <linearGradient id="ig2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd1e8" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#c9b6ff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#7ec8e3" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#ig1)"/>
+  <path d="M250 420 Q320 200 400 300 Q480 400 550 180" fill="none" stroke="url(#ig2)" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <path d="M280 440 Q350 250 420 320 Q490 390 520 220" fill="none" stroke="url(#ig2)" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+  <path d="M220 400 Q300 280 380 340 Q460 400 580 200" fill="none" stroke="url(#ig2)" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
+  <circle cx="400" cy="300" r="60" fill="none" stroke="url(#ig2)" stroke-width="1" opacity="0.3"/>
+  <text x="400" y="520" text-anchor="middle" fill="#ffd1e8" font-family="system-ui, sans-serif" font-size="16" font-weight="300" letter-spacing="6" opacity="0.4">ILLUSTRATION</text>
+</svg>

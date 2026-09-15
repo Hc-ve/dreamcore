@@ -1,0 +1,21 @@
+{
+  "name": "dreamcore-edge-tts",
+  "version": "1.0.0",
+  "description": "Dreamcore AI Assistant Edge TTS Backend Service",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "node-edge-tts": "^1.2.10"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "allowScripts": {
+    "edge-tts-nodejs@1.0.6": true
+  }
+}

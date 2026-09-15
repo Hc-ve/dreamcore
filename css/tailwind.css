@@ -1,0 +1,11 @@
+/* ============================================================
+   css/tailwind.css — Tailwind CSS 独立入口（S0-01 工单新增）
+   与现有 css/style.css 并存，在 index.html 中先于 style.css 引入，
+   保证同优先级时原有样式为准。
+   因 tailwind.config.js 中 corePlugins.preflight = false，
+   @tailwind base 不会输出 CSS Reset，不影响现有页面。
+   后续新模块（摄影工坊/修图工作台）统一使用本入口的工具类。
+   ============================================================ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

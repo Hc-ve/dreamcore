@@ -1,0 +1,19 @@
+{
+  "name": "Dreamcore · 梦境数字艺术社交平台",
+  "short_name": "Dreamcore",
+  "description": "梦境美学数字艺术社交平台，探索梦幻艺术创作",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0612",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["art", "entertainment", "social"]
+}

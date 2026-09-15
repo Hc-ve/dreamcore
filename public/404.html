@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0612" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#f5f3fa" media="(prefers-color-scheme: light)" />
+<meta name="robots" content="noindex, follow" />
+<script>
+  (function() {
+    var saved = localStorage.getItem('dreamcore-theme');
+    if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    else if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  })();
+</script>
+<title>404 · 梦境迷失 | Dreamcore</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+  .page-404 {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-404-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .page-404-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.25;
+    animation: orbFloat 10s ease-in-out infinite;
+  }
+  .page-404-orb.o1 { width: 300px; height: 300px; background: var(--dream-pink); top: 10%; left: 5%; }
+  .page-404-orb.o2 { width: 250px; height: 250px; background: var(--dream-purple); bottom: 15%; right: 10%; animation-delay: -3s; }
+  .page-404-orb.o3 { width: 200px; height: 200px; background: var(--dream-blue); top: 50%; left: 60%; animation-delay: -6s; }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -30px); }
+  }
+  .page-404-content {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+  }
+  .page-404-moon {
+    font-size: 80px;
+    margin-bottom: 24px;
+    display: inline-block;
+    animation: moonPulse 4s ease-in-out infinite;
+  }
+  @keyframes moonPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.08); opacity: 1; }
+  }
+  .page-404 h1 {
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: clamp(42px, 8vw, 72px);
+    font-weight: 500;
+    margin-bottom: 16px;
+    background: var(--grad-dream);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .page-404 p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .page-404 .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    font-size: 15px;
+  }
+  .page-404-stars {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .page-404-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--dream-purple);
+    opacity: 0.4;
+    animation: starTwinkle 3s ease-in-out infinite;
+  }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+  }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+<header id="navbar" role="banner" style="position:fixed;top:0;left:0;width:100%;z-index:500;padding:14px 0;">
+  <div class="nav-inner" style="display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 28px;">
+    <a href="/" class="logo" aria-label="Dreamcore 首页" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-primary);font-weight:600;font-size:18px;">
+      <span style="width:28px;height:28px;border-radius:50%;background:var(--grad-dream);display:inline-block;flex-shrink:0;"></span>
+      <span>Dreamcore</span>
+    </a>
+    <a href="/" class="btn-primary btn-sm" style="text-decoration:none;"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> 返回首页</a>
+  </div>
+</header>
+
+<main id="main-content" class="page-404" role="main">
+  <div class="page-404-bg">
+    <div class="page-404-orb o1"></div>
+    <div class="page-404-orb o2"></div>
+    <div class="page-404-orb o3"></div>
+    <div class="page-404-stars" id="stars-container"></div>
+  </div>
+  <div class="page-404-content">
+    <div class="page-404-moon" aria-hidden="true">🌙</div>
+    <h1>404 · 梦境迷失</h1>
+    <p>这页艺术尚未创作，就像梦中那片未曾抵达的花园。<br>返回画廊，继续探索梦境之美。</p>
+    <a href="/" class="btn-primary">
+      <i class="fa-solid fa-compass" aria-hidden="true"></i>
+      返回梦境画廊
+    </a>
+  </div>
+</main>
+
+<footer role="contentinfo" style="position:fixed;bottom:0;left:0;width:100%;padding:16px 0;text-align:center;font-size:12px;color:var(--text-tertiary);z-index:1;">
+  © 2026 Dreamcore · 梦境数字艺术平台
+</footer>
+
+<script>
+  (function() {
+    const container = document.getElementById('stars-container');
+    for (let i = 0; i < 30; i++) {
+      const star = document.createElement('div');
+      star.className = 'page-404-star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDuration = (2 + Math.random() * 3) + 's';
+      container.appendChild(star);
+    }
+  })();
+</script>
+</body>
+</html>
