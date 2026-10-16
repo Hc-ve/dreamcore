@@ -1,0 +1,28 @@
+
+========== AI 文创：未登录完整路径 ==========
+1) 进入 #/craft → 弹窗: 选择作品 · AI文创 | 默认tab=我的作品 | 内容="登录后即可在这里看到你的作品"
+2) 切「热门作品」→ 条目数: 24
+3) 选中作品后: {"pickerGone":true,"craftPage":false,"craftVisible":false,"buttons":["开始探索","分享海报","🛍 一键定制下单","开始创作","重新生成","书签\n      藏品卡 · 2:3 · 3D","手账本\n      藏品卡 · 2:3 · 3D","明信片\n      明信片 · 3:2 · 3D","贺卡\n      明信片 · 3:2 · 3D","红包\n      明信片 · 3:2 · 3D","笔记本\n      藏品卡 · 2:3 · 3D","印章\n      藏品卡 · 2:3","笔袋\n      壁纸 · 16:9 · 3D","文具盒\n      壁纸 · 16:9 · 3D","线圈本\n      藏品卡 · 2:3 · 3D","文件夹\n      壁纸 · 16:9","书立\n      藏品卡 · 2:3","书套\n      壁纸 · 16:9"],"headings":["文旅画廊","三星堆盲盒","唐·古艺 / Panel in the Sh","水墨赛博山水","明·书迹 / Calligraphy","清·古艺 / Demon queller Z","凤凰古城沱江晨雾","大唐不夜城","秦淮河夫子庙","苗银首饰"]}
+API: []
+4) 生成按钮: null
+
+========== 3D 定制（BFF 未启动） ==========
+存在 3D 入口: true
+3D 交互后: {"toast":"","err":null,"canvas":3}
+API: []
+
+========== 其余路由截图 ==========
+atlas: title=文化故事图鉴 · Dreamcore modal=true
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学
+footprint: title=文化探索足迹 · Dreamcore modal=true
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学
+pricing: title=Dreamcore · AI+文旅文创艺术共创社区 modal=true
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学
+scenic: title=Dreamcore · AI+文旅文创艺术共创社区 modal=true
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学
+ai-disclosure: title=Dreamcore · AI+文旅文创艺术共创社区 modal=true
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学
+leaderboard: title=排行榜 · Dreamcore modal=false
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学
+tutor: title=AI陪练 · Dreamcore modal=false
+   跳转到主要内容 Dreamcore 文化探索 搜索作品 发布 创作工坊 登录 搜索作品 发布作品 AI识文化 文化图鉴 探索足迹 景区推荐 AI评分 AI修图 AI文创 AI陪练 AI策展 合伙人计划 创作者排行榜 个人中心 管理后台 设置 DREAMCORE · AI+文旅文创艺术共创社区 当AI遇见文旅 让传统美学

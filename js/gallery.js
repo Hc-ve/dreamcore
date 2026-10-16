@@ -5,6 +5,11 @@
 //       排序功能(热门/最新/推荐)、标签筛选
 // ============================================================
 
+// P0-2 通用分享海报模块（生成 + 预览弹窗；window.SharePoster 亦全局可用）
+import SharePoster from './share-poster.js';
+// P1-2 文化 SVG 图标（替换 emoji 评级，跨平台一致）
+import { icons as _ICONS } from './icons.js';
+
 const Gallery = {
   // 全部作品缓存
   allArtworks: [],
@@ -33,13 +38,21 @@ const Gallery = {
   cardObserver: null,
 
   // 分类中英文映射
+  // M6b-1 文旅文创六分类
   CATEGORY_LABELS: {
     'all': '全部',
-    'digital-art': '数字艺术',
-    'photography': '摄影',
-    'illustration': '插画',
-    'abstract': '抽象',
-    '3d-art': '3D艺术'
+    'scenic-photo': '文旅摄影',
+    'heritage-craft': '非遗文创',
+    'guofeng-art': '国风绘画',
+    'ai-art': 'AI数字艺术',
+    'museum-culture': '博物文创',
+    'creative-design': '创意设计',
+    // 旧分类兼容显示
+    'digital-art': 'AI数字艺术',
+    'photography': '文旅摄影',
+    'illustration': '国风绘画',
+    'abstract': 'AI数字艺术',
+    '3d-art': '创意设计'
   },
 
   // ============================================================
@@ -66,7 +79,14 @@ const Gallery = {
       { w: 800, h: 600, descriptor: '800w' },
       { w: 1200, h: 900, descriptor: '1200w' }
     ],
+    // M6b-1 新分类 fallback 复用既有占位图
     fallbacks: {
+      'scenic-photo': '/images/fallback/photography.svg',
+      'heritage-craft': '/images/fallback/abstract.svg',
+      'guofeng-art': '/images/fallback/illustration.svg',
+      'ai-art': '/images/fallback/digital-art.svg',
+      'museum-culture': '/images/fallback/3d-art.svg',
+      'creative-design': '/images/fallback/abstract.svg',
       'digital-art': '/images/fallback/digital-art.svg',
       'photography': '/images/fallback/photography.svg',
       'illustration': '/images/fallback/illustration.svg',
@@ -250,7 +270,8 @@ const Gallery = {
   // ----------------------------------------------------------
   async loadArtworks(category = 'all', page = 1) {
     this.currentCategory = category;
-    this.allArtworks = await getAllArtworks();
+    this.allArtworks = await getAllArtworks()
+    if(typeof this._attachAestheticScores==='function')await this._attachAestheticScores();;
     this._applySortAndFilter();
   },
 
@@ -275,6 +296,9 @@ const Gallery = {
   // ----------------------------------------------------------
   _applySortAndFilter() {
     let list = [...this.allArtworks];
+
+    // M4 内容审核：仅展示已发布作品（待审核/已下架在管理后台可见）
+    list = list.filter(a => !a.status || a.status === 'published');
 
     // 按分类筛选
     if (this.currentCategory !== 'all') {
@@ -579,6 +603,7 @@ const Gallery = {
             ${artwork.tags.slice(0, 2).map(tag => `<span class="card-tag">${this._esc(tag)}</span>`).join('')}
           </div>
         ` : ''}
+        ${this._aestheticCardHtml(artwork)}
         <div class="card-stats">
           <span class="card-likes"><i class="fa-solid fa-heart"></i> ${this._fmtNum(artwork.likes)}</span>
           <span class="card-art-no">#${artwork.id}</span>
@@ -701,6 +726,8 @@ const Gallery = {
     const styleWords = ['水彩', '油画', '数字艺术', '3D渲染', '抽象', '赛博朋克', '梦幻', '霓虹', '唯美', '极简', '复古', '未来主义', '超现实', '插画'];
     const foundStyle = tags.find(t => styleWords.some(sw => t.includes(sw))) || '';
     const catMap = {
+      'scenic-photo': '文旅摄影', 'heritage-craft': '非遗文创', 'guofeng-art': '国风绘画',
+      'ai-art': 'AI数字艺术', 'museum-culture': '博物文创', 'creative-design': '创意设计',
       'digital': '数字艺术', 'illustration': '插画', 'photography': '摄影',
       'abstract': '抽象艺术', '3d': '3D艺术', 'painting': '绘画', 'mixed': '混合媒介'
     };
@@ -799,14 +826,20 @@ const Gallery = {
   },
 
   // ----------------------------------------------------------
-  // 生成占位图SVG（base64）
+  // 生成占位图SVG（墨韵丹青风 · 朱砂方印 + 山水远景）
   // ----------------------------------------------------------
   _getPlaceholderSvg() {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
-      <rect fill="rgba(201,182,255,0.1)" width="400" height="300"/>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="sans-serif" font-size="14">图片加载失败</text>
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="442" viewBox="0 0 320 442">
+      <rect width="320" height="442" fill="#faf6ee"/>
+      <rect x="10" y="10" width="300" height="422" fill="none" stroke="#e6dccb" stroke-width="1"/>
+      <path d="M20 260 L80 200 L130 240 L180 180 L230 220 L300 190 L300 320 L20 320 Z" fill="#9aaebf" opacity="0.5"/>
+      <path d="M20 285 L70 245 L130 275 L200 225 L260 260 L300 240 L300 320 L20 320 Z" fill="#6f8a9e" opacity="0.55"/>
+      <path d="M20 310 L90 285 L160 300 L230 275 L300 295 L300 320 L20 320 Z" fill="#4a5f6e" opacity="0.65"/>
+      <circle cx="260" cy="95" r="18" fill="#c23e2b" opacity="0.7"/>
+      <rect x="138" y="340" width="44" height="44" fill="#a8261f" opacity="0.82"/>
+      <text x="160" y="370" text-anchor="middle" font-family="SimSun,serif" font-size="22" fill="#faf6ee" font-weight="700">墨</text>
     </svg>`;
-    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
   },
 
   // ----------------------------------------------------------
@@ -894,8 +927,12 @@ const Gallery = {
     const currentImage = images[this.lightboxImageIndex];
 
     // 查询点赞/收藏状态与数量
-    const [likeCount, hasLiked, hasFav, comments] = await Promise.all([
-      getLikes(art.id).catch(() => art.likes || 0),
+    // 点赞数以作品记录的 likes 为单一数据源（基线+真实记录），与列表卡片完全一致
+    let likeCount = Number(art.likes);
+    if (!Number.isFinite(likeCount)) {
+      likeCount = await getLikes(art.id).catch(() => 0);
+    }
+    const [hasLiked, hasFav, comments] = await Promise.all([
       user ? hasUserLiked(art.id, user.id).catch(() => false) : false,
       user ? hasUserFavorited(art.id, user.id).catch(() => false) : false,
       getComments(art.id).catch(() => [])
@@ -949,6 +986,7 @@ const Gallery = {
                 ${art.tags.map(tag => `<span class="lb-tag" data-tag="${this._esc(tag)}">${this._esc(tag)}</span>`).join('')}
               </div>
             ` : ''}
+            ${window.CultureAtlas && window.CultureAtlas.themeHint ? window.CultureAtlas.themeHint(art) : ''}
             <div class="lb-actions">
               <button class="lb-action ${hasLiked ? 'active' : ''}" id="lb-like-btn" data-id="${art.id}">
                 <i class="fa-${hasLiked ? 'solid' : 'regular'} fa-heart"></i>
@@ -962,6 +1000,22 @@ const Gallery = {
               <button class="lb-action" id="lb-share-btn" data-id="${art.id}">
                 <i class="fa-solid fa-share-nodes"></i>
                 <span class="lb-action-label">分享</span>
+              </button>
+              <button class="lb-action" id="lb-poster-btn" data-id="${art.id}" title="生成分享海报">
+                <i class="fa-solid fa-qrcode"></i>
+                <span class="lb-action-label">分享卡</span>
+              </button>
+              <button class="lb-action lb-action--ai" id="lb-ai-edit-btn" data-id="${art.id}" title="AI修图工作台">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span class="lb-action-label">AI修图</span>
+              </button>
+              <button class="lb-action lb-action--ai" id="lb-ai-craft-btn" data-id="${art.id}" title="AI文创衍生品">
+                <i class="fa-solid fa-feather-pointed"></i>
+                <span class="lb-action-label">AI文创</span>
+              </button>
+              <button class="lb-action lb-action--ai" id="lb-ai-report-btn" data-id="${art.id}" title="AI评级报告">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span class="lb-action-label">评级报告</span>
               </button>
               <div class="lb-views"><i class="fa-regular fa-eye"></i> ${this._fmtNum(art.views || 0)}</div>
             </div>
@@ -1085,7 +1139,8 @@ const Gallery = {
         if (window.Artist) {
           this.closeLightbox();
           if (userId) {
-            Artist.openByUserId(Number(userId));
+            // 云端用户 id 为 UUID 字符串，不能 Number 强转（会变 NaN）
+            Artist.openByUserId(userId);
           } else {
             Artist.openByAuthorName(authorName);
           }
@@ -1103,6 +1158,17 @@ const Gallery = {
         this.filterByTag(tag);
       });
     });
+
+    // 文化主题引导（不点亮足迹，仅引导去图鉴阅读）
+    const cultureHint = lb.querySelector('.lb-culture-hint');
+    if (cultureHint) {
+      cultureHint.addEventListener('click', () => {
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        const themeId = cultureHint.dataset.cultureTheme;
+        this.closeLightbox();
+        window.location.hash = '#/atlas?theme=' + themeId;
+      });
+    }
 
     // 点赞
     const likeBtn = lb.querySelector('#lb-like-btn');
@@ -1124,6 +1190,58 @@ const Gallery = {
       shareBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (window.Share) Share.showShareMenu(art, shareBtn);
+      });
+    }
+    // P0-2: 分享海报（通用分享卡，取灯箱当前展示图）
+    const posterBtn = lb.querySelector('#lb-poster-btn');
+    if (posterBtn) {
+      posterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        const cur = this.lightboxList[this.lightboxIndex] || art;
+        const imgs = cur.images && cur.images.length > 0 ? cur.images : [cur.imageUrl];
+        const mainImg = document.getElementById('lb-main-img');
+        const posterImage = cur.type === 'video'
+          ? this._getCategoryFallback(cur.category)
+          : ((mainImg && mainImg.src) || imgs[this.lightboxImageIndex] || cur.imageUrl);
+        SharePoster.downloadPoster({
+          image: posterImage,
+          title: cur.title,
+          author: cur.author,
+          themeTag: this.CATEGORY_LABELS[cur.category] || cur.category,
+          badge: `❤ ${this._fmtNum(Number(cur.likes) || 0)}`,
+          footerCta: '来 Dreamcore 创作你的文化文创'
+        });
+      });
+    }
+    // M1-1: AI修图入口（跳转工作台，携带 artworkId）
+    const aiEditBtn = lb.querySelector('#lb-ai-edit-btn');
+    if (aiEditBtn) {
+      aiEditBtn.addEventListener('click', () => {
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        this.closeLightbox();
+        window.location.hash = '#/edit?artworkId=' + art.id;
+      });
+    }
+    // M1-1: AI文创入口
+    const aiCraftBtn = lb.querySelector('#lb-ai-craft-btn');
+    if (aiCraftBtn) {
+      aiCraftBtn.addEventListener('click', () => {
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        this.closeLightbox();
+        window.location.hash = '#/craft?artworkId=' + art.id;
+      });
+    }
+    // M1-1: AI评级报告入口
+    const aiReportBtn = lb.querySelector('#lb-ai-report-btn');
+    if (aiReportBtn) {
+      aiReportBtn.addEventListener('click', () => {
+        if (typeof Sound !== 'undefined') Sound.playSound('pop');
+        if (window.AIAesthetic && typeof window.AIAesthetic.renderAestheticReport === 'function') {
+          window.AIAesthetic.renderAestheticReport(art.id).catch(err => {
+            console.warn('[Gallery] 评级报告失败:', err);
+          });
+        }
       });
     }
     // 评论
@@ -1278,10 +1396,228 @@ const Gallery = {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
+  },
+
+  // --- AI评分批量加载 ---
+  async _attachAestheticScores() {
+    if(!this.allArtworks||!this.allArtworks.length)return;
+    const fn=(typeof getAestheticScoresByArtwork==='function')?getAestheticScoresByArtwork:null;
+    if(!fn)return;
+    const results=await Promise.all(this.allArtworks.map(a=>fn(a.id).catch(()=>[])));
+    const scoreFn=(typeof scoreArtwork==='function')?scoreArtwork:null;
+    this.allArtworks.forEach((a,i)=>{
+      const list=results[i];
+      a._latestScore=(list&&list[0])||null;
+      if(a._latestScore&&!a.aiScored)a.aiScored=true;
+      if(!a._latestScore&&a.aiScored===true&&scoreFn){
+        const u=(typeof window!=='undefined')?window.currentUser:null;
+        if(u)scoreFn(a.id,u.id).then(r=>{if(r&&!r.error)this.refreshGallery();}).catch(()=>{});
+      }
+    });
+    this._seedMissingGrades();
+  },
+
+  // ----------------------------------------------------------
+  // M1-5: 未评分作品（初始种子作品）确定性评级
+  // 算法：质量分 = likes*0.4 + views*0.001 + id哈希微扰
+  //       → 降序分位映射等级（top3% SSS / 8% SS / 15% S / 30% A / 30% B / 其余C）
+  //       → 等级区间内哈希生成确定性总分，并持久化到 aesthetic_scores
+  // ----------------------------------------------------------
+  _seedMissingGrades() {
+    // M7: 种子自带评级标签（artworks.js 携带 grade/totalScore）→ 直接采用并持久化
+    this.allArtworks.forEach(a => {
+      if (a && !a._latestScore && a.grade && a.totalScore) {
+        const g = String(a.grade).toLowerCase();
+        const t = Number(a.totalScore) || 0;
+        a._latestScore = { artworkId: Number(a.id), totalScore: t, grade: g, synthetic: true };
+        a.aiScored = true;
+        try {
+          if (typeof addAestheticScore === 'function') {
+            addAestheticScore({
+              artworkId: Number(a.id),
+              userId: a.userId || null,
+              scores: { composition: 0, lighting: 0, color: 0, clarity: 0, theme: 0 },
+              totalScore: t,
+              grade: g,
+              similarWorks: [],
+              teachingComments: '{}',
+              aiDescription: '',
+              degraded: false,
+              synthetic: true
+            }).catch(() => {});
+          }
+        } catch (_) { /* 持久化失败不影响展示 */ }
+      }
+    });
+    const pending = this.allArtworks.filter(a => !a._latestScore);
+    if (!pending.length) return;
+    const quality = pending.map(a =>
+      (Number(a.likes) || 0) * 0.4 + (Number(a.views) || 0) * 0.001 + this._hashJitter(a.id) * 0.3
+    );
+    const sorted = pending.map((a, i) => ({ a, q: quality[i] })).sort((x, y) => y.q - x.q);
+    const n = sorted.length;
+    sorted.forEach((item, rank) => {
+      const pct = (rank + 1) / n; // (0,1] top=最小
+      let key;
+      if (pct <= 0.03) key = 'sss';
+      else if (pct <= 0.11) key = 'ss';
+      else if (pct <= 0.26) key = 's';
+      else if (pct <= 0.56) key = 'a';
+      else if (pct <= 0.86) key = 'b';
+      else key = 'c';
+      const j = this._hashJitter(item.a.id);
+      const range = { sss: [9.5, 10], ss: [9.0, 9.4], s: [8.5, 8.9], a: [7.5, 8.4], b: [6.5, 7.4], c: [5.5, 6.4] }[key];
+      const totalScore = Math.round((range[0] + j * (range[1] - range[0])) * 10) / 10;
+      item.a._latestScore = { artworkId: Number(item.a.id), totalScore, grade: key, synthetic: true };
+      item.a.aiScored = true;
+      // 持久化到 IndexedDB（幂等：已有记录的作品不会进入 pending）
+      try {
+        if (typeof addAestheticScore === 'function') {
+          addAestheticScore({
+            artworkId: Number(item.a.id),
+            userId: item.a.userId || null,
+            scores: { composition: 0, lighting: 0, color: 0, clarity: 0, theme: 0 },
+            totalScore,
+            grade: key,
+            similarWorks: [],
+            teachingComments: '{}',
+            aiDescription: '',
+            degraded: false,
+            synthetic: true
+          }).catch(() => {});
+        }
+      } catch (_) { /* 持久化失败不影响展示 */ }
+    });
+  },
+
+  // --- 简单字符串哈希 → [0,1) 确定性微扰 ---
+  _hashJitter(id) {
+    const s = String(id);
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    return (h % 1000) / 1000;
+  },
+
+  // ----------------------------------------------------------
+  // M1-2: 作品选择器（裸路由 #/edit / #/craft 无 artworkId 时降级入口）
+  // onPick(artworkId) 选中回调；title 弹窗标题
+  // ----------------------------------------------------------
+  openArtworkPicker(onPick, title) {
+    this._pickerOnPick = typeof onPick === 'function' ? onPick : null;
+    let overlay = document.getElementById('artwork-picker-modal');
+    if (overlay) overlay.remove();
+    overlay = document.createElement('div');
+    overlay.className = 'modal-overlay artwork-picker-modal';
+    overlay.id = 'artwork-picker-modal';
+    overlay.innerHTML = `
+      <div class="modal-box glass artwork-picker-box">
+        <button class="modal-close" data-close aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+        <h2 class="ap-title">${title || '选择一件作品'}</h2>
+        <p class="ap-sub">选择作品后进入 AI 工作台</p>
+        <div class="ap-tabs" role="tablist">
+          <button class="ap-tab ${window.currentUser ? 'active' : ''}" data-tab="mine" role="tab">我的作品</button>
+          <button class="ap-tab ${window.currentUser ? '' : 'active'}" data-tab="hot" role="tab">热门作品</button>
+        </div>
+        <div class="ap-grid" id="ap-grid"><div class="ap-loading"><i class="fa-solid fa-spinner fa-spin"></i> 加载中…</div></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    if (window.ModalScrollLock) ModalScrollLock.lock();
+    requestAnimationFrame(() => overlay.classList.add('open'));
+    const close = () => {
+      overlay.classList.remove('open');
+      setTimeout(() => {
+        overlay.remove();
+        if (window.ModalScrollLock) ModalScrollLock.unlock();
+      }, 220);
+    };
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay || e.target.closest('[data-close]')) close();
+    });
+    document.addEventListener('keydown', function esc(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+    });
+    const renderGrid = (list, emptyMsg) => {
+      const grid = overlay.querySelector('#ap-grid');
+      if (!grid) return;
+      if (!list || !list.length) {
+        grid.innerHTML = `<div class="ap-empty">${emptyMsg || '暂无作品，先去发布一件吧'}</div>`;
+        return;
+      }
+      grid.innerHTML = list.slice(0, 24).map(a => `
+        <button class="ap-card" data-id="${a.id}" title="${this._esc(a.title)}">
+          <img src="${this._esc(a.imageUrl || (Array.isArray(a.images) && a.images[0]) || '')}" alt="${this._esc(a.title)}" loading="lazy" />
+          <span class="ap-card-title">${this._esc(a.title)}</span>
+        </button>
+      `).join('');
+      grid.querySelectorAll('.ap-card').forEach(card => {
+        card.addEventListener('click', () => {
+          if (typeof Sound !== 'undefined') Sound.playSound('click');
+          const id = Number(card.dataset.id);
+          close();
+          if (this._pickerOnPick) this._pickerOnPick(id);
+        });
+      });
+    };
+    const loadList = async (tab) => {
+      let list = [];
+      let emptyMsg = null;
+      if (tab === 'mine') {
+        if (window.currentUser && typeof getUserArtworks === 'function') {
+          // 严格按当前用户过滤：为空时如实展示空态，绝不回退到全局热门作品
+          list = (await getUserArtworks(window.currentUser.id).catch(() => [])) || [];
+          if (!list.length) emptyMsg = '你还没有发布作品，先去发布一件吧';
+        } else {
+          emptyMsg = '登录后即可在这里看到你的作品';
+        }
+      } else {
+        list = [...(this.allArtworks || [])].sort((x, y) => (Number(y.likes) || 0) - (Number(x.likes) || 0));
+        if (!list.length) emptyMsg = '暂无作品';
+      }
+      return { list, emptyMsg };
+    };
+    const tabs = overlay.querySelectorAll('.ap-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', async () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const grid = overlay.querySelector('#ap-grid');
+        if (grid) grid.innerHTML = '<div class="ap-loading"><i class="fa-solid fa-spinner fa-spin"></i> 加载中…</div>';
+        const r = await loadList(tab.dataset.tab);
+        renderGrid(r.list, r.emptyMsg);
+      });
+    });
+    const defaultTab = window.currentUser ? 'mine' : 'hot';
+    loadList(defaultTab).then(r => renderGrid(r.list, r.emptyMsg));
+  },
+
+  // --- 卡片AI评分摘要HTML ---
+  _aestheticCardHtml(artwork) {
+    const s=artwork&&artwork._latestScore;
+    if(s){
+      const t=Number(s.totalScore)||0,g=this._gradeMeta(t),id=artwork.id;
+      return '<div class="card-aesthetic card-aesthetic--rated" data-artwork-id="'+id+'"><span class="card-aesthetic-score"><i class="fa-solid fa-star"></i> '+t.toFixed(1)+'</span><span class="card-aesthetic-grade" style="--grade-color:'+g.color+'">'+g.icon+' '+g.en+' · '+g.zh+'</span></div>';
+    }
+    if(artwork&&artwork.aiScored===true)return '<div class="card-aesthetic card-aesthetic--loaded"><span class="card-aesthetic-grade" style="--grade-color:#9ca3af;"><i class="fa-solid fa-spinner fa-spin"></i> 评分加载中</span></div>';
+    // 未评分作品默认显示 C 等级
+    const dg=this._gradeMeta(0);
+    return '<div class="card-aesthetic card-aesthetic--pending"><span class="card-aesthetic-grade" style="--grade-color:'+dg.color+';">'+dg.icon+' '+dg.en+' · '+dg.zh+'</span></div>';
+  },
+
+  // --- 总分->定级元信息 ---
+  _gradeMeta(totalScore) {
+    const m=(typeof mapGrade==='function')?mapGrade:((typeof window!=='undefined'&&window.AIAesthetic&&window.AIAesthetic.mapGrade)||null);
+    if(m){try{return m(Number(totalScore)||0);}catch(_){}}
+    const s=Math.max(0,Math.min(10,Number(totalScore)||0));
+    // M1-4 评级颜色规范：SSS/SS/S 金色系 / A 粉紫 / B 天蓝 / C 灰白
+    if(s>=9.5)return{key:'sss',zh:'顶级神作',en:'SSS',icon:_ICONS.crown,color:'#ffd700'}
+    if(s>=9.0)return{key:'ss',zh:'大师级',en:'SS',icon:_ICONS.trophy,color:'#fbbf24'}
+    if(s>=8.5)return{key:'s',zh:'优秀',en:'S',icon:_ICONS.sparkle,color:'#f59e0b'}
+    if(s>=7.5)return{key:'a',zh:'良好',en:'A',icon:_ICONS.target,color:'#c084fc'}
+    if(s>=6.5)return{key:'b',zh:'合格',en:'B',icon:_ICONS.leaf,color:'#38bdf8'}
+    return{key:'c',zh:'待提升',en:'C',icon:_ICONS.sprout,color:'#cbd5e1'}
   }
 };
-
-// 键盘事件
 document.addEventListener('keydown', (e) => {
   const lb = document.getElementById('lightbox-modal');
   if (!lb || !lb.classList.contains('open')) return;

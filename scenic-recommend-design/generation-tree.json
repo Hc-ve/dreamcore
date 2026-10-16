@@ -1,0 +1,59 @@
+{
+  "root": {
+    "nodeId": "gen-project-shell",
+    "kind": "project-shell",
+    "pageIds": ["page-entry-nav", "page-entry-hero", "page-entry-cta", "page-entry-result", "page-entry-profile", "page-scenic-list", "page-scenic-feed", "page-scenic-detail", "page-craft-match", "page-share-poster", "page-design-spec"],
+    "output": "partials/components.css",
+    "sharedRegions": ["浏览器外壳 browser-frame", "产品顶部导航 app-nav", "设计令牌 var(--sn-*)", "组件类库 sn-card/sn-tag/sn-chip/pill-btn/match-hint", "玻璃拟态与圆角/间距体系"],
+    "privateRegions": [],
+    "mutableSlots": ["activeNavItem", "pageBody"],
+    "status": "generated",
+    "children": [
+      {
+        "nodeId": "gen-group-entries",
+        "kind": "shared-branch",
+        "pageIds": ["page-entry-nav", "page-entry-hero", "page-entry-cta", "page-entry-result", "page-entry-profile"],
+        "output": "partials/components.css",
+        "sharedRegions": ["亮色浅紫雾底 + 顶部导航外壳"],
+        "privateRegions": ["各入口形态与视觉权重演示"],
+        "mutableSlots": ["pageBody"],
+        "status": "generated",
+        "children": [
+          { "nodeId": "page-entry-nav", "kind": "page-leaf", "pageIds": ["page-entry-nav"], "output": "pages/entry-nav.html", "sharedRegions": [], "privateRegions": ["文化探索下拉·热门景区高亮"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-entry-hero", "kind": "page-leaf", "pageIds": ["page-entry-hero"], "output": "pages/entry-hero.html", "sharedRegions": [], "privateRegions": ["首页Hero本季热门景区运营卡"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-entry-cta", "kind": "page-leaf", "pageIds": ["page-entry-cta"], "output": "pages/entry-cta.html", "sharedRegions": [], "privateRegions": ["详情页一键做3D文创 CTA 区"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-entry-result", "kind": "page-leaf", "pageIds": ["page-entry-result"], "output": "pages/entry-result.html", "sharedRegions": [], "privateRegions": ["成果页去打卡领积分引导"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-entry-profile", "kind": "page-leaf", "pageIds": ["page-entry-profile"], "output": "pages/entry-profile.html", "sharedRegions": [], "privateRegions": ["个人中心我的景区足迹"], "mutableSlots": [], "status": "planned", "children": [] }
+        ]
+      },
+      {
+        "nodeId": "gen-group-pages",
+        "kind": "shared-branch",
+        "pageIds": ["page-scenic-list", "page-scenic-feed", "page-scenic-detail", "page-craft-match", "page-share-poster"],
+        "output": "partials/components.css",
+        "sharedRegions": ["浏览器外壳；景区弹层用深色玻璃语境，工作台用亮色语境"],
+        "privateRegions": ["四大子页面完整布局"],
+        "mutableSlots": ["pageBody"],
+        "status": "generated",
+        "children": [
+          { "nodeId": "page-scenic-list", "kind": "page-leaf", "pageIds": ["page-scenic-list"], "output": "pages/scenic-list.html", "sharedRegions": [], "privateRegions": ["聚合页搜索+筛选+Banner+卡片流+列表Tab"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-scenic-feed", "kind": "page-leaf", "pageIds": ["page-scenic-feed"], "output": "pages/scenic-feed.html", "sharedRegions": [], "privateRegions": ["聚合页种草流Tab，外壳与列表态一致"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-scenic-detail", "kind": "page-leaf", "pageIds": ["page-scenic-detail"], "output": "pages/scenic-detail.html", "sharedRegions": [], "privateRegions": ["龙门石窟详情全区块+IP文创CTA插入"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-craft-match", "kind": "page-leaf", "pageIds": ["page-craft-match"], "output": "pages/craft-match.html", "sharedRegions": [], "privateRegions": ["工作台顶部匹配提示条+风格品类预选高亮"], "mutableSlots": [], "status": "planned", "children": [] },
+          { "nodeId": "page-share-poster", "kind": "page-leaf", "pageIds": ["page-share-poster"], "output": "pages/share-poster.html", "sharedRegions": [], "privateRegions": ["景区打卡海报弹窗+主次按钮"], "mutableSlots": [], "status": "planned", "children": [] }
+        ]
+      },
+      {
+        "nodeId": "page-design-spec",
+        "kind": "page-leaf",
+        "pageIds": ["page-design-spec"],
+        "output": "pages/design-spec.html",
+        "sharedRegions": [],
+        "privateRegions": ["令牌色板/圆角/间距/组件复用对照"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      }
+    ]
+  }
+}

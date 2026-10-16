@@ -1,0 +1,515 @@
+{
+  "data": [
+    {
+      "id": "page-entry-nav",
+      "title": "入口① 顶部导航·文化探索下拉",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 0,
+        "y": 771,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 767,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-7d578506",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/entry-nav.html",
+        "interactions": [
+          {
+            "domId": "nav-hot-scenic",
+            "targetPageId": "page-scenic-list",
+            "hideEdge": true,
+            "transitionLabel": "导航进入热门景区"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-entry-hero",
+      "title": "入口② 首页Hero·本季热门景区",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1021,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-2058f48d",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/entry-hero.html",
+        "interactions": [
+          {
+            "domId": "hero-scenic-card",
+            "targetPageId": "page-scenic-list",
+            "transitionLabel": "探索热门景区"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-entry-cta",
+      "title": "入口③ 详情页·一键做3D文创CTA",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 480,
+        "y": 771,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1112,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-e1c0856e",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/entry-cta.html",
+        "interactions": [
+          {
+            "domId": "cta-to-craft",
+            "targetPageId": "page-craft-match",
+            "hideEdge": true,
+            "transitionLabel": "一键做3D文创"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-entry-result",
+      "title": "入口④ 成果页·去打卡领积分",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 960,
+        "y": 771,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1059,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-1efaa2c9",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/entry-result.html",
+        "interactions": [
+          {
+            "domId": "result-checkin",
+            "targetPageId": "page-share-poster",
+            "hideEdge": true,
+            "transitionLabel": "去打卡领积分"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-entry-profile",
+      "title": "入口⑤ 个人中心·我的景区足迹",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 1440,
+        "y": 771,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 880,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-a8fb4795",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/entry-profile.html",
+        "interactions": [
+          {
+            "domId": "profile-footprint",
+            "targetPageId": "page-scenic-list",
+            "hideEdge": true,
+            "transitionLabel": "查看我的景区足迹"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-scenic-list",
+      "title": "子页1 景区聚合页·景区列表",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 480,
+        "y": 0,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1268,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-61c3f5ae",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/scenic-list.html",
+        "interactions": [
+          {
+            "domId": "scenic-card-longmen",
+            "targetPageId": "page-scenic-detail",
+            "transitionLabel": "进入龙门石窟详情"
+          },
+          {
+            "domId": "tab-feed",
+            "targetPageId": "page-scenic-feed",
+            "hideEdge": true,
+            "transitionLabel": "切换种草流Tab"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-scenic-feed",
+      "title": "子页1 景区聚合页·种草流",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 1920,
+        "y": 771,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1846,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-10f1e15f",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/scenic-feed.html",
+        "interactions": [
+          {
+            "domId": "feed-card-longmen",
+            "targetPageId": "page-scenic-detail",
+            "hideEdge": true,
+            "transitionLabel": "种草笔记进入景区详情"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-scenic-detail",
+      "title": "子页2 景区详情页·龙门石窟",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 960,
+        "y": 0,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 2267,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-1011470e",
+          "measuredAt": 1791447237664
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/scenic-detail.html",
+        "interactions": [
+          {
+            "domId": "craft-cta-main",
+            "targetPageId": "page-craft-match",
+            "transitionLabel": "一键做3D文创"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-craft-match",
+      "title": "子页3 文创生成链路·景区匹配态",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 1440,
+        "y": 0,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1162,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-c805ee0c",
+          "measuredAt": 1791449571627
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/craft-match.html",
+        "interactions": [
+          {
+            "domId": "open-share-poster",
+            "targetPageId": "page-share-poster",
+            "transitionLabel": "查看成果分享海报"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-share-poster",
+      "title": "子页4 成果分享弹窗·打卡海报",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 1920,
+        "y": 0,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1169,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-625c5151",
+          "measuredAt": 1791449571627
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/share-poster.html",
+        "interactions": [
+          {
+            "domId": "poster-close",
+            "targetPageId": "page-craft-match",
+            "hideEdge": true,
+            "transitionLabel": "关闭海报返回工作台"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-design-spec",
+      "title": "附录 设计令牌与组件复用规范",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 2400,
+        "y": 771,
+        "group": 2,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1956,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-6bc88cb5",
+          "measuredAt": 1791449571627
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/design-spec.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "image-001",
+      "title": "水墨古镇水乡",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 0,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-001.jpg"
+      }
+    },
+    {
+      "id": "image-002",
+      "title": "烟雨江南灯影",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 480,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-002.jpg"
+      }
+    },
+    {
+      "id": "image-003",
+      "title": "国潮山水意境",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 960,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-003.jpg"
+      }
+    },
+    {
+      "id": "image-004",
+      "title": "青绿山水插画",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 1440,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-004.jpg"
+      }
+    },
+    {
+      "id": "image-005",
+      "title": "3D方块水墨山水",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 1920,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-064.jpg"
+      }
+    },
+    {
+      "id": "image-006",
+      "title": "3D几何体山水",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 2400,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-065.jpg"
+      }
+    },
+    {
+      "id": "image-007",
+      "title": "程序化3D山峦",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 2880,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-066.jpg"
+      }
+    },
+    {
+      "id": "image-008",
+      "title": "IP文创冰箱贴实拍",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 3360,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-090.jpg"
+      }
+    },
+    {
+      "id": "image-009",
+      "title": "国风文创衍生品",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 3840,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-091.jpg"
+      }
+    },
+    {
+      "id": "image-010",
+      "title": "文创实物组合",
+      "type": "image",
+      "version": 1,
+      "createdAt": 1791440000000,
+      "canvasData": {
+        "x": 4320,
+        "y": 1419,
+        "naturalSize": {
+          "width": 2240,
+          "height": 1680
+        }
+      },
+      "devMetadata": {
+        "imageSrc": "assets/gen-092.jpg"
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "desktop",
+    "projectName": "Dreamcore 热门景区模块设计",
+    "designLibrary": null
+  }
+}

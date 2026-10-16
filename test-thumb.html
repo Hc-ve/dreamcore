@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>缩略图渲染修复验证</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 780px; margin: 40px auto; padding: 0 20px; }
+  h1 { font-size: 1.2rem; color: #333; }
+  #log { background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 8px; font-size: .78rem; font-family: 'Consolas', monospace; min-height: 180px; max-height: 400px; overflow-y: auto; line-height: 1.5; }
+  #log .ok { color: #4ec9b0; }
+  #log .err { color: #f48771; }
+  #log .info { color: #9cdcfe; }
+  .thumb-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .thumb-box { border: 1px solid #ddd; border-radius: 8px; padding: 8px; text-align: center; }
+  .thumb-box canvas, .thumb-box img { border-radius: 4px; background: #f5f2ec; display: block; }
+  .thumb-box .label { font-size: .7rem; color: #888; margin-top: 4px; white-space: nowrap; }
+  button { padding: 8px 16px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; margin-right: 8px; }
+  button:hover { background: #f5f5f5; }
+  .test-result { padding: 8px; border-radius: 6px; margin-top: 12px; font-size: .9rem; }
+  .test-pass { background: #e8f5e9; color: #2e7d32; }
+  .test-fail { background: #ffebee; color: #c62828; }
+</style>
+</head>
+<body>
+
+<h1>🔍 缩略图渲染修复 — 独立验证页</h1>
+<p>对比实验：同一个 WebGLRenderer，<code>preserveDrawingBuffer: true</code> vs <code>false</code>，渲染后立即 <code>toDataURL()</code> 看谁能拿到非空帧。</p>
+
+<div style="margin:12px 0">
+  <button onclick="runCompare()">▶ 运行对比测试</button>
+</div>
+
+<div class="thumb-row" id="thumbs"></div>
+<div id="result"></div>
+<div id="log"></div>
+
+<script type="module">
+import * as THREE from 'three';
+
+const logEl = document.getElementById('log');
+const thumbsEl = document.getElementById('thumbs');
+const resultEl = document.getElementById('result');
+
+function log(msg, cls = 'info') {
+  const line = document.createElement('div');
+  line.className = cls;
+  const ts = new Date().toLocaleTimeString();
+  line.textContent = `[${ts}] ${msg}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// 判断 dataURL 是否"空白"（preserveDrawingBuffer 缺失时的典型产物）
+// 真正的缩略图：非透明像素 > 总像素的 5%
+function isBlankThumb(dataURL) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const d = ctx.getImageData(0, 0, c.width, c.height).data;
+      let nonEmpty = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        // 不是纯白色(245,242,236)背景
+        if (d[i] < 240 || d[i+1] < 237 || d[i+2] < 231) nonEmpty++;
+      }
+      const ratio = nonEmpty / (d.length / 4);
+      resolve(ratio < 0.05);
+    };
+    img.src = dataURL;
+  });
+}
+
+function makeCube() {
+  const group = new THREE.Group();
+  const geom = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+  const mat = new THREE.MeshStandardMaterial({ color: 0xd4a574, roughness: 0.5, metalness: 0.1 });
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.rotation.set(0.3, 0.5, 0);
+  group.add(mesh);
+  return group;
+}
+
+// === 场景 setup 和 admin.js renderThumb() 完全一致 ===
+function createScene(object) {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf5f2ec);
+  scene.add(object);
+
+  // 相机
+  const bbox = new THREE.Box3().setFromObject(object);
+  const size = bbox.getSize(new THREE.Vector3());
+  const center = bbox.getCenter(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const scale = 1.2 / (maxDim || 1);
+  object.position.copy(center).multiplyScalar(-scale);
+  object.scale.setScalar(scale);
+
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  camera.position.set(1.5, 1.2, 1.5);
+  camera.lookAt(0, 0, 0);
+
+  // 灯光（和 admin.js 一致）
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+  scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(2, 3, 2);
+  scene.add(dir);
+  const fill = new THREE.DirectionalLight(0xfff0e0, 0.3);
+  fill.position.set(-2, 1, -2);
+  scene.add(fill);
+
+  return { scene, camera };
+}
+
+async function testPreserve(preserve) {
+  log(`创建 WebGLRenderer preserveDrawingBuffer=${preserve}…`);
+  const canvas = document.createElement('canvas');
+  canvas.width = 200; canvas.height = 200;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    preserveDrawingBuffer: preserve,
+    alpha: false
+  });
+  renderer.setSize(200, 200, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.setClearColor(0xf5f2ec, 1);
+
+  const cube = makeCube();
+  const { scene, camera } = createScene(cube);
+
+  log(`  render()…`);
+  renderer.render(scene, camera);
+
+  // 关键：模拟 admin.js upload path 里 render→toDataURL 之间的异步间隙
+  // admin.js 在这之间会 await 动态 import DRACOLoader / GLTFLoader 等
+  // 这个 await 让出事件循环，浏览器有机会交换 framebuffer → preserveDrawingBuffer=false 就会丢失帧
+  log(`  ⏸ 模拟 admin.js 异步间隙 await Promise(resolve)…`);
+  await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => requestAnimationFrame(() => r()));
+  log(`  ✅ 异步间隙结束`);
+
+  log(`  同步中间操作（纹理遍历）…`);
+  const textures = [];
+  scene.traverse(obj => {
+    if (obj.isMesh && obj.material) {
+      const m = obj.material;
+      for (const k of ['map','normalMap','roughnessMap','metalnessMap','emissiveMap']) {
+        if (m[k] && m[k].isTexture) textures.push(m[k]);
+      }
+    }
+  });
+  const dummy = new Array(10000).fill(0).map((_, i) => i * 1.5);
+  log(`  中间操作：遍历了 ${textures.length} 个纹理，分配了 ${dummy.length} 个数字`);
+
+  // 现在取帧
+  log(`  toDataURL()…`);
+  const dataURL = canvas.toDataURL('image/png');
+  const isBlank = await isBlankThumb(dataURL);
+  const sizeKB = Math.round(dataURL.length * 0.75 / 1024);
+
+  // 清理
+  textures.forEach(t => t.dispose());
+  renderer.dispose();
+  canvas.getContext('webgl')?.getExtension('WEBGL_lose_context')?.loseContext();
+
+  return { preserve, dataURL, isBlank, sizeKB };
+}
+
+async function runCompare() {
+  thumbsEl.innerHTML = '';
+  resultEl.innerHTML = '';
+  logEl.innerHTML = '';
+  log('========== 开始对比测试 ==========', 'info');
+
+  // 先 false（bug 行为）
+  const buggy = await testPreserve(false);
+  log(`preserveDrawingBuffer=false → ${buggy.isBlank ? '⚠️ 空白帧（BUG！）' : '✓ 有内容'}  ${buggy.sizeKB}KB`, buggy.isBlank ? 'err' : 'ok');
+
+  // 再 true（修复后）
+  const fixed = await testPreserve(true);
+  log(`preserveDrawingBuffer=true  → ${fixed.isBlank ? '⚠️ 空白帧（BUG！）' : '✓ 有内容'}  ${fixed.sizeKB}KB`, fixed.isBlank ? 'err' : 'ok');
+
+  // 渲染对比图
+  for (const r of [buggy, fixed]) {
+    const box = document.createElement('div');
+    box.className = 'thumb-box';
+    box.innerHTML = `
+      <img src="${r.dataURL}" width="200" height="200">
+      <div class="label">preserveDrawingBuffer=${r.preserve}</div>
+      <div class="label" style="color:${r.isBlank?'#c62828':'#2e7d32'}">
+        ${r.isBlank ? '❌ 空白帧' : '✅ 有内容'} (${r.sizeKB}KB)
+      </div>
+    `;
+    thumbsEl.appendChild(box);
+  }
+
+  // 结论
+  const pass = buggy.isBlank && !fixed.isBlank;
+  const bothOk = !buggy.isBlank && !fixed.isBlank;
+  let msg;
+  if (pass) {
+    msg = '<div class="test-result test-pass">✅ 对比测试通过：<code>preserveDrawingBuffer=true</code> 修复有效！false 模式拿到空白帧（完美复现原 bug），true 模式拿到真实渲染帧。</div>';
+  } else if (bothOk) {
+    msg = '<div class="test-result test-fail">⚠️ 两种模式都拿到了内容帧 — 可能是浏览器在同一 tick 内 render→toDataURL 还没交换。请在 admin.js upload path 的场景下测试（有异步等待）。</div>';
+  } else {
+    msg = `<div class="test-result test-fail">❌ 两种模式都是空白！preserveDrawingBuffer=true 也没生效，有别的问题。</div>`;
+  }
+  resultEl.innerHTML = msg;
+
+  log('========== 测试结束 ==========', 'info');
+  log(`结论：${pass ? '✅ 根因修复确认！' : bothOk ? '⚠️ 需要在 admin upload path 场景再测' : '❌ 其他问题'}`, pass ? 'ok' : 'err');
+}
+
+window.runCompare = runCompare;
+log('页面加载完成，点击"运行对比测试"按钮开始');
+</script>
+</body>
+</html>

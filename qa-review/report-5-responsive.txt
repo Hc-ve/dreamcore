@@ -1,0 +1,95 @@
+
+========== 1. 主题 BUG 根因验证 ==========
+{
+ "localStorage_raw": "\"dark\"",
+ "localStorage_JSONparsed": "dark",
+ "dataTheme_attr": "\"dark\"",
+ "attr_len": 6,
+ "matches_css_dark": false,
+ "matches_css_quoted": true,
+ "bodyBg": "rgb(245, 243, 250)",
+ "activeSeg": []
+}
+→ CSS 选择器是否命中深色变量组: #f5f3fa
+
+========== 2. 响应式 ==========
+Mobile-375    home       sw=  375 iw=  375 ok         smallTap(vis)=10 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    gallery    sw=  375 iw=  375 ok         smallTap(vis)=10 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    craft      sw=  375 iw=  375 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    atlas      sw=  375 iw=  375 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    footprint  sw=  375 iw=  375 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    pricing    sw=  375 iw=  375 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    scenic     sw=  375 iw=  375 ok         smallTap(vis)=15 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-375    admin      sw=  375 iw=  375 ok         smallTap(vis)=16 menuBtn=true navCenter=false offenders=["DIV.nav-right","DIV.","BUTTON.btn-ghost","SPAN."]
+Mobile-414    home       sw=  414 iw=  414 ok         smallTap(vis)=10 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    gallery    sw=  414 iw=  414 ok         smallTap(vis)=10 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    craft      sw=  414 iw=  414 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    atlas      sw=  414 iw=  414 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    footprint  sw=  414 iw=  414 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    pricing    sw=  414 iw=  414 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    scenic     sw=  414 iw=  414 ok         smallTap(vis)=15 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Mobile-414    admin      sw=  414 iw=  414 ok         smallTap(vis)=16 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    home       sw=  768 iw=  768 ok         smallTap(vis)=10 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    gallery    sw=  768 iw=  768 ok         smallTap(vis)=10 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    craft      sw=  768 iw=  768 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    atlas      sw=  768 iw=  768 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    footprint  sw=  768 iw=  768 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    pricing    sw=  768 iw=  768 ok         smallTap(vis)=12 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    scenic     sw=  768 iw=  768 ok         smallTap(vis)=15 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Tablet-768    admin      sw=  768 iw=  768 ok         smallTap(vis)=16 menuBtn=true navCenter=false offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   home       sw= 1024 iw= 1024 ok         smallTap(vis)=9 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   gallery    sw= 1024 iw= 1024 ok         smallTap(vis)=9 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   craft      sw= 1024 iw= 1024 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   atlas      sw= 1024 iw= 1024 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   footprint  sw= 1024 iw= 1024 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   pricing    sw= 1024 iw= 1024 ok         smallTap(vis)=12 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   scenic     sw= 1024 iw= 1024 ok         smallTap(vis)=14 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Laptop-1024   admin      sw= 1024 iw= 1024 ok         smallTap(vis)=15 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  home       sw= 1440 iw= 1440 ok         smallTap(vis)=9 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  gallery    sw= 1440 iw= 1440 ok         smallTap(vis)=9 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  craft      sw= 1440 iw= 1440 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  atlas      sw= 1440 iw= 1440 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  footprint  sw= 1440 iw= 1440 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  pricing    sw= 1440 iw= 1440 ok         smallTap(vis)=12 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  scenic     sw= 1440 iw= 1440 ok         smallTap(vis)=14 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Desktop-1440  admin      sw= 1440 iw= 1440 ok         smallTap(vis)=15 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     home       sw= 1920 iw= 1920 ok         smallTap(vis)=9 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     gallery    sw= 1920 iw= 1920 ok         smallTap(vis)=9 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     craft      sw= 1920 iw= 1920 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     atlas      sw= 1920 iw= 1920 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     footprint  sw= 1920 iw= 1920 ok         smallTap(vis)=11 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     pricing    sw= 1920 iw= 1920 ok         smallTap(vis)=12 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     scenic     sw= 1920 iw= 1920 ok         smallTap(vis)=14 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+Wide-1920     admin      sw= 1920 iw= 1920 ok         smallTap(vis)=15 menuBtn=true navCenter=true offenders=["BUTTON.","I.fa-solid fa-magnifying-gla","BUTTON.","I.fa-solid fa-cloud-arrow-up"]
+
+========== 3. 可访问性 ==========
+{
+ "imgTotal": 12,
+ "imgNoAlt": 0,
+ "imgEmptyAlt": 0,
+ "h1Count": 1,
+ "headingOrder": [
+  "H1:当AI遇见文旅让传统美学数字新生",
+  "H2:文旅画廊",
+  "H3:三星堆盲盒",
+  "H3:唐·古艺 / Panel in the Sh",
+  "H3:水墨赛博山水",
+  "H3:明·书迹 / Calligraphy",
+  "H3:清·古艺 / Demon queller Z",
+  "H3:凤凰古城沱江晨雾",
+  "H3:大唐不夜城",
+  "H3:秦淮河夫子庙",
+  "H3:苗银首饰",
+  "H3:唐·佛容 / Buddha"
+ ],
+ "landmarks": {
+  "header": true,
+  "main": true,
+  "footer": true,
+  "nav": 2
+ },
+ "buttonsNoLabel": 0,
+ "inputsNoLabel": 0,
+ "lang": "zh-CN",
+ "skipLink": true
+}

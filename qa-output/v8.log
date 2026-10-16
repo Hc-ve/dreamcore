@@ -1,0 +1,196 @@
+﻿
+Running 1 test using 1 worker
+
+[1/1] [Desktop Chrome] › tests\bookmark-uv-e2e.spec.js:28:1 › 书签 UV 修复 E2E — 完整路径
+[Desktop Chrome] › tests\bookmark-uv-e2e.spec.js:28:1 › 书签 UV 修复 E2E — 完整路径
+=== 0. 初始化 ===
+
+  ✅ 主站已加载
+
+
+=== 1. Admin → 上传修复模型 ===
+
+  ✅ 上传中...
+
+  📸 admin-uploaded-v3.png
+
+  ✅ 上传完成
+
+
+=== 2. 进入 /#/craft 选作品 ===
+
+  找"热门作品" tab...
+
+  ✅ 切到热门作品
+
+  📸 craft-hotworks.png
+
+  找弹窗里的作品缩略图...
+
+  找到弹窗里的"故宫雪夜生成"
+
+  ✅ 弹窗作品已点击
+
+  📸 workbench-opened.png
+
+
+=== 3. 确认书签选中 ===
+
+  ✅ 书签 chip 已点击
+
+  📸 bookmark-confirmed.png
+
+
+=== 4. 实物预览 → 切 3D旋转 ===
+
+  ✅ 点击实物预览
+
+  切"3D旋转" tab...
+
+  ✅ 切到 3D旋转
+
+
+  🔍 browser-side UV diag: {
+  "byteLen": 4802020,
+  "meshes": [
+    {
+      "verts": 150012,
+      "range": "U[0.00,1.00] V[0.00,0.72]",
+      "byDir": {
+        "+X": {
+          "mnU": 0,
+          "mxU": 1,
+          "mnV": 0,
+          "mxV": 0.7200000286102295
+        },
+        "-Z": {
+          "mnU": 0,
+          "mxU": 0.25,
+          "mnV": 0,
+          "mxV": 0.20000000298023224
+        },
+        "-Y": {
+          "mnU": 0,
+          "mxU": 1,
+          "mnV": 0,
+          "mxV": 0.7200000286102295
+        },
+        "+Y": {
+          "mnU": 0,
+          "mxU": 1,
+          "mnV": 0,
+          "mxV": 0.7200000286102295
+        },
+        "+Z": {
+          "mnU": 0,
+          "mxU": 1,
+          "mnV": 0,
+          "mxV": 0.7200000286102295
+        },
+        "-X": {
+          "mnU": 0,
+          "mxU": 1,
+          "mnV": 0,
+          "mxV": 0.7200000286102295
+        }
+      }
+    }
+  ]
+}
+
+  📸 3d-front.png
+
+  📸 正面已截图
+
+
+=== 5. JS API 精确切换视角 ===
+
+  📸 3d-front.png
+
+  front: ✅
+
+  📸 3d-back.png
+
+  back: ✅
+
+  📸 3d-top.png
+
+  top: ✅
+
+  📸 3d-bottom.png
+
+  bottom: ✅
+
+  📸 3d-side-right.png
+
+  side-right: ✅
+
+  📸 3d-side-left.png
+
+  side-left: ✅
+
+  📸 3d-iso.png
+
+  iso: ✅
+
+
+=== 6. 材质诊断 ===
+
+{
+  "sceneFound": true,
+  "camPos": [
+    1.8,
+    1.5999999999999999,
+    1.8000000000000003
+  ],
+  "c3dKeys": [
+    "loadCustomModelsCache",
+    "getCachedCustomModel",
+    "clearCustomModelCache",
+    "renderCustom",
+    "render",
+    "countTriangles",
+    "dispose",
+    "isActive",
+    "_controls",
+    "_camera"
+  ],
+  "meshCount": 2,
+  "meshInfo": [
+    {
+      "name": "node_0",
+      "verts": 150012,
+      "mats": [
+        {
+          "type": "MeshPhysicalMaterial",
+          "hasMap": true,
+          "side": 2,
+          "color": "ffffff",
+          "roughness": 0.55,
+          "metalness": 0.06
+        }
+      ],
+      "uvRange": "U[0.00,1.00] V[0.00,0.72]"
+    },
+    {
+      "name": "",
+      "verts": 4,
+      "mats": [
+        {
+          "type": "ShadowMaterial",
+          "hasMap": false,
+          "side": 0,
+          "color": "000000"
+        }
+      ],
+      "uvRange": "U[0.00,1.00] V[0.00,1.00]"
+    }
+  ]
+}
+
+  📸 final-state.png
+
+
+=== ✅ 完成 ===
+
+  1 passed (35.3s)

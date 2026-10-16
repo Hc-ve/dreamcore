@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>马克杯 UV 测试</title>
+  <style>
+    body { margin: 0; background: #f5f0e8; font-family: sans-serif; }
+    #app { width: 100vw; height: 100vh; display: flex; }
+    #three3dView { flex: 1; background: linear-gradient(135deg, #1a1a2e, #16213e); }
+    #sidebar { width: 320px; padding: 20px; background: #fff; overflow-y: auto; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+    h1 { font-size: 18px; color: #333; }
+    .log { font-size: 11px; background: #f8f8f8; padding: 8px; margin: 4px 0; border-radius: 4px; font-family: monospace; word-break: break-all; max-height: 400px; overflow-y: auto; }
+    .log.warn { border-left: 3px solid #f39c12; }
+    .log.error { border-left: 3px solid #e74c3c; }
+    .log.ok { border-left: 3px solid #27ae60; }
+    button { padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 4px; }
+    button:hover { background: #2980b9; }
+    label { font-size: 12px; color: #666; display: block; margin-top: 12px; }
+    input[type="file"] { margin: 4px 0; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="three3dView"></div>
+  <div id="sidebar">
+    <h1>🎯 马克杯 UV 测试 v13</h1>
+    <div style="font-size:12px;color:#666;">BFF v13 mesh 拆分 + 前端 sentinel 保护</div>
+    <label>GLB 模型:</label>
+    <input type="file" id="glbInput" accept=".glb">
+    <label>设计图:</label>
+    <input type="file" id="designInput" accept="image/*">
+    <div style="margin-top:10px;">
+      <button id="renderBtn">渲染</button>
+      <button id="resetBtn">重置视角</button>
+    </div>
+    <div id="logs"></div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+const logs = document.getElementById('logs');
+function log(msg, type = '') {
+  const div = document.createElement('div');
+  div.className = 'log ' + type;
+  div.textContent = msg;
+  logs.prepend(div);
+  console.log(msg);
+}
+
+// ===== 场景 =====
+const container = document.getElementById('three3dView');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+camera.position.set(2, 1.5, 2);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+container.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// 灯光
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+dir.position.set(5, 5, 5);
+scene.add(dir);
+
+// ===== Canvas 设计图 + paper sentinel =====
+function makeCanvasTexture(designImage) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+  
+  // 1. 画 paper 米白底色（整个 canvas）
+  ctx.fillStyle = '#faf7f2';
+  ctx.fillRect(0, 0, 1024, 1024);
+  
+  // 2. 画设计图（如果有）
+  if (designImage) {
+    ctx.drawImage(designImage, 0, 0, 1024, 1024);
+  } else {
+    // 全幅测试图案：覆盖整个 canvas，验证 wrap 区域覆盖 + UV 连续性
+    // 1. U 方向横向渐变（验证 atan2 圆周 wrap 是否连续一圈）
+    const grad = ctx.createLinearGradient(0, 0, 1024, 0);
+    grad.addColorStop(0, '#e74c3c');
+    grad.addColorStop(0.5, '#f1c40f');
+    grad.addColorStop(1, '#2980b9');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1024, 1024);
+    // 2. 细网格（低对比度，不喧宾夺主，只用来验证 UV 连续性）
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 2;
+    for (let x = 0; x <= 1024; x += 128) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1024); ctx.stroke();
+    }
+    for (let y = 0; y <= 1024; y += 128) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1024, y); ctx.stroke();
+    }
+  }
+  
+  // 3. 🚨 关键：画 paper sentinel 区域（物理右上角）
+  // CanvasTexture flipY=true: UV(0.9999,0.9999) → canvas (X≈1023, Y≈0)
+  // fillRect(W-8, 0, 8, 8) 画在物理右上角
+  ctx.fillStyle = '#faf7f2';
+  ctx.fillRect(1016, 0, 8, 8);
+  log('✅ Canvas 已画 paper sentinel 在物理右上角 (1016, 0)');
+  
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.flipY = true;
+  return tex;
+}
+
+// ===== 材质注入 —— 和 craft-3d.js _injectCanvasTextureToModel 完全一致 =====
+const PAPER_COLOR = 0xfaf7f2;
+const PAPER_ROUGH = 0.85;
+function injectTextures(group, canvasTex) {
+  function _isSentinelUV(uvAttr) {
+    if (!uvAttr) return false;
+    let sent = 0, zero = 0;
+    for (let i = 0; i < uvAttr.count; i++) {
+      const u = uvAttr.getX(i), v = uvAttr.getY(i);
+      if (u >= 0.9998 && v >= 0.9998) sent++;
+      else if (Math.abs(u) < 0.001 && Math.abs(v) < 0.001) zero++;
+    }
+    const total = uvAttr.count;
+    const pct = (sent + zero) / total;
+    log(`   UV 检测: sent=${sent} zero=${zero} total=${total} sentinel_pct=${(pct*100).toFixed(1)}%`);
+    return pct >= 0.95;
+  }
+  
+  let canvasMats = 0, paperMats = 0;
+  group.traverse(obj => {
+    if (!obj.isMesh) return;
+    const uvAttr = obj.geometry.attributes?.uv;
+    const alreadyPaper = obj.userData._paperMat === true;
+    const isSent = uvAttr ? _isSentinelUV(uvAttr) : false;
+    
+    if (isSent || alreadyPaper) {
+      // sentinel → paperMat
+      obj.material = new THREE.MeshStandardMaterial({
+        color: PAPER_COLOR, roughness: PAPER_ROUGH, metalness: 0.02, side: THREE.DoubleSide
+      });
+      paperMats++;
+      log(`  📄 "${obj.name}" → paperMat 米白 #faf7f2 (sentinelUV=${isSent} wasPaper=${alreadyPaper})`, 'ok');
+    } else {
+      // 正常 → CanvasTexture
+      const mat = new THREE.MeshStandardMaterial({ 
+        map: canvasTex, roughness: 0.55, metalness: 0.06, side: THREE.DoubleSide 
+      });
+      obj.material = mat;
+      canvasMats++;
+      log(`  🎨 "${obj.name}" → CanvasTexture 设计图 wrap`, 'ok');
+    }
+  });
+  return { canvasMats, paperMats };
+}
+
+// ===== 主渲染流程 =====
+// 浏览器版 base64 工具（代替 Node.js Buffer）
+function arrayBufferToBase64(buf) {
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+function base64ToArrayBuffer(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+async function render() {
+  log('========== 开始渲染 ==========');
+  
+  // 清除旧对象
+  scene.children.forEach(c => { if (c.geometry) scene.remove(c); });
+  
+  // CanvasTexture
+  const tex = makeCanvasTexture();
+  
+  // 1. 加载原始 GLB
+  log('1. 加载原始马克杯 GLB...');
+  const glbData = await fetch('./文创设计参考/模型/马克杯 .glb').then(r => r.arrayBuffer());
+  const origGltf = await new GLTFLoader().parseAsync(glbData, '');
+  log(`   原始 mesh 数: ${origGltf.scene.children.length}`);
+  
+  // 2. 调 BFF v13
+  log('2. 调 BFF POST /api/uv/process (form3d=mug, v13)...');
+  const bffResp = await fetch('http://localhost:3001/api/uv/process', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ form3d: 'mug', glbBase64: arrayBufferToBase64(glbData) })
+  });
+  const j = await bffResp.json();
+  log(`   BFF 返回: strategy=${j.strategy} v=${j.strategyVersion||'?'} triangles=${j.triangles} ms=${j.ms}`);
+  
+  if (!j.glbBase64) { log('❌ BFF 失败: ' + JSON.stringify(j).slice(0, 300), 'error'); return; }
+  
+  // 3. 解析 BFF 处理后的 GLB
+  log('3. 解析 BFF 处理后的 GLB...');
+  const procBuf = base64ToArrayBuffer(j.glbBase64);
+  const bffGltf = await new GLTFLoader().parseAsync(procBuf, '');
+  
+  // 4. 注入材质
+  log('4. 注入材质...');
+  const stats = injectTextures(bffGltf.scene, tex);
+  log(`   🎨 CanvasTexture 材质: ${stats.canvasMats}  📄 paperMat: ${stats.paperMats}`);
+  
+  // 5. 加到场景
+  const group = bffGltf.scene || bffGltf.scenes[0];
+  // 居中 + 缩放到合理大小
+  const box = new THREE.Box3().setFromObject(group);
+  const center = box.getCenter(new THREE.Vector3());
+  group.position.sub(center);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const scale = 1.2 / maxDim;
+  group.scale.setScalar(scale);
+  
+  scene.add(group);
+  log('5. 加到 Three.js 场景 ✅', 'ok');
+  
+  // 动画
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+  
+  log('========== 渲染完成 ==========', 'ok');
+}
+
+// ===== UI 事件 =====
+document.getElementById('renderBtn').addEventListener('click', render);
+document.getElementById('resetBtn').addEventListener('click', () => {
+  camera.position.set(2, 1.5, 2); controls.reset();
+});
+
+// 自动渲染
+window.addEventListener('DOMContentLoaded', () => {
+  log('🎯 独立马克杯 UV 测试页 v13 已就绪');
+  render();
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+});
+</script>
+</body>
+</html>

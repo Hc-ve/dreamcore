@@ -1,0 +1,7 @@
+﻿provider 返回: self-trained
+text: {"title":"三星堆青铜面具奇遇记","subtitle":"穿越千年的神秘对话","craftType":"poster","style":"guofeng","layout":"poster-hero","palette":["朱砂","黛青","月白"],"scenes":[{"desc":"古蜀国的天空下，一尊青铜面具静静站立。","slot":"main"},{"desc":"夜幕降临，面具旁出现了一位手持灯笼的人影。","slot":"scene"}],"stickers":["🐉","🏺","✨"]}
+JSON 解析: OK
+title=三星堆青铜面具奇遇记 | craftType=poster | style=guofeng | layout=poster-hero
+palette=['朱砂', '黛青', '月白'] | scenes=2 项
+
+端到端链路: 前端代理 → ai-proxy → ollama 自研模型(v3) ✓ 全部打通

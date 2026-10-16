@@ -1,0 +1,45 @@
+
+========== A. 主题切换 ==========
+初始            : {"attr":null,"lsTheme":null,"lsSetting":null,"bodyBg":"rgb(245, 243, 250)","bodyColor":"rgb(26, 26, 46)","heroTagColor":"rgb(255, 209, 232)","cardTitleColor":"rgb(26, 26, 46)"}
+抽屉内按钮      : ["0:浅:","1:深:","2:跟随:active","3:默认:active","4:国风:","5:非遗:","6:极简:","7:A-:","8:A:active","9:A+:"]
+点击「深」后    : {"attr":"\"dark\"","lsTheme":"\"dark\"","lsSetting":null,"bodyBg":"rgb(245, 243, 250)","bodyColor":"rgb(26, 26, 46)","heroTagColor":"rgb(255, 209, 232)","cardTitleColor":"rgb(26, 26, 46)"}
+Esc 关抽屉后    : {"attr":"\"dark\"","lsTheme":"\"dark\"","lsSetting":null,"bodyBg":"rgb(245, 243, 250)","bodyColor":"rgb(26, 26, 46)","heroTagColor":"rgb(255, 209, 232)","cardTitleColor":"rgb(26, 26, 46)"}
+刷新后(持久化)  : {"attr":null,"lsTheme":"\"dark\"","lsSetting":null,"bodyBg":"rgb(245, 243, 250)","bodyColor":"rgb(26, 26, 46)","heroTagColor":"rgb(255, 209, 232)","cardTitleColor":"rgb(26, 26, 46)"}
+深色画廊        : {"attr":null,"lsTheme":"\"dark\"","lsSetting":null,"bodyBg":"rgb(245, 243, 250)","bodyColor":"rgb(26, 26, 46)","heroTagColor":"rgb(255, 209, 232)","cardTitleColor":"rgb(26, 26, 46)"}
+深色对比度不合格数: 26
+   ratio= 8.54 24px GRAD .logo-text "Dreamcore" fg=rgb(0, 0, 238) bg=rgb(245,243,250)
+   ratio= 1.23 15px . "244" fg=rgb(255, 209, 232) bg=rgb(245,243,250)
+   ratio=  1.1 11px .card-cat "创意设计" fg=rgb(255, 255, 255) bg=rgb(245,243,250)
+   ratio= 1.64 11px .card-tag "文创设计" fg=rgb(201, 182, 255) bg=rgb(245,243,250)
+   ratio= 1.64 11px .card-tag "IP形象" fg=rgb(201, 182, 255) bg=rgb(245,243,250)
+   ratio= 1.52 12px .card-aesthetic-score "9.9" fg=rgb(251, 191, 36) bg=rgb(245,243,250)
+   ratio= 1.27 11px .card-aesthetic-grade "👑 SSS · 顶级神作" fg=rgb(255, 215, 0) bg=rgb(245,243,250)
+   ratio=  1.1 11px .card-cat "博物文创" fg=rgb(255, 255, 255) bg=rgb(245,243,250)
+   ratio=  1.1 11px .card-cat "国风绘画" fg=rgb(255, 255, 255) bg=rgb(245,243,250)
+   ratio= 1.64 11px .card-tag "青绿山水" fg=rgb(201, 182, 255) bg=rgb(245,243,250)
+   ratio= 1.64 11px .card-tag "国风" fg=rgb(201, 182, 255) bg=rgb(245,243,250)
+   ratio=  1.1 11px .card-cat "非遗文创" fg=rgb(255, 255, 255) bg=rgb(245,243,250)
+   ratio=  1.1 11px .card-cat "文旅摄影" fg=rgb(255, 255, 255) bg=rgb(245,243,250)
+   ratio= 1.64 11px .card-tag "文旅摄影" fg=rgb(201, 182, 255) bg=rgb(245,243,250)
+
+========== B. 画廊图片 ==========
+3s 后   : {"n":12,"noSrc":4,"dataSrc":4,"sample":[{"src":"/images/artworks/gen-087.jpg","dataSrc":"","loading":"lazy","complete":true,"nw":2240},{"src":"/images/artworks/met-49540.jpg","dataSrc":"","loading":"lazy","complete":true,"nw":462}],"cards":12}
+滚动后  : {"n":22,"noSrc":7,"dataSrc":7,"sample":[{"src":"/images/artworks/gen-087.jpg","dataSrc":"","loading":"lazy","complete":true,"nw":2240},{"src":"/images/artworks/met-49540.jpg","dataSrc":"","loading":"lazy","complete":true,"nw":462}],"cards":22}
+回顶部后: {"n":22,"noSrc":7,"dataSrc":7,"sample":[{"src":"/images/artworks/gen-087.jpg","dataSrc":"","loading":"lazy","complete":true,"nw":2240},{"src":"/images/artworks/met-49540.jpg","dataSrc":"","loading":"lazy","complete":true,"nw":462}],"cards":22}
+chips: ["0:全部:filter-chip active","1:文旅摄影:filter-chip","2:非遗文创:filter-chip","3:国风绘画:filter-chip","4:AI数字艺术:filter-chip","5:博物文创:filter-chip","6:创意设计:filter-chip"]
+点第3个chip后: 卡片 22 → 12 | active=["非遗文创"] | 分类=["非遗文创","非遗文创","非遗文创","非遗文创","非遗文创","非遗文创"]
+
+========== C. 路由守卫 ==========
+#admin → {"title":"管理后台 · Dreamcore","heroH":900,"galleryH":1856.984375,"ownPage":[],"modal":true,"toast":"请先登录后再操作"}
+#/settings → {"title":"设置 · Dreamcore","heroH":900,"galleryH":1856.984375,"ownPage":[],"modal":true,"toast":null}
+#/partner → {"title":"合伙人申请 · Dreamcore","heroH":900,"galleryH":1856.984375,"ownPage":["partner-page"],"modal":true,"toast":null}
+#/curate → {"title":"AI智能策展 · Dreamcore","heroH":900,"galleryH":1856.984375,"ownPage":["curate-page"],"modal":true,"toast":null}
+
+========== D. 登录 ==========
+表单: {"open":true,"inputs":["auth-username|用户名","auth-password|密码","auth-captcha-input|图形验证码"],"canvas":1,"submit":["submit:","submit:登录"]}
+提交后: {"modalOpen":true,"err":"无","nav":"登录"}
+
+========== E. AI 文创工作台 ==========
+选择器: {"exists":true,"title":"选择作品 · AI文创","btns":["","我的作品","热门作品"],"items":0,"body":"选择作品 · AI文创 选择作品后进入 AI 工作台 我的作品 热门作品 登录后即可在这里看到你的作品"}
+选作品后: {"pickerGone":false,"craft":false,"btns":["开始探索"]}
+API: []

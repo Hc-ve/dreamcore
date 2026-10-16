@@ -1,0 +1,155 @@
+{
+  "timestamp": "2026-09-18T10:20:12.504Z",
+  "target": "http://localhost:5173/",
+  "summary": {
+    "totalIssues": 7,
+    "p0": 1,
+    "p1": 6,
+    "p2": 0
+  },
+  "consoleErrors": [
+    "hash is not defined"
+  ],
+  "networkErrors": [
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://localhost:3001/health",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "severity": "P0",
+      "module": "Login",
+      "title": "Login may have failed",
+      "steps": "Login admin/admin123",
+      "expected": "Redirect away from login",
+      "actual": "URL: http://localhost:5173/#/login",
+      "screenshot": "p0-login-result"
+    },
+    {
+      "id": "ISSUE-002",
+      "severity": "P1",
+      "module": "M2-Edit",
+      "title": "edit has console errors",
+      "steps": "Navigate to #/edit?artworkId=1",
+      "expected": "No console errors",
+      "actual": "1 errors",
+      "screenshot": "p1-edit"
+    },
+    {
+      "id": "ISSUE-003",
+      "severity": "P1",
+      "module": "M3-Craft",
+      "title": "craft has console errors",
+      "steps": "Navigate to #/craft?artworkId=1",
+      "expected": "No console errors",
+      "actual": "1 errors",
+      "screenshot": "p1-craft"
+    },
+    {
+      "id": "ISSUE-004",
+      "severity": "P1",
+      "module": "M4-Curate",
+      "title": "curate has console errors",
+      "steps": "Navigate to #/curate",
+      "expected": "No console errors",
+      "actual": "1 errors",
+      "screenshot": "p1-curate"
+    },
+    {
+      "id": "ISSUE-005",
+      "severity": "P1",
+      "module": "M4-CurateHall",
+      "title": "curate-hall has console errors",
+      "steps": "Navigate to #/curate?hallId=1",
+      "expected": "No console errors",
+      "actual": "1 errors",
+      "screenshot": "p1-curate-hall"
+    },
+    {
+      "id": "ISSUE-006",
+      "severity": "P1",
+      "module": "M5-Tutor",
+      "title": "tutor has console errors",
+      "steps": "Navigate to #/tutor",
+      "expected": "No console errors",
+      "actual": "1 errors",
+      "screenshot": "p1-tutor"
+    },
+    {
+      "id": "ISSUE-007",
+      "severity": "P1",
+      "module": "M6-Partner",
+      "title": "partner has console errors",
+      "steps": "Navigate to #/partner",
+      "expected": "No console errors",
+      "actual": "1 errors",
+      "screenshot": "p1-partner"
+    }
+  ]
+}

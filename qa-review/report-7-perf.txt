@@ -1,0 +1,120 @@
+
+========== 生产构建 · 首页性能（冷启动） ==========
+goto(load) 用时: 18025ms
+{
+ "ttfb": 13,
+ "domContentLoaded": 121,
+ "loadEvent": 18017,
+ "fcp": 732,
+ "lcp": 732,
+ "cls": 0.038,
+ "requests": 13,
+ "transferKB": 655,
+ "threeLoaded": true,
+ "byExt": {
+  "net/c": {
+   "n": 1,
+   "KB": 30
+  },
+  "css": {
+   "n": 2,
+   "KB": 51
+  },
+  "js": {
+   "n": 9,
+   "KB": 575
+  },
+  "svg": {
+   "n": 1,
+   "KB": 0
+  }
+ },
+ "biggest": [
+  {
+   "n": "main-C9hnWUTt.js",
+   "KB": 185
+  },
+  {
+   "n": "vendor-three-BX2Vlr8r.js",
+   "KB": 169
+  },
+  {
+   "n": "ai-group-D4FsO64F.js",
+   "KB": 69
+  },
+  {
+   "n": "auth-group-Bz4jwRPX.js",
+   "KB": 55
+  },
+  {
+   "n": "main-YVgYiBh9.css",
+   "KB": 32
+  },
+  {
+   "n": "css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap",
+   "KB": 30
+  },
+  {
+   "n": "gallery-group-D-Jq7I8v.js",
+   "KB": 29
+  },
+  {
+   "n": "vendor-gsap-SFc2wnMY.js",
+   "KB": 27
+  },
+  {
+   "n": "admin-group-pBZDBDi3.js",
+   "KB": 25
+  },
+  {
+   "n": "all.min.css",
+   "KB": 19
+  }
+ ]
+}
+
+--- 4xx/5xx 响应 ---
+无
+
+--- 请求失败 ---
+无
+
+--- 控制台/页面错误 ---
+无
+
+--- 关键资源 ---
+[
+ "200 0KB /assets/js/admin-group-pBZDBDi3.js",
+ "200 0KB /assets/js/vendor-gsap-SFc2wnMY.js",
+ "200 0KB /assets/js/gallery-group-D-Jq7I8v.js",
+ "200 0KB /assets/js/auth-group-Bz4jwRPX.js",
+ "200 0KB /assets/css/main-YVgYiBh9.css",
+ "200 0KB /assets/js/ai-group-D4FsO64F.js",
+ "200 0KB /assets/js/craft-products-B2f-NRhO.js",
+ "200 0KB /assets/js/craft-3d-D952phCE.js",
+ "200 0KB /assets/js/main-C9hnWUTt.js",
+ "200 0KB /assets/js/vendor-three-BX2Vlr8r.js",
+ "200 18KB https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+ "200 24KB https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2",
+ "200 147KB https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2",
+ "200 40KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.60.woff2",
+ "200 7KB https://gstatic.loli.net/s/notoserifsc/v36/H4chBXePl9DZ0Xe7gG9cyOj7oqP0dTpxZbB9E9gjjmzKvaeKHUTtJDWv3z-us4bxD8F5og.87.woff2",
+ "200 8KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.87.woff2",
+ "200 37KB https://gstatic.loli.net/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2",
+ "200 45KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.118.woff2",
+ "200 47KB https://gstatic.loli.net/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+ "200 41KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.51.woff2",
+ "200 23KB https://gstatic.loli.net/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8.woff2",
+ "200 57KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.113.woff2",
+ "200 51KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.117.woff2",
+ "200 60KB https://gstatic.loli.net/s/notosanssc/v41/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg1IzSy-MNbE9VH8V.104.woff2"
+]
+
+========== 生产构建 · 路由可用性 ==========
+#gallery     title=文旅画廊 · Dreamcore               heroH=900 len=1664 own=[] modal=false newRes=13
+#/craft      title=AI文创衍生品 · Dreamcore            heroH=900 len=1718 own=[] modal=true newRes=1
+#/atlas      title=文化故事图鉴 · Dreamcore             heroH=900 len=3130 own=["culture-atlas-page"] modal=true newRes=9
+#/footprint  title=文化探索足迹 · Dreamcore             heroH=900 len=3872 own=["culture-footprint-page"] modal=true newRes=37
+#/pricing    title=Dreamcore · AI+文旅文创艺术共创社区      heroH=900 len=2174 own=["pricing-page"] modal=true newRes=1
+#/scenic     title=Dreamcore · AI+文旅文创艺术共创社区      heroH=900 len=3001 own=["scenic-recommend-page"] modal=true newRes=4
+#admin       title=管理后台 · Dreamcore               heroH=900 len=1807 own=[] modal=true newRes=1

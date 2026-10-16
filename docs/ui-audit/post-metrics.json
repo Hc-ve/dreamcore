@@ -1,0 +1,274 @@
+{
+  "desktop": {
+    "h1Text": "当AI遇见文旅让传统美学数字新生",
+    "h1Lines": 1,
+    "h1Width": 780,
+    "contentW": 780,
+    "bubbleW": 180,
+    "bubbleH": 92.28125,
+    "bubbleText": "你好呀！我是小梦，这里的精灵助手💫 有",
+    "fabExists": true,
+    "allBtns": [
+      {
+        "h": 0,
+        "classes": "icon-btn menu-toggle"
+      },
+      {
+        "h": 44,
+        "classes": "btn-ghost btn-sm nav-dropdown-trigger"
+      },
+      {
+        "h": 38,
+        "classes": "icon-btn"
+      },
+      {
+        "h": 35,
+        "classes": "btn-primary btn-sm"
+      },
+      {
+        "h": 44,
+        "classes": "btn-ghost btn-sm nav-dropdown-trigger"
+      },
+      {
+        "h": 38,
+        "classes": "icon-btn"
+      },
+      {
+        "h": 40,
+        "classes": "btn-ghost"
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 44,
+        "classes": ""
+      },
+      {
+        "h": 53,
+        "classes": "btn-primary"
+      },
+      {
+        "h": 53,
+        "classes": "btn-ghost"
+      },
+      {
+        "h": 53,
+        "classes": "btn-ghost"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip active"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip"
+      },
+      {
+        "h": 40,
+        "classes": "filter-chip"
+      },
+      {
+        "h": 0,
+        "classes": "tag-filter-clear"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 36,
+        "classes": "card-view"
+      },
+      {
+        "h": 25.59375,
+        "classes": ""
+      },
+      {
+        "h": 25.59375,
+        "classes": ""
+      },
+      {
+        "h": 25.59375,
+        "classes": ""
+      },
+      {
+        "h": 40,
+        "classes": ""
+      },
+      {
+        "h": 48,
+        "classes": "btn-primary btn-block"
+      },
+      {
+        "h": 26.879974365234375,
+        "classes": "ai-icon-btn ai-voice-selector"
+      },
+      {
+        "h": 26.879974365234375,
+        "classes": "ai-icon-btn ai-voice-toggle active"
+      },
+      {
+        "h": 26.879974365234375,
+        "classes": "ai-icon-btn"
+      },
+      {
+        "h": 26.879974365234375,
+        "classes": "ai-icon-btn"
+      },
+      {
+        "h": 26.8800048828125,
+        "classes": "ai-chip"
+      },
+      {
+        "h": 26.8800048828125,
+        "classes": "ai-chip"
+      },
+      {
+        "h": 26.8800048828125,
+        "classes": "ai-chip"
+      },
+      {
+        "h": 26.8800048828125,
+        "classes": "ai-chip"
+      },
+      {
+        "h": 26.87994384765625,
+        "classes": "ai-chip"
+      },
+      {
+        "h": 36.47998046875,
+        "classes": "ai-send"
+      }
+    ],
+    "orbs": [
+      {
+        "cls": "hero-orb o1",
+        "color": "rgba(168, 38, 31, 0.18) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      {
+        "cls": "hero-orb o2",
+        "color": "rgba(45, 74, 107, 0.2) none repeat scroll 0% 0% / auto padding-box border-box"
+      },
+      {
+        "cls": "hero-orb o3",
+        "color": "rgba(184, 137, 42, 0.15) none repeat scroll 0% 0% / auto padding-box border-box"
+      }
+    ],
+    "fabBg": "none",
+    "purpleCount": 19
+  }
+}

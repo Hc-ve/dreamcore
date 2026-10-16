@@ -1,0 +1,70 @@
+
+========== 运行 1 ==========
+wall goto(load) = 901ms
+nav timing: {"ttfb":8,"dcl":123,"load":891}
+请求数=13 总传输=655KB | 字体请求=2 字体=49KB 字体最后完成=514ms
+按主机: {
+ "fonts.loli.net": {
+  "n": 1,
+  "KB": 30,
+  "ms": 514
+ },
+ "localhost:4173": {
+  "n": 11,
+  "KB": 607,
+  "ms": 973
+ },
+ "cdnjs.cloudflare.com": {
+  "n": 1,
+  "KB": 19,
+  "ms": 499
+ }
+}
+最慢资源:
+      500ms  起    13    30KB  /css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;
+      486ms  起    14    19KB  /ajax/libs/font-awesome/6.4.0/css/all.min.css
+       31ms  起    14   185KB  /assets/js/main-C9hnWUTt.js
+       25ms  起    14    32KB  /assets/css/main-YVgYiBh9.css
+       24ms  起   324   169KB  /assets/js/vendor-three-BX2Vlr8r.js
+       23ms  起    14     5KB  /assets/js/craft-products-B2f-NRhO.js
+       22ms  起    14    11KB  /assets/js/craft-3d-D952phCE.js
+       21ms  起    14    55KB  /assets/js/auth-group-Bz4jwRPX.js
+       20ms  起    14    69KB  /assets/js/ai-group-D4FsO64F.js
+       16ms  起    14    25KB  /assets/js/admin-group-pBZDBDi3.js
+       16ms  起    14    29KB  /assets/js/gallery-group-D-Jq7I8v.js
+       15ms  起    14    27KB  /assets/js/vendor-gsap-SFc2wnMY.js
+
+========== 运行 2 ==========
+wall goto(load) = 1865ms
+nav timing: {"ttfb":5,"dcl":205,"load":1859}
+请求数=13 总传输=655KB | 字体请求=2 字体=49KB 字体最后完成=699ms
+按主机: {
+ "fonts.loli.net": {
+  "n": 1,
+  "KB": 30,
+  "ms": 505
+ },
+ "cdnjs.cloudflare.com": {
+  "n": 1,
+  "KB": 19,
+  "ms": 699
+ },
+ "localhost:4173": {
+  "n": 11,
+  "KB": 607,
+  "ms": 1925
+ }
+}
+最慢资源:
+      690ms  起    10    19KB  /ajax/libs/font-awesome/6.4.0/css/all.min.css
+      496ms  起     9    30KB  /css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;
+       30ms  起    10   185KB  /assets/js/main-C9hnWUTt.js
+       24ms  起    10    32KB  /assets/css/main-YVgYiBh9.css
+       23ms  起   261   169KB  /assets/js/vendor-three-BX2Vlr8r.js
+       22ms  起    10    11KB  /assets/js/craft-3d-D952phCE.js
+       22ms  起    10     5KB  /assets/js/craft-products-B2f-NRhO.js
+       20ms  起    10    55KB  /assets/js/auth-group-Bz4jwRPX.js
+       19ms  起    10    69KB  /assets/js/ai-group-D4FsO64F.js
+       15ms  起    10    27KB  /assets/js/vendor-gsap-SFc2wnMY.js
+       15ms  起    10    25KB  /assets/js/admin-group-pBZDBDi3.js
+       14ms  起    10    29KB  /assets/js/gallery-group-D-Jq7I8v.js

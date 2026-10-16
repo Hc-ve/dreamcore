@@ -1,7 +1,11 @@
 // ============================================================
 // js/search.js — 搜索系统增强版
 // 功能: 模糊匹配 / 历史记录 / 热门搜索 / 排序筛选 / 空状态
+//       M7 智能搜索增强: 语义搜索 + 标签云 + AI 评分筛选
 // ============================================================
+
+import { getAestheticScoresByArtwork } from './db.js';
+import { DIMENSIONS } from './ai-aesthetic.js';
 
 const Search = {
   debounceTimer: null,
@@ -11,6 +15,10 @@ const Search = {
   currentKeyword: '',
   currentSort: 'relevance',
   currentCategory: 'all',
+  // M7 增强状态
+  currentMinScore: 0,
+  _scoresCache: new Map(),
+  _tagCloudRendered: false,
   HOT_KEYWORDS: ['梦幻', '抽象', '霓虹', '星河', '赛博朋克', '水彩', '未来', '自然'],
   HISTORY_KEY: 'dreamcore_search_history',
   MAX_HISTORY: 10,
@@ -43,6 +51,7 @@ const Search = {
         // 重新打开时刷新历史记录列表和焦点陷阱
         this._renderHistoryList();
         this._setupFocusTrap(overlay);
+        this._renderEnhancedPanel();
       }
       setTimeout(() => {
         const input = overlay.querySelector('#search-input');
@@ -51,6 +60,7 @@ const Search = {
       return;
     }
     this._buildModal();
+    this._renderEnhancedPanel();
   },
 
   _triggerElement: null,
@@ -79,6 +89,19 @@ const Search = {
             <div class="search-history-list" id="search-history-list"></div>
           </div>
         </div>
+        <div class="search-enhanced-panel" id="search-enhanced-panel">
+          <div class="tag-cloud" id="search-tag-cloud"></div>
+          <div class="search-filters">
+            <div class="filter-group">
+              <label>分类</label>
+              <select id="filter-category"><option value="all">全部</option></select>
+            </div>
+            <div class="filter-group">
+              <label>AI 评分</label>
+              <div class="score-range">最低分 <input type="number" min="0" max="10" step="0.1" id="filter-min-score" value="0" /></div>
+            </div>
+          </div>
+        </div>
         <div class="search-results" id="search-results">
           <div class="search-empty-hint">输入关键词，开始探索梦境艺术</div>
         </div>
@@ -92,6 +115,19 @@ const Search = {
     const input = overlay.querySelector('#search-input');
     input.addEventListener('input', (e) => this.handleSearch(e.target.value));
     input.addEventListener('focus', () => this._showSuggest());
+    // G-02 修复：Enter 键提交搜索 → 渲染结果 + 关弹窗 + 更新 hash（让 Router 更新标题/canonical）
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const q = (e.target.value || '').trim();
+        if (!q) return;
+        this._doSearch(q);
+        // 关弹窗后更新 hash —— Router 会更新 document.title / canonical
+        setTimeout(() => {
+          window.location.hash = `#search?q=${encodeURIComponent(q)}`;
+        }, 50);
+      }
+    });
 
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay || e.target.closest('[data-close]')) this._close();
@@ -110,6 +146,7 @@ const Search = {
 
     this._renderHotList();
     this._renderHistoryList();
+    this._setupEnhancedPanelHandlers();
 
     setTimeout(() => {
       input.focus();
@@ -253,6 +290,7 @@ const Search = {
     this.currentKeyword = keyword;
     this.currentSort = 'relevance';
     this.currentCategory = 'all';
+    this._syncCategorySelect();
     this._hideSuggest();
     this._saveHistory(keyword);
     const results = this._search(keyword);
@@ -268,14 +306,11 @@ const Search = {
     const isIdSearch = !!idMatch;
     const idVal = isIdSearch ? parseInt(idMatch[1], 10) : null;
 
-    return this.allArtworks.filter(a => {
-      if (isIdSearch && a.id === idVal) return true;
-      if (a.title && a.title.toLowerCase().includes(kw)) return true;
-      if (a.author && a.author.toLowerCase().includes(kw)) return true;
-      if (a.tags && a.tags.some(t => t.toLowerCase().includes(kw))) return true;
-      if (a.description && a.description.toLowerCase().includes(kw)) return true;
-      return false;
-    });
+    // M7: 关键词搜索走语义搜索；ID 搜索保留精确匹配
+    if (isIdSearch) {
+      return this.allArtworks.filter(a => a.id === idVal);
+    }
+    return this.semanticSearch(q, this.allArtworks);
   },
 
   _sortResults(results, sortType, keyword) {
@@ -328,13 +363,19 @@ const Search = {
     return score;
   },
 
-  renderSearchResults(results, keyword) {
+  async renderSearchResults(results, keyword) {
     const container = document.getElementById('search-results');
     if (!container) return;
 
-    const filtered = this.currentCategory === 'all'
+    // 分类筛选（chips 与 enhanced panel 的 select 共用 currentCategory）
+    let filtered = this.currentCategory === 'all'
       ? results
       : results.filter(a => a.category === this.currentCategory);
+
+    // M7: AI 评分最低分筛选（异步获取评分）
+    if (this.currentMinScore > 0) {
+      filtered = await this._applyScoreFilter(filtered, this.currentMinScore);
+    }
 
     const sorted = this._sortResults(filtered, this.currentSort, keyword);
 
@@ -404,6 +445,7 @@ const Search = {
     container.querySelectorAll('.search-filter-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         this.currentCategory = chip.dataset.cat;
+        this._syncCategorySelect();
         this.renderSearchResults(results, keyword);
       });
     });
@@ -415,6 +457,200 @@ const Search = {
         this.renderSearchResults(results, keyword);
       });
     }
+  },
+
+  // ------------------------------------------------------------
+  // M7 智能搜索增强：语义搜索 / 标签云 / 筛选面板
+  // ------------------------------------------------------------
+
+  /**
+   * 语义搜索：关键词 + 标签 + 描述 + 作者 + 分类匹配，加权排序
+   * @param {string} query - 查询词
+   * @param {Array} artworks - 作品列表
+   * @returns {Array} 过滤并按相关度排序后的作品
+   */
+  semanticSearch(query, artworks) {
+    const q = (query || '').toLowerCase().trim();
+    if (!q) return artworks;
+    return artworks.filter(art => {
+      const title = (art.title || '').toLowerCase();
+      const desc = (art.description || '').toLowerCase();
+      const tags = (art.tags || []).map(t => t.toLowerCase());
+      const author = (art.author || '').toLowerCase();
+      const category = (art.category || '').toLowerCase();
+      return title.includes(q) || desc.includes(q) || tags.some(t => t.includes(q)) || author.includes(q) || category.includes(q);
+    }).sort((a, b) => this._matchScore(q, b) - this._matchScore(q, a));
+  },
+
+  /**
+   * 匹配评分：标题 > 标签 > 描述 > 作者
+   * @param {string} q - 已小写的查询词
+   * @param {object} art - 作品对象
+   * @returns {number} 匹配分数
+   */
+  _matchScore(q, art) {
+    let score = 0;
+    if ((art.title || '').toLowerCase().includes(q)) score += 10;
+    if ((art.tags || []).some(t => t.toLowerCase() === q)) score += 8;
+    if ((art.tags || []).some(t => t.toLowerCase().includes(q))) score += 5;
+    if ((art.description || '').toLowerCase().includes(q)) score += 3;
+    if ((art.author || '').toLowerCase().includes(q)) score += 2;
+    return score;
+  },
+
+  /**
+   * 构建标签云数据：统计频率，取前 30，按热度映射字体大小
+   * @param {Array} artworks - 作品列表
+   * @returns {Array<{tag:string,count:number,size:number}>}
+   */
+  buildTagCloud(artworks) {
+    const tagCount = {};
+    artworks.forEach(art => {
+      (art.tags || []).forEach(tag => {
+        tagCount[tag] = (tagCount[tag] || 0) + 1;
+      });
+    });
+    const sorted = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 30);
+    return sorted.map(([tag, count]) => ({
+      tag,
+      count,
+      size: Math.max(0.8, Math.min(2, count / 5))
+    }));
+  },
+
+  /**
+   * 渲染标签云到容器，绑定点击回调
+   * @param {HTMLElement} container - 标签云容器
+   * @param {Array} artworks - 作品列表
+   * @param {function(string):void} onTagClick - 标签点击回调
+   */
+  renderTagCloud(container, artworks, onTagClick) {
+    if (!container) return;
+    const tags = this.buildTagCloud(artworks);
+    container.innerHTML = tags.map(({ tag, size }) =>
+      `<button class="tag-cloud-item" data-tag="${this._esc(tag)}" style="font-size:${size}em">${this._esc(tag)}</button>`
+    ).join('');
+    container.querySelectorAll('.tag-cloud-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (onTagClick) onTagClick(btn.dataset.tag);
+      });
+    });
+  },
+
+  /**
+   * 渲染增强面板：标签云 + 分类下拉选项
+   */
+  _renderEnhancedPanel() {
+    if (!this.allArtworks.length) return;
+    const tagCloudEl = document.getElementById('search-tag-cloud');
+    if (tagCloudEl && !this._tagCloudRendered) {
+      this.renderTagCloud(tagCloudEl, this.allArtworks, (tag) => {
+        const input = document.getElementById('search-input');
+        if (input) input.value = tag;
+        this._doSearch(tag);
+      });
+      this._tagCloudRendered = true;
+    }
+    // 填充分类下拉
+    const catSelect = document.getElementById('filter-category');
+    if (catSelect && catSelect.children.length <= 1) {
+      const catLabels = window.Gallery ? Gallery.CATEGORY_LABELS : {};
+      const cats = [...new Set(this.allArtworks.map(a => a.category))].filter(Boolean);
+      cats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = catLabels[cat] || cat;
+        catSelect.appendChild(opt);
+      });
+    }
+    this._syncCategorySelect();
+  },
+
+  /**
+   * 绑定增强面板事件：分类下拉 + 评分输入
+   */
+  _setupEnhancedPanelHandlers() {
+    const catSelect = document.getElementById('filter-category');
+    if (catSelect) {
+      catSelect.addEventListener('change', () => {
+        this.currentCategory = catSelect.value;
+        if (this.currentResults.length) {
+          this.renderSearchResults(this.currentResults, this.currentKeyword);
+        }
+      });
+    }
+    const scoreInput = document.getElementById('filter-min-score');
+    if (scoreInput) {
+      let scoreTimer = null;
+      scoreInput.addEventListener('input', () => {
+        clearTimeout(scoreTimer);
+        const val = parseFloat(scoreInput.value);
+        scoreTimer = setTimeout(() => {
+          this.currentMinScore = (isNaN(val) || val < 0) ? 0 : Math.min(10, val);
+          if (this.currentResults.length) {
+            this.renderSearchResults(this.currentResults, this.currentKeyword);
+          }
+        }, 400);
+      });
+    }
+  },
+
+  /**
+   * 同步分类下拉选中态
+   */
+  _syncCategorySelect() {
+    const catSelect = document.getElementById('filter-category');
+    if (catSelect) catSelect.value = this.currentCategory;
+  },
+
+  /**
+   * AI 评分最低分筛选：保留 totalScore >= minScore 的作品
+   * 使用缓存避免重复查询
+   * @param {Array} results - 作品列表
+   * @param {number} minScore - 最低总分
+   * @returns {Promise<Array>}
+   */
+  async _applyScoreFilter(results, minScore) {
+    const kept = [];
+    for (const art of results) {
+      const total = await this._getArtworkTotalScore(art.id);
+      if (total !== null && total >= minScore) kept.push(art);
+    }
+    return kept;
+  },
+
+  /**
+   * 获取作品最新评分总分（带缓存）
+   * @param {number} artworkId
+   * @returns {Promise<number|null>}
+   */
+  async _getArtworkTotalScore(artworkId) {
+    const id = Number(artworkId);
+    if (this._scoresCache.has(id)) return this._scoresCache.get(id);
+    let total = null;
+    try {
+      const records = await getAestheticScoresByArtwork(id);
+      if (records && records.length > 0) {
+        total = records[0].totalScore || 0;
+      }
+    } catch { total = null; }
+    this._scoresCache.set(id, total);
+    return total;
+  },
+
+  /**
+   * 重置增强面板状态：清空缓存与输入
+   */
+  _resetEnhancedPanel() {
+    this.currentMinScore = 0;
+    this._scoresCache = new Map();
+    this._tagCloudRendered = false;
+    const scoreInput = document.getElementById('filter-min-score');
+    if (scoreInput) scoreInput.value = '0';
+    const catSelect = document.getElementById('filter-category');
+    if (catSelect) catSelect.value = 'all';
+    const tagCloudEl = document.getElementById('search-tag-cloud');
+    if (tagCloudEl) tagCloudEl.innerHTML = '';
   },
 
   _renderEmptyState() {
@@ -442,6 +678,8 @@ const Search = {
     this.currentResults = [];
     this.currentSort = 'relevance';
     this.currentCategory = 'all';
+    // M7: 清理增强面板资源
+    this._resetEnhancedPanel();
     this._showSuggest();
     this._renderHistoryList();
   },
@@ -464,8 +702,19 @@ const Search = {
 window.Search = Search;
 window.showSearchBar = () => Search.showSearchBar();
 
+// M7: 挂载语义搜索增强到全局
+window.SearchEnhanced = {
+  semanticSearch: (q, arts) => Search.semanticSearch(q, arts),
+  buildTagCloud: (arts) => Search.buildTagCloud(arts),
+  renderTagCloud: (c, arts, cb) => Search.renderTagCloud(c, arts, cb)
+};
+
+// 解构语义搜索函数以便 export
+const { semanticSearch, buildTagCloud, renderTagCloud } = Search;
+const showSearchBar = window.showSearchBar;
+
 // ES Module export
 export default Search;
 export { Search };
-const showSearchBar = window.showSearchBar;
 export { showSearchBar };
+export { semanticSearch, buildTagCloud, renderTagCloud };

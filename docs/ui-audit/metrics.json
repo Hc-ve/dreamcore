@@ -1,0 +1,149 @@
+{
+  "steps": [
+    "shot-01 OK",
+    "shot-02 OK",
+    "shot-03 OK",
+    "shot-04 OK",
+    "shot-05 OK",
+    "shot-06 OK",
+    "shot-07 OK"
+  ],
+  "light": {
+    "dataTheme": "light",
+    "vars": {
+      "--bg-dark": "#faf6ee",
+      "--bg-card": "#fffdf9",
+      "--text-primary": "#1a1614",
+      "--text-secondary": "#3d3630",
+      "--accent": "#a8261f",
+      "--accent-hover": "",
+      "--border": "#e6dccb",
+      "--radius": "4px",
+      "--font-serif": "",
+      "--lg-blur": "10px"
+    },
+    "body": {
+      "bg": "rgb(250, 246, 238)",
+      "fontFamily": "\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontSize": "16px",
+      "lineHeight": "25.6px"
+    },
+    "h1": {
+      "text": "当AI遇见文旅让传统美学数字新生",
+      "fontFamily": "\"Noto Serif SC\", \"Source Han Serif SC\", \"Songti SC\", STSong, serif",
+      "fontSize": "96px",
+      "fontWeight": "600"
+    },
+    "h2": {
+      "text": "文旅画廊",
+      "fontFamily": "\"Noto Serif SC\", serif",
+      "fontSize": "52px",
+      "fontWeight": "600"
+    },
+    "nav": {
+      "background-color": "rgba(255, 253, 249, 0.85)",
+      "backdrop-filter": "blur(8px) saturate(1)",
+      "border-bottom": "1px solid rgb(240, 232, 216)",
+      "height": "73.7812px",
+      "position": "fixed"
+    },
+    "btn": {
+      "background-color": "rgb(168, 38, 31)",
+      "border-radius": "4px",
+      "transition": "0.25s cubic-bezier(0.22, 0.61, 0.36, 1)",
+      "color": "rgb(255, 255, 255)",
+      "font-size": "13px",
+      "padding": "8px 16px"
+    },
+    "card": {
+      "cls": "hero-daily-card",
+      "background-color": "rgb(243, 236, 224)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "border": "1px solid rgba(26, 22, 20, 0.08)"
+    },
+    "counts": {
+      "imgs": 12,
+      "placeholderLinks": 1,
+      "buttons": 60,
+      "cards": 12
+    },
+    "docHeight": 3061,
+    "title": "Dreamcore · AI+文旅文创艺术共创社区"
+  },
+  "leaderboard": {
+    "hasPodium": true,
+    "podiumSample": "lb-podium",
+    "medalText": "🥈\n        林\n        林梦雨\n        SSS\n   "
+  },
+  "dark": {
+    "dataTheme": "dark",
+    "vars": {
+      "--bg-dark": "#14110e",
+      "--bg-card": "#1e1a16",
+      "--text-primary": "#f2ece1",
+      "--text-secondary": "#d4cbb9",
+      "--accent": "#d4564c",
+      "--accent-hover": "",
+      "--border": "#3a3228",
+      "--radius": "4px",
+      "--font-serif": "",
+      "--lg-blur": "10px"
+    },
+    "body": {
+      "bg": "rgb(20, 17, 14)",
+      "fontFamily": "\"Noto Sans SC\", \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "fontSize": "16px",
+      "lineHeight": "25.6px"
+    },
+    "h1": {
+      "text": "当AI遇见文旅让传统美学数字新生",
+      "fontFamily": "\"Noto Serif SC\", \"Source Han Serif SC\", \"Songti SC\", STSong, serif",
+      "fontSize": "96px",
+      "fontWeight": "600"
+    },
+    "h2": {
+      "text": "文旅画廊",
+      "fontFamily": "\"Noto Serif SC\", serif",
+      "fontSize": "52px",
+      "fontWeight": "600"
+    },
+    "nav": {
+      "background-color": "rgba(26, 22, 20, 0.85)",
+      "backdrop-filter": "blur(8px) saturate(1)",
+      "border-bottom": "1px solid rgb(42, 36, 32)",
+      "height": "73.7812px",
+      "position": "fixed"
+    },
+    "btn": {
+      "background-color": "rgb(212, 86, 76)",
+      "border-radius": "4px",
+      "transition": "0.25s cubic-bezier(0.22, 0.61, 0.36, 1)",
+      "color": "rgb(255, 255, 255)",
+      "font-size": "13px",
+      "padding": "8px 16px"
+    },
+    "card": {
+      "cls": "hero-daily-card",
+      "background-color": "rgb(38, 33, 28)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "border": "1px solid rgba(26, 22, 20, 0.08)"
+    },
+    "counts": {
+      "imgs": 12,
+      "placeholderLinks": 1,
+      "buttons": 60,
+      "cards": 12
+    },
+    "docHeight": 3061,
+    "title": "Dreamcore · AI+文旅文创艺术共创社区"
+  },
+  "mobile": {
+    "navOverflow": {
+      "scrollW": 390,
+      "clientW": 390
+    },
+    "hOverflow": false
+  }
+}

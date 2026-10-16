@@ -1,0 +1,1243 @@
+{
+  "version": "v6",
+  "generated_at": "2026-09-29T08:15:28.203Z",
+  "dataset": {
+    "生成时间": "2026-09-29T06:32:06.343Z",
+    "蒸馏候选总数": 2231,
+    "坏行丢弃": 0,
+    "重校验丢弃": 0,
+    "精确去重丢弃": 554,
+    "防泄漏丢弃": 13,
+    "最终训练集": 1664,
+    "高重复标题数_出现超3次": 21,
+    "craftType分布": {
+      "card": 389,
+      "postcard": 339,
+      "template": 148,
+      "poster": 765,
+      "wallpaper": 23
+    },
+    "产品大类分布": {
+      "accessory": 86,
+      "stationery": 604,
+      "digital": 31,
+      "life": 85,
+      "home": 81,
+      "textile": 40,
+      "toy": 12,
+      "office": 45,
+      "creative": 680
+    }
+  },
+  "config": {
+    "base_model": "Qwen2.5-1.5B-Instruct",
+    "method": "LoRA SFT",
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "learning_rate": "1.0e-4",
+    "num_train_epochs": 3,
+    "batch_per_device": 1,
+    "grad_accum": 8,
+    "lr_scheduler": "cosine",
+    "warmup_ratio": 0.1,
+    "bf16": true,
+    "cutoff_len": 1280,
+    "val_size": 0.05
+  },
+  "train": {
+    "total_steps": null,
+    "loss_curve": [
+      {
+        "step": 5,
+        "loss": 1.435309600830078,
+        "epoch": 0.02531645569620253,
+        "lr": 0.000006666666666666667
+      },
+      {
+        "step": 10,
+        "loss": 1.510085678100586,
+        "epoch": 0.05063291139240506,
+        "lr": 0.000015
+      },
+      {
+        "step": 15,
+        "loss": 1.416781520843506,
+        "epoch": 0.0759493670886076,
+        "lr": 0.000023333333333333336
+      },
+      {
+        "step": 20,
+        "loss": 1.3217612266540528,
+        "epoch": 0.10126582278481013,
+        "lr": 0.000031666666666666666
+      },
+      {
+        "step": 25,
+        "loss": 1.2257268905639649,
+        "epoch": 0.12658227848101267,
+        "lr": 0.00004
+      },
+      {
+        "step": 30,
+        "loss": 1.1544645309448243,
+        "epoch": 0.1518987341772152,
+        "lr": 0.000048333333333333334
+      },
+      {
+        "step": 35,
+        "loss": 1.1014005661010742,
+        "epoch": 0.17721518987341772,
+        "lr": 0.00005666666666666667
+      },
+      {
+        "step": 40,
+        "loss": 1.0876468658447265,
+        "epoch": 0.20253164556962025,
+        "lr": 0.00006500000000000001
+      },
+      {
+        "step": 45,
+        "loss": 1.0340659141540527,
+        "epoch": 0.22784810126582278,
+        "lr": 0.00007333333333333333
+      },
+      {
+        "step": 50,
+        "loss": 0.9286087036132813,
+        "epoch": 0.25316455696202533,
+        "lr": 0.00008166666666666667
+      },
+      {
+        "step": 55,
+        "loss": 0.9556394577026367,
+        "epoch": 0.27848101265822783,
+        "lr": 0.00009
+      },
+      {
+        "step": 60,
+        "loss": 0.8542057037353515,
+        "epoch": 0.3037974683544304,
+        "lr": 0.00009833333333333333
+      },
+      {
+        "step": 65,
+        "loss": 0.9019810676574707,
+        "epoch": 0.3291139240506329,
+        "lr": 0.00009998615614057742
+      },
+      {
+        "step": 70,
+        "loss": 0.8333375930786133,
+        "epoch": 0.35443037974683544,
+        "lr": 0.00009992992860008892
+      },
+      {
+        "step": 75,
+        "loss": 0.8453267097473145,
+        "epoch": 0.379746835443038,
+        "lr": 0.00009983050074900824
+      },
+      {
+        "step": 80,
+        "loss": 0.8495696067810059,
+        "epoch": 0.4050632911392405,
+        "lr": 0.00009968795861417676
+      },
+      {
+        "step": 85,
+        "loss": 0.7661700248718262,
+        "epoch": 0.43037974683544306,
+        "lr": 0.00009950242552572271
+      },
+      {
+        "step": 90,
+        "loss": 0.76089506149292,
+        "epoch": 0.45569620253164556,
+        "lr": 0.00009927406201035368
+      },
+      {
+        "step": 95,
+        "loss": 0.7839833736419678,
+        "epoch": 0.4810126582278481,
+        "lr": 0.00009900306565246578
+      },
+      {
+        "step": 100,
+        "loss": 0.7655999660491943,
+        "epoch": 0.5063291139240507,
+        "lr": 0.00009868967092319003
+      },
+      {
+        "step": 105,
+        "loss": 0.8082112312316895,
+        "epoch": 0.5316455696202531,
+        "lr": 0.00009833414897752347
+      },
+      {
+        "step": 110,
+        "loss": 0.8312479972839355,
+        "epoch": 0.5569620253164557,
+        "lr": 0.00009793680741972084
+      },
+      {
+        "step": 115,
+        "loss": 0.773653221130371,
+        "epoch": 0.5822784810126582,
+        "lr": 0.00009749799003714954
+      },
+      {
+        "step": 120,
+        "loss": 0.7028615951538086,
+        "epoch": 0.6075949367088608,
+        "lr": 0.00009701807650283839
+      },
+      {
+        "step": 125,
+        "loss": 0.6502131938934326,
+        "epoch": 0.6329113924050633,
+        "lr": 0.0000964974820469774
+      },
+      {
+        "step": 130,
+        "loss": 0.6818170070648193,
+        "epoch": 0.6582278481012658,
+        "lr": 0.0000959366570976528
+      },
+      {
+        "step": 135,
+        "loss": 0.7111308097839355,
+        "epoch": 0.6835443037974683,
+        "lr": 0.00009533608689112827
+      },
+      {
+        "step": 140,
+        "loss": 0.7429946899414063,
+        "epoch": 0.7088607594936709,
+        "lr": 0.00009469629105200937
+      },
+      {
+        "step": 145,
+        "loss": 0.7393193721771241,
+        "epoch": 0.7341772151898734,
+        "lr": 0.00009401782314365457
+      },
+      {
+        "step": 150,
+        "loss": 0.7108057498931885,
+        "epoch": 0.759493670886076,
+        "lr": 0.00009330127018922194
+      },
+      {
+        "step": 155,
+        "loss": 0.7464967727661133,
+        "epoch": 0.7848101265822784,
+        "lr": 0.00009254725216376561
+      },
+      {
+        "step": 160,
+        "loss": 0.6995117664337158,
+        "epoch": 0.810126582278481,
+        "lr": 0.00009175642145782179
+      },
+      {
+        "step": 165,
+        "loss": 0.7084463119506836,
+        "epoch": 0.8354430379746836,
+        "lr": 0.00009092946231294819
+      },
+      {
+        "step": 170,
+        "loss": 0.7231119632720947,
+        "epoch": 0.8607594936708861,
+        "lr": 0.00009006709022970547
+      },
+      {
+        "step": 175,
+        "loss": 0.6253019809722901,
+        "epoch": 0.8860759493670886,
+        "lr": 0.00008917005134859263
+      },
+      {
+        "step": 180,
+        "loss": 0.7250436782836914,
+        "epoch": 0.9113924050632911,
+        "lr": 0.00008823912180447236
+      },
+      {
+        "step": 185,
+        "loss": 0.623183012008667,
+        "epoch": 0.9367088607594937,
+        "lr": 0.00008727510705504454
+      },
+      {
+        "step": 190,
+        "loss": 0.6624733924865722,
+        "epoch": 0.9620253164556962,
+        "lr": 0.00008627884118394913
+      },
+      {
+        "step": 195,
+        "loss": 0.7057664871215821,
+        "epoch": 0.9873417721518988,
+        "lr": 0.00008525118617910143
+      },
+      {
+        "step": 200,
+        "loss": 0.6402831077575684,
+        "epoch": 1.010126582278481,
+        "lr": 0.0000841930311868839
+      },
+      {
+        "step": 205,
+        "loss": 0.5985519409179687,
+        "epoch": 1.0354430379746835,
+        "lr": 0.00008310529174284004
+      },
+      {
+        "step": 210,
+        "loss": 0.6245698451995849,
+        "epoch": 1.0607594936708862,
+        "lr": 0.00008198890897953586
+      },
+      {
+        "step": 215,
+        "loss": 0.5218031883239747,
+        "epoch": 1.0860759493670886,
+        "lr": 0.00008084484881227448
+      },
+      {
+        "step": 220,
+        "loss": 0.5959195613861084,
+        "epoch": 1.111392405063291,
+        "lr": 0.00007967410110336782
+      },
+      {
+        "step": 225,
+        "loss": 0.5646119594573975,
+        "epoch": 1.1367088607594937,
+        "lr": 0.00007847767880568945
+      },
+      {
+        "step": 230,
+        "loss": 0.5526773452758789,
+        "epoch": 1.1620253164556962,
+        "lr": 0.00007725661708624853
+      },
+      {
+        "step": 235,
+        "loss": 0.583966875076294,
+        "epoch": 1.1873417721518988,
+        "lr": 0.0000760119724305441
+      },
+      {
+        "step": 240,
+        "loss": 0.527112627029419,
+        "epoch": 1.2126582278481013,
+        "lr": 0.0000747448217284739
+      },
+      {
+        "step": 245,
+        "loss": 0.5579283714294434,
+        "epoch": 1.2379746835443037,
+        "lr": 0.00007345626134258898
+      },
+      {
+        "step": 250,
+        "loss": 0.5657207012176514,
+        "epoch": 1.2632911392405064,
+        "lr": 0.00007214740615950041
+      },
+      {
+        "step": 255,
+        "loss": 0.512404203414917,
+        "epoch": 1.2886075949367088,
+        "lr": 0.00007081938862525839
+      },
+      {
+        "step": 260,
+        "loss": 0.5092500209808349,
+        "epoch": 1.3139240506329113,
+        "lr": 0.0000694733577655387
+      },
+      {
+        "step": 265,
+        "loss": 0.5622412204742432,
+        "epoch": 1.339240506329114,
+        "lr": 0.00006811047819148413
+      },
+      {
+        "step": 270,
+        "loss": 0.5804959297180176,
+        "epoch": 1.3645569620253164,
+        "lr": 0.00006673192909206108
+      },
+      {
+        "step": 275,
+        "loss": 0.5472399234771729,
+        "epoch": 1.389873417721519,
+        "lr": 0.00006533890321380319
+      },
+      {
+        "step": 280,
+        "loss": 0.5237844944000244,
+        "epoch": 1.4151898734177215,
+        "lr": 0.0000639326058288246
+      },
+      {
+        "step": 285,
+        "loss": 0.5480983257293701,
+        "epoch": 1.4405063291139242,
+        "lr": 0.00006251425369199599
+      },
+      {
+        "step": 290,
+        "loss": 0.50765061378479,
+        "epoch": 1.4658227848101266,
+        "lr": 0.0000610850739881854
+      },
+      {
+        "step": 295,
+        "loss": 0.569408369064331,
+        "epoch": 1.491139240506329,
+        "lr": 0.000059646303270474845
+      },
+      {
+        "step": 300,
+        "loss": 0.549865436553955,
+        "epoch": 1.5164556962025317,
+        "lr": 0.000058199186390271486
+      },
+      {
+        "step": 305,
+        "loss": 0.5410863399505615,
+        "epoch": 1.5417721518987342,
+        "lr": 0.000056744975420238745
+      },
+      {
+        "step": 310,
+        "loss": 0.5408462524414063,
+        "epoch": 1.5670886075949366,
+        "lr": 0.00005528492857097966
+      },
+      {
+        "step": 315,
+        "loss": 0.4744428634643555,
+        "epoch": 1.5924050632911393,
+        "lr": 0.00005382030910240936
+      },
+      {
+        "step": 320,
+        "loss": 0.5344162464141846,
+        "epoch": 1.6177215189873417,
+        "lr": 0.00005235238423075899
+      },
+      {
+        "step": 325,
+        "loss": 0.48246026039123535,
+        "epoch": 1.6430379746835442,
+        "lr": 0.00005088242403215644
+      },
+      {
+        "step": 330,
+        "loss": 0.5430913925170898,
+        "epoch": 1.6683544303797468,
+        "lr": 0.0000494117003437326
+      },
+      {
+        "step": 335,
+        "loss": 0.5888379096984864,
+        "epoch": 1.6936708860759495,
+        "lr": 0.000047941485663204125
+      },
+      {
+        "step": 340,
+        "loss": 0.5405429363250732,
+        "epoch": 1.7189873417721517,
+        "lr": 0.00004647305204788445
+      },
+      {
+        "step": 345,
+        "loss": 0.49338040351867674,
+        "epoch": 1.7443037974683544,
+        "lr": 0.000045007670014076045
+      },
+      {
+        "step": 350,
+        "loss": 0.47713751792907716,
+        "epoch": 1.769620253164557,
+        "lr": 0.00004354660743779574
+      },
+      {
+        "step": 355,
+        "loss": 0.5287775516510009,
+        "epoch": 1.7949367088607595,
+        "lr": 0.00004209112845778481
+      },
+      {
+        "step": 360,
+        "loss": 0.5151570796966553,
+        "epoch": 1.820253164556962,
+        "lr": 0.00004064249238175223
+      },
+      {
+        "step": 365,
+        "loss": 0.4952357769012451,
+        "epoch": 1.8455696202531646,
+        "lr": 0.00003920195259679822
+      },
+      {
+        "step": 370,
+        "loss": 0.5536147594451905,
+        "epoch": 1.870886075949367,
+        "lr": 0.000037770755484960004
+      },
+      {
+        "step": 375,
+        "loss": 0.5069712638854981,
+        "epoch": 1.8962025316455695,
+        "lr": 0.00003635013934481895
+      },
+      {
+        "step": 380,
+        "loss": 0.5525115966796875,
+        "epoch": 1.9215189873417722,
+        "lr": 0.00003494133332010117
+      },
+      {
+        "step": 385,
+        "loss": 0.5086035251617431,
+        "epoch": 1.9468354430379748,
+        "lr": 0.0000335455563361995
+      },
+      {
+        "step": 390,
+        "loss": 0.4687495708465576,
+        "epoch": 1.972151898734177,
+        "lr": 0.000032164016045536304
+      },
+      {
+        "step": 395,
+        "loss": 0.5186773777008057,
+        "epoch": 1.9974683544303797,
+        "lr": 0.00003079790778267994
+      },
+      {
+        "step": 400,
+        "loss": 0.4609982490539551,
+        "epoch": 2.020253164556962,
+        "lr": 0.000029448413530118914
+      },
+      {
+        "step": 405,
+        "loss": 0.41746020317077637,
+        "epoch": 2.0455696202531644,
+        "lr": 0.000028116700895588472
+      },
+      {
+        "step": 410,
+        "loss": 0.41969499588012693,
+        "epoch": 2.070886075949367,
+        "lr": 0.000026803922101834454
+      },
+      {
+        "step": 415,
+        "loss": 0.4135398864746094,
+        "epoch": 2.0962025316455697,
+        "lr": 0.000025511212989688586
+      },
+      {
+        "step": 420,
+        "loss": 0.39961020946502684,
+        "epoch": 2.1215189873417724,
+        "lr": 0.000024239692035317678
+      },
+      {
+        "step": 425,
+        "loss": 0.3700167417526245,
+        "epoch": 2.1468354430379746,
+        "lr": 0.000022990459382497088
+      },
+      {
+        "step": 430,
+        "loss": 0.42394700050354006,
+        "epoch": 2.1721518987341772,
+        "lr": 0.00002176459589074566
+      },
+      {
+        "step": 435,
+        "loss": 0.45314745903015136,
+        "epoch": 2.19746835443038,
+        "lr": 0.00002056316220014588
+      },
+      {
+        "step": 440,
+        "loss": 0.44289422035217285,
+        "epoch": 2.222784810126582,
+        "lr": 0.000019387197813658092
+      },
+      {
+        "step": 445,
+        "loss": 0.40958471298217775,
+        "epoch": 2.248101265822785,
+        "lr": 0.000018237720197723075
+      },
+      {
+        "step": 450,
+        "loss": 0.446867036819458,
+        "epoch": 2.2734177215189875,
+        "lr": 0.00001711572390193102
+      },
+      {
+        "step": 455,
+        "loss": 0.43407340049743653,
+        "epoch": 2.2987341772151897,
+        "lr": 0.000016022179698518523
+      },
+      {
+        "step": 460,
+        "loss": 0.39161608219146726,
+        "epoch": 2.3240506329113924,
+        "lr": 0.00001495803374243835
+      },
+      {
+        "step": 465,
+        "loss": 0.44635443687438964,
+        "epoch": 2.349367088607595,
+        "lr": 0.000013924206752728281
+      },
+      {
+        "step": 470,
+        "loss": 0.38252503871917726,
+        "epoch": 2.3746835443037977,
+        "lr": 0.00001292159321588778
+      },
+      {
+        "step": 475,
+        "loss": 0.4143231868743896,
+        "epoch": 2.4,
+        "lr": 0.000011951060611951615
+      },
+      {
+        "step": 480,
+        "loss": 0.4102755546569824,
+        "epoch": 2.4253164556962026,
+        "lr": 0.000011013448663929705
+      },
+      {
+        "step": 485,
+        "loss": 0.385883092880249,
+        "epoch": 2.4506329113924052,
+        "lr": 0.000010109568611263093
+      },
+      {
+        "step": 490,
+        "loss": 0.40924968719482424,
+        "epoch": 2.4759493670886075,
+        "lr": 0.000009240202507924405
+      },
+      {
+        "step": 495,
+        "loss": 0.42383241653442383,
+        "epoch": 2.50126582278481,
+        "lr": 0.000008406102545769989
+      },
+      {
+        "step": 500,
+        "loss": 0.4358550548553467,
+        "epoch": 2.526582278481013,
+        "lr": 0.000007607990403729526
+      },
+      {
+        "step": 505,
+        "loss": 0.40907936096191405,
+        "epoch": 2.5518987341772155,
+        "lr": 0.0000068465566233957945
+      },
+      {
+        "step": 510,
+        "loss": 0.4063614845275879,
+        "epoch": 2.5772151898734177,
+        "lr": 0.000006122460011555187
+      },
+      {
+        "step": 515,
+        "loss": 0.3925469875335693,
+        "epoch": 2.6025316455696204,
+        "lr": 0.000005436327070175728
+      },
+      {
+        "step": 520,
+        "loss": 0.4807733535766602,
+        "epoch": 2.6278481012658226,
+        "lr": 0.000004788751454345763
+      },
+      {
+        "step": 525,
+        "loss": 0.4062035083770752,
+        "epoch": 2.6531645569620252,
+        "lr": 0.000004180293458632489
+      },
+      {
+        "step": 530,
+        "loss": 0.43408498764038084,
+        "epoch": 2.678481012658228,
+        "lr": 0.000003611479532304618
+      },
+      {
+        "step": 535,
+        "loss": 0.3804896116256714,
+        "epoch": 2.7037974683544306,
+        "lr": 0.000003082801823838527
+      },
+      {
+        "step": 540,
+        "loss": 0.4300524234771729,
+        "epoch": 2.729113924050633,
+        "lr": 0.000002594717755102205
+      },
+      {
+        "step": 545,
+        "loss": 0.41066703796386717,
+        "epoch": 2.7544303797468355,
+        "lr": 0.0000021476496255852683
+      },
+      {
+        "step": 550,
+        "loss": 0.3589302062988281,
+        "epoch": 2.779746835443038,
+        "lr": 0.0000017419842470175195
+      },
+      {
+        "step": 555,
+        "loss": 0.40512862205505373,
+        "epoch": 2.8050632911392404,
+        "lr": 0.0000013780726086922103
+      },
+      {
+        "step": 560,
+        "loss": 0.41200952529907225,
+        "epoch": 2.830379746835443,
+        "lr": 0.0000010562295737834737
+      },
+      {
+        "step": 565,
+        "loss": 0.41915740966796877,
+        "epoch": 2.8556962025316457,
+        "lr": 7.76733606920832e-7
+      },
+      {
+        "step": 570,
+        "loss": 0.4093903064727783,
+        "epoch": 2.8810126582278484,
+        "lr": 5.398265332563934e-7
+      },
+      {
+        "step": 575,
+        "loss": 0.3942124366760254,
+        "epoch": 2.9063291139240506,
+        "lr": 3.4571332923314936e-7
+      },
+      {
+        "step": 580,
+        "loss": 0.366414475440979,
+        "epoch": 2.9316455696202532,
+        "lr": 1.9456194523554406e-7
+      },
+      {
+        "step": 585,
+        "loss": 0.39872701168060304,
+        "epoch": 2.9569620253164555,
+        "lr": 8.650316027566386e-8
+      },
+      {
+        "step": 590,
+        "loss": 0.42901129722595216,
+        "epoch": 2.982278481012658,
+        "lr": 2.1630468840738714e-8
+      }
+    ],
+    "eval_loss_curve": [],
+    "final_train_loss": 0.42901129722595216,
+    "train_results": {
+      "epoch": 3,
+      "total_flos": 25886510682071040,
+      "train_loss": 0.6078154119578275,
+      "train_runtime": 4579.9483,
+      "train_samples_per_second": 1.035,
+      "train_steps_per_second": 0.13
+    }
+  },
+  "accept": {
+    "model": "dreamcraft-1.5b:v6",
+    "time": "2026-09-29 16:12:39",
+    "duration_sec": 32.8,
+    "cases": 20,
+    "pass_all": 20,
+    "pass_rate": 1,
+    "json_parse_rate": 1,
+    "crafttype_enum_rate": 1,
+    "style_enum_rate": 1,
+    "product_hit_rate": 1,
+    "layout_match_rate": 1,
+    "palette_valid_rate": 1,
+    "topic_adherence_rate": 1,
+    "title_subtitle_len_rate": 1,
+    "targets": {
+      "crafttype_enum": 1,
+      "style_enum": 1,
+      "product_hit": 0.9,
+      "layout_match": 0.9,
+      "palette_valid": 0.95,
+      "topic_adherence": 0.9
+    },
+    "details": [
+      {
+        "title": "秦淮河灯影冰箱贴",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "ink",
+        "layout": "poster-swing",
+        "palette": [
+          "黛青",
+          "月白",
+          "朱砂"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "秦淮河夜泊 / 做一个冰箱贴，把秦淮河灯",
+        "attempt_retried": true
+      },
+      {
+        "title": "夫子庙灯市明信片",
+        "productName": "明信片",
+        "craftType": "postcard",
+        "style": "festive",
+        "layout": "postcard-circle",
+        "palette": [
+          "朱砂",
+          "赭黄"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "夫子庙灯市 / 想要夫子庙主题的明信片，",
+        "attempt_retried": true
+      },
+      {
+        "title": "千手观音·石刻徽章",
+        "productName": "徽章",
+        "craftType": "card",
+        "style": "dunhuang",
+        "layout": "card-layered",
+        "palette": [
+          "赭石",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "大足石刻千手观音 / 把这幅画做成徽章",
+        "attempt_retried": true
+      },
+      {
+        "title": "土楼古韵伴手礼",
+        "productName": "书签",
+        "craftType": "postcard",
+        "style": "guofeng",
+        "layout": "postcard-circle",
+        "palette": [
+          "黛青",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "福建土楼群 / 土楼主题的伴手礼",
+        "attempt_retried": true
+      },
+      {
+        "title": "运河漕运古韵",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "guofeng",
+        "layout": "poster-hero",
+        "palette": [
+          "靛蓝",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "京杭大运河漕运图 / 设计一款运河主题衍生品",
+        "attempt_retried": true
+      },
+      {
+        "title": "都江堰水则书签",
+        "productName": "书签",
+        "craftType": "card",
+        "style": "guofeng",
+        "layout": "card-layered",
+        "palette": [
+          "靛蓝",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "都江堰水则 / 做个书签，突出治水智慧",
+        "attempt_retried": true
+      },
+      {
+        "title": "乐山大佛全景冰箱贴",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "guofeng",
+        "layout": "poster-sym",
+        "palette": [
+          "赭石",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "乐山大佛全景 / 乐山大佛的冰箱贴",
+        "attempt_retried": true
+      },
+      {
+        "title": "布达拉宫晨光·国风印象",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "guofeng",
+        "layout": "poster-hero",
+        "palette": [
+          "靛蓝",
+          "米白",
+          "赭石"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "布达拉宫晨光 / 国风一点，重点画布达拉宫",
+        "attempt_retried": true
+      },
+      {
+        "title": "避暑山庄烟雨楼挂件",
+        "productName": "项链",
+        "craftType": "card",
+        "style": "guofeng",
+        "layout": "card-window",
+        "palette": [
+          "靛蓝",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "避暑山庄烟雨楼 / 做个挂件，要有皇家园林味",
+        "attempt_retried": true
+      },
+      {
+        "title": "柏树颂儒·孔庙雅韵",
+        "productName": "书签",
+        "craftType": "card",
+        "style": "guofeng",
+        "layout": "card-layered",
+        "palette": [
+          "黛青",
+          "米白",
+          "赭石"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "曲阜孔庙柏树 / 儒家文化相关的周边",
+        "attempt_retried": true
+      },
+      {
+        "title": "甲骨文古韵书签",
+        "productName": "书签",
+        "craftType": "card",
+        "style": "guofeng",
+        "layout": "card-layered",
+        "palette": [
+          "朱砂",
+          "赭黄"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "殷墟甲骨文 / 甲骨文主题的文创产品",
+        "attempt_retried": true
+      },
+      {
+        "title": "玉琮纹样丝巾",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "guofeng",
+        "layout": "poster-hero",
+        "palette": [
+          "靛蓝",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "良渚玉琮 / 玉琮纹样的丝巾",
+        "attempt_retried": true
+      },
+      {
+        "title": "碉楼映日·开平记忆",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "ink",
+        "layout": "poster-sym",
+        "palette": [
+          "黛青",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "开平碉楼群 / 想做碉楼主题的纪念品",
+        "attempt_retried": true
+      },
+      {
+        "title": "庐山云雾·水墨留白",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "ink",
+        "layout": "poster-hero",
+        "palette": [
+          "黛青",
+          "月白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "庐山云雾 / 水墨留白感觉，主题是庐山",
+        "attempt_retried": true
+      },
+      {
+        "title": "武夷九曲茶韵伴手礼",
+        "productName": "马克杯",
+        "craftType": "poster",
+        "style": "feiyi",
+        "layout": "poster-sym",
+        "palette": [
+          "黛青",
+          "月白",
+          "竹青"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "武夷山九曲溪 / 茶文化相关的伴手礼",
+        "attempt_retried": true
+      },
+      {
+        "title": "云海栈道手机壳",
+        "productName": "手机壳",
+        "craftType": "wallpaper",
+        "style": "qinghua",
+        "layout": "wallpaper-min",
+        "palette": [
+          "黛青",
+          "月白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "三清山栈道云海 / 云海主题的手机壳",
+        "attempt_retried": true
+      },
+      {
+        "title": "青城山幽径雅韵",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "qinghua",
+        "layout": "poster-frame",
+        "palette": [
+          "黛青",
+          "月白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "青城山幽径 / 道教文化周边，要雅致",
+        "attempt_retried": true
+      },
+      {
+        "title": "峨眉金顶日出明信片",
+        "productName": "明信片",
+        "craftType": "postcard",
+        "style": "guofeng",
+        "layout": "postcard-circle",
+        "palette": [
+          "靛蓝",
+          "米白",
+          "赭石"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "峨眉山金顶 / 金顶日出的明信片",
+        "attempt_retried": true
+      },
+      {
+        "title": "卢舍那大佛徽章",
+        "productName": "徽章",
+        "craftType": "card",
+        "style": "dunhuang",
+        "layout": "card-layered",
+        "palette": [
+          "赭黄",
+          "米白"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "龙门石窟卢舍那大佛 / 把卢舍那大佛做成徽章",
+        "attempt_retried": true
+      },
+      {
+        "title": "红石峡·云台山冰箱贴",
+        "productName": "艺术装饰画",
+        "craftType": "poster",
+        "style": "ink",
+        "layout": "poster-sym",
+        "palette": [
+          "赭石",
+          "米白",
+          "黛青"
+        ],
+        "json_ok": true,
+        "type_ok": true,
+        "style_ok": true,
+        "product_ok": true,
+        "layout_ok": true,
+        "palette_ok": true,
+        "topic_ok": true,
+        "len_ok": true,
+        "pass": true,
+        "case": "云台山红石峡 / 红石峡风景的冰箱贴",
+        "attempt_retried": true
+      }
+    ]
+  }
+}

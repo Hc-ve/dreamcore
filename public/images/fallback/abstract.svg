@@ -1,19 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
-  <defs>
-    <linearGradient id="ag1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#120a1f"/>
-      <stop offset="100%" stop-color="#0a0612"/>
-    </linearGradient>
-    <linearGradient id="ag2" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#c9b6ff" stop-opacity="0.2"/>
-      <stop offset="50%" stop-color="#ffd1e8" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#7ec8e3" stop-opacity="0.1"/>
-    </linearGradient>
-  </defs>
-  <rect width="800" height="600" fill="url(#ag1)"/>
-  <ellipse cx="300" cy="350" rx="180" ry="120" fill="none" stroke="url(#ag2)" stroke-width="1.5" transform="rotate(-20 300 350)" opacity="0.4"/>
-  <ellipse cx="500" cy="280" rx="150" ry="90" fill="none" stroke="url(#ag2)" stroke-width="1.2" transform="rotate(15 500 280)" opacity="0.3"/>
-  <ellipse cx="400" cy="400" rx="200" ry="80" fill="none" stroke="url(#ag2)" stroke-width="1" transform="rotate(-10 400 400)" opacity="0.25"/>
-  <circle cx="400" cy="300" r="4" fill="url(#ag2)" opacity="0.5"/>
-  <text x="400" y="520" text-anchor="middle" fill="#c9b6ff" font-family="system-ui, sans-serif" font-size="16" font-weight="300" letter-spacing="8" opacity="0.4">ABSTRACT</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 442">
+  <!-- 宣纸底 -->
+  <rect width="320" height="442" fill="#faf6ee"/>
+  <!-- 细边框 -->
+  <rect x="10" y="10" width="300" height="422" fill="none" stroke="#e6dccb" stroke-width="1"/>
+  <!-- 回纹边框 上下 -->
+  <g fill="none" stroke="#a8261f" stroke-width="1.2" opacity="0.4" stroke-linejoin="round">
+    <!-- 上边 -->
+    <path d="M20 22 L28 22 L28 30 L20 30 L20 38 L36 38 L36 22 L44 22 L44 46 L12 46 L12 14 L44 14"/>
+    <!-- 下边 -->
+    <path d="M20 420 L28 420 L28 412 L20 412 L20 404 L36 404 L36 420 L44 420 L44 396 L12 396 L12 428 L44 428"/>
+  </g>
+  <!-- 青瓷瓶 -->
+  <path d="M150 90 L170 90 L166 110 L175 130 Q200 180 195 260 Q190 330 160 350 L160 360 L150 360 L150 350 Q120 330 115 260 Q110 180 135 130 L144 110 Z" fill="#5a7a6a" opacity="0.75"/>
+  <!-- 瓶身光泽 -->
+  <path d="M130 140 Q125 200 128 270" stroke="#9db5a8" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- 瓶口 -->
+  <ellipse cx="160" cy="90" rx="10" ry="3" fill="#4a6b52" opacity="0.9"/>
+  <!-- 瓶身纹饰：回纹 -->
+  <g stroke="#2d4a6b" stroke-width="1" fill="none" opacity="0.5">
+    <path d="M125 200 Q140 190 155 200 Q170 210 185 200"/>
+    <path d="M125 230 Q140 220 155 230 Q170 240 185 230"/>
+    <path d="M125 260 Q140 250 155 260 Q170 270 185 260"/>
+  </g>
+  <!-- 底座 -->
+  <rect x="115" y="358" width="90" height="6" fill="#8a6b20" opacity="0.7"/>
+  <!-- 朱砂方印 -->
+  <rect x="248" y="385" width="44" height="44" fill="#a8261f" opacity="0.82"/>
+  <text x="270" y="415" text-anchor="middle" font-family="SimSun,serif" font-size="22" fill="#faf6ee" font-weight="700">器</text>
+  <!-- 编号 -->
+  <text x="22" y="432" font-family="SimSun,serif" font-size="11" fill="#7a6650" opacity="0.6">肆 · 回纹</text>
 </svg>

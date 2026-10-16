@@ -1,0 +1,47 @@
+﻿python.exe : [transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+At line:15 char:2075
++ ... pgrep\bin'; & 'E:\anaconda\envs\dreamcraft\python.exe' 'e:\a\6a578b50 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([transformers] ...dtype` instead!:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+loading model...
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<02:22,  2.37it/s]
+Loading weights:   4%|▎         | 12/338 [00:00<00:11, 28.43it/s]
+Loading weights:   8%|▊         | 28/338 [00:00<00:05, 59.96it/s]
+Loading weights:  12%|█▏        | 41/338 [00:00<00:03, 75.69it/s]
+Loading weights:  18%|█▊        | 62/338 [00:00<00:02, 98.95it/s]
+Loading weights:  23%|██▎       | 77/338 [00:01<00:02, 104.77it/s]
+Loading weights:  29%|██▉       | 99/338 [00:01<00:01, 125.55it/s]
+Loading weights:  33%|███▎      | 113/338 [00:01<00:02, 103.74it/s]
+Loading weights:  39%|███▉      | 133/338 [00:01<00:01, 125.35it/s]
+Loading weights:  44%|████▍     | 148/338 [00:01<00:01, 113.39it/s]
+Loading weights:  49%|████▉     | 165/338 [00:01<00:01, 126.04it/s]
+Loading weights:  54%|█████▍    | 183/338 [00:01<00:01, 132.23it/s]
+Loading weights:  59%|█████▊    | 198/338 [00:01<00:01, 124.74it/s]
+Loading weights:  63%|██████▎   | 213/338 [00:02<00:00, 128.81it/s]
+Loading weights:  67%|██████▋   | 228/338 [00:02<00:00, 134.13it/s]
+Loading weights:  72%|███████▏  | 243/338 [00:02<00:00, 133.58it/s]
+Loading weights:  76%|███████▌  | 257/338 [00:02<00:00, 123.50it/s]
+Loading weights:  81%|████████▏ | 275/338 [00:02<00:00, 137.29it/s]
+Loading weights:  86%|████████▌ | 290/338 [00:02<00:00, 139.94it/s]
+Loading weights:  90%|█████████ | 305/338 [00:02<00:00, 120.81it/s]
+Loading weights:  96%|█████████▌| 323/338 [00:02<00:00, 134.80it/s]
+Loading weights: 100%|██████████| 338/338 [00:03<00:00, 112.02it/s]
+  [1] OK 飞天舞动敦煌梦 | postcard | postcard-circle
+  [2] OK 青花瓷韵手机壁纸 | wallpaper | wallpaper-min
+  [3] OK 赛博幻影·都市夜语 | poster | poster-hero
+  [4] OK 苗族银饰艺术卡 | card | card-layered
+  [5] OK 江南水乡水墨印象 | template | 
+  [6] OK 新春庙会迎春图 | poster | poster-hero
+  [7] OK 三星堆神秘面纱 | card | card-layered
+  [8] OK 故宫红墙雪景壁纸 | wallpaper | wallpaper-min
+  [9] OK 皮影戏光影传奇 | card | card-layered
+  [10] OK 茶马古道记忆 | postcard | postcard-circle
+
+===== 直接验收（transformers bf16，无量化）=====
+JSON 合法率: 10/10 = 100%  [线 ≥90%]
+新字段合规率: 10/10 = 100%  [线 ≥85%]
+平均耗时: 3.7s/条

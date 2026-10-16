@@ -61,10 +61,13 @@ const Profile = {
           <div class="stat-card"><div class="stat-num" id="stat-following">—</div><div class="stat-label">关注</div></div>
         </div>
 
+        <button class="profile-lb-entry" id="profile-lb-btn"><span><i class="fa-solid fa-trophy" aria-hidden="true"></i> 我的排行榜排名</span><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+
         <div class="profile-tabs">
           <button class="profile-tab active" data-tab="works"><i class="fa-regular fa-images"></i> 我的作品</button>
           <button class="profile-tab" data-tab="favs"><i class="fa-regular fa-bookmark"></i> 我的收藏</button>
           <button class="profile-tab" data-tab="following"><i class="fa-regular fa-user-plus"></i> 我的关注</button>
+          <button class="profile-tab" data-tab="orders"><i class="fa-solid fa-box"></i> 我的订单</button>
         </div>
 
         <div class="profile-content" id="profile-content"></div>
@@ -74,6 +77,11 @@ const Profile = {
     this.modalEl = overlay;
 
     overlay.addEventListener('click', (e) => {
+      if (e.target.closest('#profile-lb-btn')) {
+        this._close();
+        location.hash = '#/leaderboard';
+        return;
+      }
       if (e.target === overlay || e.target.closest('[data-close]')) this._close();
     });
     // Tab 切换
@@ -116,6 +124,9 @@ const Profile = {
       this._renderGrid(favs, false);
     } else if (this.currentTab === 'following') {
       this._renderFollowing(following);
+    } else if (this.currentTab === 'orders') {
+      const orders = await getAllOrders();
+      this._renderOrders(orders.filter(o => String(o.userId) === String(user.id)));
     }
   },
 
@@ -238,6 +249,65 @@ const Profile = {
     });
   },
 
+  // ----------------------------------------------------------
+  // 渲染我的订单（列表 + 点击展开物流时间线详情）
+  // ----------------------------------------------------------
+  _statusLabel(status) {
+    const labels = (window.ORDER_STATE_LABELS) || { paid: '已支付', producing: '制作中', shipped: '已发货', in_transit: '运输中', delivered: '已签收' };
+    return labels[status] || status || '—';
+  },
+
+  _renderOrders(list) {
+    const content = this.modalEl.querySelector('#profile-content');
+    if (!list || list.length === 0) {
+      content.innerHTML = `
+        <div class="profile-empty">
+          <i class="fa-solid fa-box"></i>
+          <p>还没有订单</p>
+          <p style="font-size:12px;margin-top:8px;opacity:0.6;">去创作工坊把你的作品变成实物吧～</p>
+        </div>`;
+      return;
+    }
+    content.innerHTML = '<div class="profile-orders"></div>';
+    const wrap = content.querySelector('.profile-orders');
+    list.forEach(o => {
+      const card = document.createElement('div');
+      card.className = 'profile-order-card';
+      const spec = [o.material, o.size].filter(Boolean).join(' · ') || (o.craftType || '—');
+      const product = o.product || o.craftType || '文创商品';
+      const timeline = Array.isArray(o.timeline) && o.timeline.length
+        ? o.timeline.map(t => {
+            const ts = t.ts ? new Date(t.ts).toLocaleString('zh-CN', { hour12: false }) : '';
+            return `<li class="po-tl-item"><span class="po-tl-state">${this._esc(this._statusLabel(t.state))}</span><span class="po-tl-note">${this._esc(t.note || '')}</span><span class="po-tl-ts">${this._esc(ts)}</span></li>`;
+          }).join('')
+        : `<li class="po-tl-item"><span class="po-tl-state">${this._esc(this._statusLabel(o.status))}</span></li>`;
+      card.innerHTML = `
+        <div class="po-head">
+          <span class="po-no">订单号 ${this._esc(o.orderNo || '—')}</span>
+          <span class="po-status po-status-${this._esc(o.status)}">${this._esc(this._statusLabel(o.status))}</span>
+        </div>
+        <div class="po-body">
+          <div class="po-row"><span class="po-k">商品</span><span>${this._esc(product)}</span></div>
+          <div class="po-row"><span class="po-k">规格</span><span>${this._esc(spec)}</span></div>
+          <div class="po-row"><span class="po-k">价格</span><span>¥${Number(o.price) || 0}</span></div>
+          <div class="po-row"><span class="po-k">收货人</span><span>${this._esc(o.receiver || '—')}（${this._esc(o.phone || '—')}）</span></div>
+          <div class="po-row"><span class="po-k">收货地址</span><span>${this._esc(o.address || '—')}</span></div>
+          ${o.trackingNo ? `<div class="po-row"><span class="po-k">物流单号</span><span>${this._esc(o.trackingNo)}</span></div>` : ''}
+        </div>
+        <button class="po-toggle" type="button">物流详情 <i class="fa-solid fa-chevron-down"></i></button>
+        <ol class="po-timeline" hidden>${timeline}</ol>
+      `;
+      const toggle = card.querySelector('.po-toggle');
+      const tl = card.querySelector('.po-timeline');
+      toggle.addEventListener('click', () => {
+        const open = tl.hasAttribute('hidden');
+        tl.hidden = !open;
+        toggle.classList.toggle('open', open);
+      });
+      wrap.appendChild(card);
+    });
+  },
+
   _close() {
     if (!this.modalEl) return;
     this.modalEl.classList.remove('open');
@@ -258,6 +328,37 @@ const Profile = {
     }[c]));
   }
 };
+
+// 我的订单卡片样式（幂等注入）
+(function _injectProfileOrderStyle() {
+  if (document.getElementById('profile-order-style')) return;
+  const style = document.createElement('style');
+  style.id = 'profile-order-style';
+  style.textContent = `
+    .profile-orders { display: flex; flex-direction: column; gap: 12px; }
+    .profile-order-card { padding: 14px 16px; border: 1px solid var(--glass-border); border-radius: var(--radius-sm); background: var(--glass-bg); }
+    .po-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .po-no { font-weight: 700; font-size: .88rem; color: var(--text-primary); }
+    .po-status { padding: 3px 10px; border-radius: 999px; font-size: .74rem; font-weight: 600; white-space: nowrap; }
+    .po-status-paid { background: rgba(52,211,153,.16); color: #2bb58a; }
+    .po-status-producing { background: rgba(245,158,11,.16); color: #d97706; }
+    .po-status-shipped { background: rgba(96,165,250,.16); color: #3b82f6; }
+    .po-status-in_transit { background: rgba(168,85,247,.16); color: #9333ea; }
+    .po-status-delivered { background: rgba(52,211,153,.22); color: #159a6b; }
+    .po-body .po-row { display: flex; gap: 10px; font-size: .82rem; margin: 4px 0; color: var(--text-primary); }
+    .po-body .po-row .po-k { flex: 0 0 58px; color: var(--text-secondary); }
+    .po-toggle { margin-top: 8px; padding: 0; border: none; background: none; color: var(--text-secondary); font-size: .78rem; cursor: pointer; }
+    .po-toggle i { transition: transform .2s; }
+    .po-toggle.open i { transform: rotate(180deg); }
+    .po-timeline { margin: 10px 0 0; padding: 0 0 0 6px; list-style: none; border-left: 2px dashed var(--glass-border); }
+    .po-timeline[hidden] { display: none; }
+    .po-tl-item { display: flex; flex-direction: column; gap: 2px; padding: 4px 0 4px 12px; font-size: .78rem; }
+    .po-tl-state { font-weight: 600; color: var(--text-primary); }
+    .po-tl-note { color: var(--text-secondary); }
+    .po-tl-ts { font-size: .7rem; color: var(--text-secondary); opacity: .7; }
+  `;
+  document.head.appendChild(style);
+})();
 
 // 暴露为全局
 window.Profile = Profile;

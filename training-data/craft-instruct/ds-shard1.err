@@ -1,0 +1,36 @@
+
+校验失败 [钥匙扣形式的文创，重点突出秦俑]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [做一个冰箱贴，把紫禁城元素融进去]: layout postcard-duo 与 craftType card 不匹配
+
+校验失败 [想要三星堆主题的徽章，送朋友]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [赛博霓虹风格的故宫文创]: 标题汉字数 5 不在 6-16
+
+校验失败 [做挂件，画面讲敦煌的故事]: palette 含非法色名: 土红,石青,赭石
+
+校验失败 [做冰箱贴，画面讲莫高窟的故事]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [以莫高窟为核，做年轻人会喜欢的文创]: palette 含非法色名: 土红,石青,米白
+
+校验失败 [做帆布包，画面讲飞天的故事]: palette 含非法色名: 土红,石青,米白
+
+校验失败 [做挂件，画面讲三星堆的故事]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [做冰箱贴，画面讲马头墙的故事]: layout postcard-torn 与 craftType card 不匹配
+
+校验失败 [做冰箱贴，画面讲青花的故事]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [做挂件，画面讲兵马俑的故事]: layout postcard-duo 与 craftType card 不匹配
+
+校验失败 [做冰箱贴，画面讲秦俑的故事]: layout postcard-duo 与 craftType card 不匹配
+
+校验失败 [做冰箱贴，画面讲脸谱的故事]: layout postcard-duo 与 craftType card 不匹配
+
+校验失败 [做挂件，画面讲唐三彩的故事]: productName 未命中知识库: 挂件
+
+校验失败 [做冰箱贴，画面讲三彩的故事]: layout postcard-torn 与 craftType card 不匹配
+
+校验失败 [做挂件，画面讲故宫的故事]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [做冰箱贴，画面讲紫禁城的故事]: layout postcard-duo 与 craftType card 不匹配

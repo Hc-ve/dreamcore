@@ -1,0 +1,51 @@
+{
+  "desktop": {
+    "heroLines": 3,
+    "bubbleVisible": false,
+    "bubbleW": 0,
+    "bubbleWordBreak": null,
+    "fabColor": "none",
+    "orbs": [
+      "rgba(168, 38, 31, 0.18)",
+      "rgba(45, 74, 107, 0.2)",
+      "rgba(184, 137, 42, 0.15)"
+    ],
+    "hasPurpleOrb": false,
+    "tabularNums": true,
+    "modalRadius": "8px",
+    "purpleElementsCount": 0
+  },
+  "gallery": {
+    "total": 12,
+    "loaded": 0,
+    "placeholder": 0,
+    "broken": 12,
+    "anyPh": false,
+    "sampleSrcs": [
+      "http://localhost:5173/images/artworks/gen-087.jpg",
+      "http://localhost:5173/images/artworks/met-49540.jpg",
+      "http://localhost:5173/images/artworks/gen-054.jpg"
+    ]
+  },
+  "modal": {
+    "fabHidden": true,
+    "bodyClass": "gsap-ready modal-open",
+    "radius": "8px"
+  },
+  "dark": {
+    "theme": "dark",
+    "bg": "rgb(20, 17, 14)"
+  },
+  "mobile": {
+    "fabSize": {
+      "w": 44,
+      "h": 44
+    },
+    "bubbleHidden": true,
+    "below44Count": 10,
+    "totalVisibleBtns": 53,
+    "navOverlaps": 0,
+    "drawerOpen": true,
+    "menuToggleVisible": true
+  }
+}

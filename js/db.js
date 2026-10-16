@@ -1,7 +1,14 @@
 // ============================================================
 // js/db.js — IndexedDB 数据层
-// 数据库: DreamcoreArtDB (版本 3)
-// 提供 作品 / 用户 / 评论 / 点赞 / 收藏 / 关注 / 通知 的增删改查
+// 数据库: DreamcoreArtDB (版本 10)
+// 提供 作品 / 用户 / 评论 / 点赞 / 收藏 / 关注 / 通知 / AI记忆 的增删改查
+// v4 新增: AI评分定级 / 同类作品对比 / 修图版本 / AI文创衍生品
+//         智能策展展馆 / 陪练会话 / 合伙人申请 共7个表
+// v7 新增: 文化探索足迹表（三行为点亮：浏览/创作/识图）
+// v8 新增: 游客攻略共创表（智慧导览景区详情页 P1-5 降级版：提交即展示+待审核角标）
+// v9 新增: 文创订单表（P3 演示级一键下单：创作→下单→运营看板闭环）
+// v10 新增: 订单物流状态机（paid→producing→shipped→in_transit→delivered）
+//          + timeline 物流时间线 + trackingNo 模拟物流单号 + status 索引
 // 管理员默认账号: admin / admin123 (SHA-256 加密存储)
 // 所有函数返回 Promise
 // ============================================================
@@ -10,13 +17,37 @@
 import { ARTWORKS_SEED_DATA } from '../data/artworks.js';
 
 const DB_NAME = 'DreamcoreArtDB';
-const DB_VERSION = 3;
+const DB_VERSION = 12; // 2026-10-03 bump：v12 确保所有浏览器（含已存 v11 的）触发 onupgradeneeded，幂等建 custom_3d_models
+
+// v10 新增：订单物流状态机（5 态固定流转，不可跳跃/回退）
+// paid(已支付) → producing(制作中) → shipped(已发货) → in_transit(运输中) → delivered(已签收)
+const ORDER_STATES = ['paid', 'producing', 'shipped', 'in_transit', 'delivered'];
+const ORDER_STATE_LABELS = {
+  paid: '已支付', producing: '制作中', shipped: '已发货', in_transit: '运输中', delivered: '已签收'
+};
 
 // 数据库实例（initDB 完成后赋值）
 let dbInstance = null;
 
-// 分类列表（与画廊筛选栏保持一致）
-const CATEGORIES = ['digital-art', 'photography', 'illustration', 'abstract', '3d-art'];
+// 分类列表（与画廊筛选栏保持一致）— M6b-1 文旅文创六分类
+const CATEGORIES = ['scenic-photo', 'heritage-craft', 'guofeng-art', 'ai-art', 'museum-culture', 'creative-design'];
+
+// M6b-1 旧分类 → 新分类迁移映射（存量数据读取时自动归一）
+const CATEGORY_MIGRATE = {
+  'digital-art': 'ai-art',
+  'photography': 'scenic-photo',
+  'illustration': 'guofeng-art',
+  'abstract': 'ai-art',
+  '3d-art': 'creative-design'
+};
+function normalizeCategory(cat) {
+  const c = String(cat || '').trim();
+  return CATEGORY_MIGRATE[c] || (CATEGORIES.includes(c) ? c : 'ai-art');
+}
+function _normalizeArtworkCategory(rec) {
+  if (rec && rec.category) rec.category = normalizeCategory(rec.category);
+  return rec;
+}
 
 // ------------------------------------------------------------
 // 工具函数：SHA-256 加密密码（使用 crypto.subtle）
@@ -114,6 +145,200 @@ function initDB() {
         store.createIndex('type', 'type', { unique: false });
         store.createIndex('createdAt', 'createdAt', { unique: false });
       }
+
+      // ============================================================
+      // v4 新增 7 个表（AI赋能文旅文创升级）
+      // ============================================================
+
+      // AI评分定级表：自增 id（v4新增）
+      // 业务语义：AI对作品进行构图/光影/色彩/清晰度/主题五维评分，给出等级与教学建议
+      if (!db.objectStoreNames.contains('aesthetic_scores')) {
+        const store = db.createObjectStore('aesthetic_scores', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('artworkId', 'artworkId', { unique: false });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // 同类作品对比表：自增 id（v4新增）
+      // 业务语义：评分时检索构图/光影/色彩/主题维度相近的作品，供用户对比参考
+      if (!db.objectStoreNames.contains('similar_works')) {
+        const store = db.createObjectStore('similar_works', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('artworkId', 'artworkId', { unique: false });
+        store.createIndex('similarArtworkId', 'similarArtworkId', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // 修图版本表：自增 id（v4新增）
+      // 业务语义：记录原始/ai-edit/manual-edit三类版本的曝光/对比度/饱和度/锐化/HSL参数与滤镜
+      if (!db.objectStoreNames.contains('edit_versions')) {
+        const store = db.createObjectStore('edit_versions', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('artworkId', 'artworkId', { unique: false });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // AI文创衍生品表：自增 id（v4新增）
+      // 业务语义：基于作品生成壁纸/海报/收藏品/明信片/模板，风格涵盖国风/非遗纹样/现代极简
+      if (!db.objectStoreNames.contains('ai_crafts')) {
+        const store = db.createObjectStore('ai_crafts', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('artworkId', 'artworkId', { unique: false });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('craftType', 'craftType', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // 智能策展展馆表：自增 id（v4新增）
+      // 业务语义：AI按非遗/地域/季节光影等主题聚合作品生成策展展馆，含草稿/发布状态
+      if (!db.objectStoreNames.contains('curated_halls')) {
+        const store = db.createObjectStore('curated_halls', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('theme', 'theme', { unique: false });
+        store.createIndex('status', 'status', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // 陪练会话表：自增 id（v4新增）
+      // 业务语义：AI陪练的构图法则/作品改进/摄影史/非遗文化等会话记录，含工具调用
+      if (!db.objectStoreNames.contains('tutor_sessions')) {
+        const store = db.createObjectStore('tutor_sessions', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('sessionType', 'sessionType', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // 合伙人申请表：自增 id（v4新增）
+      // 业务语义：景区/博物馆/非遗传承人提交合作意向，含 pending/approved/rejected 审批状态
+      if (!db.objectStoreNames.contains('partner_applications')) {
+        const store = db.createObjectStore('partner_applications', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('status', 'status', { unique: false });
+        store.createIndex('organizationType', 'organizationType', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // ============================================================
+      // v5 新增：管理后台表（操作日志 / 站点设置）
+      // ============================================================
+
+      // 操作日志表：自增 id（v5新增）
+      // 业务语义：记录管理员全部写操作，供后台审计
+      if (!db.objectStoreNames.contains('admin_logs')) {
+        const store = db.createObjectStore('admin_logs', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('adminId', 'adminId', { unique: false });
+        store.createIndex('action', 'action', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // 站点设置表：keyPath = key（v5新增）
+      // 业务语义：站点名称/公告/注册开关/AI评分开关等 KV 配置
+      if (!db.objectStoreNames.contains('site_settings')) {
+        db.createObjectStore('site_settings', { keyPath: 'key' });
+      }
+
+      // ============================================================
+      // v6 新增：发布草稿箱表
+      // ============================================================
+
+      // 发布草稿表：自增 id（v6新增）
+      // 业务语义：用户填写发布表单中途暂存，防止误关弹窗/意外退出导致内容丢失；
+      // 每篇草稿保留标题/描述/分类/图片数据，可随时恢复继续发布或删除
+      if (!db.objectStoreNames.contains('publish_drafts')) {
+        const store = db.createObjectStore('publish_drafts', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('updatedAt', 'updatedAt', { unique: false });
+      }
+
+      // ============================================================
+      // v7 新增：文化探索足迹表
+      // ============================================================
+
+      // 文化足迹表：自增 id（v7新增）
+      // 业务语义：用户对某文化主题完成 浏览作品/创作文创/AI识图 三类行为之一即点亮一条足迹；
+      // 复合唯一索引 [userId, themeId, action] 保证同一行为只记一次（幂等点亮）
+      if (!db.objectStoreNames.contains('culture_footprints')) {
+        const store = db.createObjectStore('culture_footprints', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('themeId', 'themeId', { unique: false });
+        store.createIndex('action', 'action', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+        store.createIndex('by_user_theme_action', ['userId', 'themeId', 'action'], { unique: true });
+      }
+
+      // ============================================================
+      // v8 新增：游客攻略共创表（智慧导览 P1-5 降级版）
+      // ============================================================
+
+      // 景区攻略表：自增 id（v8 新增）
+      // 业务语义：游客在景区详情页提交的共创攻略；
+      // 降级版无审核流：提交即展示 + 「待审核」黄角标（status 默认 'pending'）
+      if (!db.objectStoreNames.contains('scenic_guides')) {
+        const store = db.createObjectStore('scenic_guides', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('areaId', 'areaId', { unique: false });
+        store.createIndex('status', 'status', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // ============================================================
+      // v9 新增：文创订单表（P3 演示级一键下单）
+      // ============================================================
+
+      // 订单表：自增 id（v9 新增）
+      // 业务语义：预览弹窗「一键定制下单」的模拟支付订单（演示环境仅存本地）；
+      // 携带 userId/artworkId/craftType/scene/price/status/orderNo 供运营看板聚合
+      if (!db.objectStoreNames.contains('orders')) {
+        const store = db.createObjectStore('orders', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('userId', 'userId', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+        store.createIndex('status', 'status', { unique: false }); // v10：状态机索引（新建库路径）
+      }
+
+      // ============================================================
+      // v10 新增：订单物流字段（status 状态机 / timeline 时间线 / trackingNo）
+      // 声明式迁移：建 status 索引 + 遍历旧记录补默认值（版本变更事务内完成）
+      // ============================================================
+      if (oldVersion < 10 && db.objectStoreNames.contains('orders')) {
+        const store = event.target.transaction.objectStore('orders');
+        if (!store.indexNames.contains('status')) {
+          store.createIndex('status', 'status', { unique: false });
+        }
+        // 旧记录补默认：status 兜底 paid / timeline 空 / trackingNo 空串
+        const curReq = store.openCursor();
+        curReq.onsuccess = (ev) => {
+          const cursor = ev.target.result;
+          if (!cursor) return;
+          const rec = cursor.value;
+          let changed = false;
+          if (!ORDER_STATES.includes(rec.status)) { rec.status = 'paid'; changed = true; }
+          if (!Array.isArray(rec.timeline)) { rec.timeline = [{ state: rec.status, ts: rec.createdAt || new Date().toISOString(), note: '已支付' }]; changed = true; }
+          if (typeof rec.trackingNo !== 'string') { rec.trackingNo = ''; changed = true; }
+          if (changed) cursor.update(rec);
+          cursor.continue();
+        };
+      }
+
+      // ============================================================
+      // v11 新增：自定义 3D 模型表（运营后台品类模型替换）
+      // 双重声明式：
+      //   a) if (!contains) → 全新库 / 升级库 都能走到（幂等）
+      //   b) if (oldVersion < 11) → 版本显式迁移段（和 v10 同模式）
+      //      保证 onupgradeneeded 回调里 store 已就绪，后续事务不会抛
+      //      "One of the specified object stores was not found"
+      // ============================================================
+
+      // a) 常规声明式创建（全新库 / 升级库通用）
+      if (!db.objectStoreNames.contains('custom_3d_models')) {
+        const store = db.createObjectStore('custom_3d_models', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('productKey', 'productKey', { unique: false }); // 查询某品类绑定的模型
+        store.createIndex('format', 'format', { unique: false });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+
+      // b) 显式 oldVersion < 11 迁移段（版本号变化时必进，幂等索引补建）
+      if (oldVersion < 11 && db.objectStoreNames.contains('custom_3d_models')) {
+        const tx = event.target.transaction;
+        const store = tx.objectStore('custom_3d_models');
+        if (!store.indexNames.contains('productKey')) store.createIndex('productKey', 'productKey', { unique: false });
+        if (!store.indexNames.contains('format')) store.createIndex('format', 'format', { unique: false });
+        if (!store.indexNames.contains('createdAt')) store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
     };
 
     request.onsuccess = async (event) => {
@@ -140,7 +365,7 @@ function initDB() {
 // 迁移现有数据：为旧数据补充新字段
 // ------------------------------------------------------------
 async function migrateExistingData() {
-  // 迁移作品数据：补充 tags, images, views 字段
+  // 迁移作品数据：补充 tags, images, views 字段，以及 v4 新增的 AI评分状态字段
   const artworks = await getAllArtworks();
   const tx = dbInstance.transaction('artworks', 'readwrite');
   const store = tx.objectStore('artworks');
@@ -158,6 +383,22 @@ async function migrateExistingData() {
       art.views = art.views || 0;
       changed = true;
     }
+    // v4 新增：AI评分状态字段（向后兼容，仅在缺失时补默认值）
+    if (art.aiScored === undefined || art.aiScored === null) {
+      art.aiScored = false;
+      changed = true;
+    }
+    if (art.lastAiScoreVersion === undefined || art.lastAiScoreVersion === null) {
+      art.lastAiScoreVersion = null;
+      changed = true;
+    }
+    // v5 新增：内容审核状态（默认已发布）
+    if (art.status === undefined || art.status === null) {
+      art.status = 'published';
+      changed = true;
+    }
+    // description_ai_generated 字段保留（如已有则不重复添加）
+    // 此处无需显式处理：若已存在则保持原值，若不存在则由具体业务在生成时写入
     if (changed) {
       store.put(art);
     }
@@ -190,6 +431,11 @@ async function migrateExistingData() {
       user.worksCount = userArts.length;
       changed = true;
     }
+    // v5 新增：角色字段（superadmin/admin/user）
+    if (!user.role) {
+      user.role = user.username === 'admin' && user.isAdmin ? 'superadmin' : (user.isAdmin ? 'admin' : 'user');
+      changed = true;
+    }
     if (changed) {
       store2.put(user);
     }
@@ -205,13 +451,14 @@ async function migrateExistingData() {
 // ------------------------------------------------------------
 function _generateTagsForArtwork(art) {
   const tagPool = {
-    'digital-art': ['梦幻', '霓虹', '未来', '赛博朋克', '粒子', '渐变'],
-    'photography': ['自然', '人物', '建筑', '风光', '街拍', '微距'],
-    'illustration': ['梦幻', '抽象', '人物', '童话', '水彩', '手绘'],
-    'abstract': ['抽象', '几何', '色彩', '流体', '极简', '概念'],
-    '3d-art': ['未来', '建筑', '雕塑', '渲染', '粒子', '科幻']
+    'scenic-photo': ['文旅摄影', '山川古迹', '城市漫步', '光影记录', '风物纪实', '人文地理'],
+    'heritage-craft': ['非遗', '手作', '传统技艺', '匠心', '民艺新生', '东方美学'],
+    'guofeng-art': ['国风', '水墨', '工笔', '国潮', '东方美学', '青绿山水'],
+    'ai-art': ['AI生成', '人机共创', '数字转译', '算法美学', '传统文化新生', '赛博'],
+    'museum-culture': ['博物', '文物', '考古美学', '国宝', '文创灵感', '馆藏'],
+    'creative-design': ['文创设计', 'IP形象', '视觉设计', '包装', '国潮', '创意']
   };
-  const pool = tagPool[art.category] || ['梦幻', '抽象'];
+  const pool = tagPool[art.category] || tagPool[normalizeCategory(art.category)] || ['文创', '东方美学'];
   const count = 2 + Math.floor(Math.random() * 3);
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
@@ -250,7 +497,8 @@ async function seedIfEmpty() {
     const tx = dbInstance.transaction('artworks', 'readwrite');
     const store = tx.objectStore('artworks');
     ARTWORKS_SEED_DATA.forEach(art => {
-      const tags = _generateTagsForArtwork(art);
+      // M6b-3 种子自带文旅主题标签优先
+      const tags = (Array.isArray(art.tags) && art.tags.length) ? art.tags : _generateTagsForArtwork(art);
       const images = _generateImagesForArtwork(art);
       store.put({
         ...art,
@@ -258,6 +506,7 @@ async function seedIfEmpty() {
         type: 'image',
         tags,
         images,
+        baseLikes: art.likes || 0,
         views: art.views || 0
       });
     });
@@ -265,6 +514,48 @@ async function seedIfEmpty() {
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error);
     });
+  } else if (count > 0) {
+    // M7 种子刷新 v2：旧库种子记录全字段同步（含 imageUrl/grade/totalScore/author）
+    // + 增量补种（种子扩容如 220→244 时插入缺失 id）
+    // 安全性：仅覆盖无 userId 的种子记录；新种子 id 已存在（用户作品）时跳过，绝不覆盖用户作品
+    try {
+      await new Promise((resolve, reject) => {
+        const tx = dbInstance.transaction('artworks', 'readwrite');
+        const store = tx.objectStore('artworks');
+        const seedMap = new Map(ARTWORKS_SEED_DATA.map(a => [a.id, a]));
+        const allReq = store.getAll();
+        allReq.onsuccess = () => {
+          const all = allReq.result || [];
+          const existingIds = new Set(all.filter(r => r && r.id != null).map(r => r.id));
+          all.forEach(rec => {
+            if (rec && !rec.userId && seedMap.has(rec.id)) {
+              const seed = seedMap.get(rec.id);
+              if (rec.title !== seed.title || rec.imageUrl !== seed.imageUrl) {
+                store.put({ ...rec,
+                  title: seed.title, description: seed.description, category: seed.category,
+                  tags: seed.tags || rec.tags, imageUrl: seed.imageUrl,
+                  grade: seed.grade, totalScore: seed.totalScore,
+                  author: seed.author || rec.author,
+                  likes: seed.likes != null ? seed.likes : rec.likes,
+                  baseLikes: rec.baseLikes != null ? rec.baseLikes : (seed.likes != null ? seed.likes : rec.likes),
+                  views: seed.views != null ? seed.views : rec.views,
+                  createdAt: seed.createdAt || rec.createdAt });
+              }
+            }
+          });
+          // M7 增量补种：缺失的种子 id 直接插入（与首次导入同构）
+          seedMap.forEach((seed, id) => {
+            if (!existingIds.has(id)) {
+              const tags = (Array.isArray(seed.tags) && seed.tags.length) ? seed.tags : _generateTagsForArtwork(seed);
+              const images = _generateImagesForArtwork(seed);
+              store.put({ ...seed, userId: null, type: 'image', tags, images, baseLikes: seed.likes || 0, views: seed.views || 0 });
+            }
+          });
+        };
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (_) { /* 种子刷新失败不阻断启动 */ }
   }
 
   // 检查是否已有管理员
@@ -285,6 +576,7 @@ async function seedIfEmpty() {
       avatar: null,
       createdAt: new Date().toISOString(),
       isAdmin: true,
+      role: 'superadmin',
       bio: 'Dreamcore 平台管理员，热爱梦境美学与数字艺术。',
       followersCount: 0,
       followingCount: 0,
@@ -327,16 +619,19 @@ function getAllArtworks() {
     req.onsuccess = () => {
       const list = req.result || [];
       list.sort((a, b) => (b.id || 0) - (a.id || 0));
-      resolve(list);
+      // M6b-1 存量数据分类归一（旧分类自动映射到文旅文创新分类）
+      resolve(list.map(_normalizeArtworkCategory));
     };
     req.onerror = () => reject(req.error);
   });
 }
 
 // 获取单个作品
-function getArtworkById(id) {
+async function getArtworkById(id) {
   id = Number(id);
-  return runRequest('artworks', 'readonly', store => store.get(id));
+  const rec = await runRequest('artworks', 'readonly', store => store.get(id));
+  // M6b-1 读取归一：旧分类自动映射
+  return rec ? _normalizeArtworkCategory(rec) : rec;
 }
 
 // 添加作品（返回新作品，含分配的 id）
@@ -352,9 +647,10 @@ async function addArtwork(artwork) {
     title: artwork.title,
     description: artwork.description,
     author: artwork.author || '匿名艺术家',
-    category: artwork.category || 'digital-art',
+    category: normalizeCategory(artwork.category),
     imageUrl: artwork.imageUrl || '',
     type: artwork.type || 'image',
+    status: artwork.status || 'published',
     likes: 0,
     views: 0,
     createdAt: new Date().toISOString().slice(0, 10),
@@ -375,17 +671,90 @@ async function addArtwork(artwork) {
 }
 
 // 删除作品
-async function deleteArtwork(id) {
+// 删除作品：级联清理关联数据（comments/likes/favorites/notifications/aesthetic_scores/similar_works/edit_versions/ai_crafts）
+// deleteArtwork(id, { soft })
+//   · soft=true → 逻辑删除（status='deleted'，保留记录供恢复）
+//   · 默认物理删除（级联清理关联表）
+//   · orders 不级联（交易记录归 deleteUserCascade 管）
+async function deleteArtwork(id, { soft = false } = {}) {
   id = Number(id);
   const art = await getArtworkById(id);
-  await runRequest('artworks', 'readwrite', store => store.delete(id));
+  if (!art) throw new Error('作品不存在');
+
+  if (soft) {
+    // 逻辑删除：把状态设为 deleted
+    await runRequest('artworks', 'readwrite', store => {
+      store.put({ ...art, status: 'deleted', deletedAt: new Date().toISOString() });
+    });
+    await _updateUserWorksCount(art.userId);
+    return { ok: true, soft: true };
+  }
+
+  // 物理删除：跨 store transaction 级联清理
+  const cascadeStores = ['artworks', 'comments', 'likes', 'favorites', 'notifications',
+    'aesthetic_scores', 'similar_works', 'edit_versions', 'ai_crafts'];
+  await new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction(cascadeStores, 'readwrite');
+    const idxs = {
+      comments: tx.objectStore('comments').index('artworkId'),
+      likes: tx.objectStore('likes').index('artworkId'),
+      favorites: tx.objectStore('favorites').index('artworkId'),
+      notifications: tx.objectStore('notifications').index('artworkId'),
+      aesthetic_scores: tx.objectStore('aesthetic_scores').index('artworkId'),
+      similar_works: tx.objectStore('similar_works').index('artworkId'),
+      edit_versions: tx.objectStore('edit_versions').index('artworkId'),
+      ai_crafts: tx.objectStore('ai_crafts').index('artworkId'),
+    };
+    let pending = 0;
+    const done = () => { if (--pending <= 0) resolve(); };
+    Object.entries(idxs).forEach(([storeName, idx]) => {
+      pending++;
+      const req = idx.getAllKeys(id);
+      req.onsuccess = () => {
+        const store = tx.objectStore(storeName);
+        for (const key of req.result) store.delete(key);
+        done();
+      };
+      req.onerror = () => { done(); };
+    });
+    // similar_works 双向：similarArtworkId 也指向这个 id
+    pending++;
+    try {
+      const swIdx = tx.objectStore('similar_works').index('similarArtworkId');
+      const req2 = swIdx.getAllKeys(id);
+      req2.onsuccess = () => {
+        for (const key of req2.result) tx.objectStore('similar_works').delete(key);
+        done();
+      };
+      req2.onerror = () => { done(); };
+    } catch { done(); }
+    // 主表
+    tx.objectStore('artworks').delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+
+  // 清理 ai_creations 的 sourceArtworkId 引用（设 null，保留 AI 创作本身）
+  try {
+    await runRequest('ai_creations', 'readwrite', store => {
+      const idx = store.index('sourceArtworkId');
+      const req = idx.getAllKeys(id);
+      req.onsuccess = () => {
+        // 注意：IndexedDB 不支持 update via index，需要遍历重新 put
+        idx.getAll(id).onsuccess = (e) => {
+          for (const rec of e.target.result) {
+            store.put({ ...rec, sourceArtworkId: null });
+          }
+        };
+      };
+    });
+  } catch { /* ai_creations 可能没 sourceArtworkId 索引或 store，忽略 */ }
 
   // 更新用户作品数
-  if (art && art.userId) {
-    try {
-      await _updateUserWorksCount(art.userId);
-    } catch (e) { /* 忽略 */ }
+  if (art.userId) {
+    try { await _updateUserWorksCount(art.userId); } catch { /* 忽略 */ }
   }
+  return { ok: true, soft: false };
 }
 
 // 更新作品字段
@@ -398,26 +767,11 @@ async function updateArtwork(id, data) {
   return updated;
 }
 
-// 获取指定用户发布的作品
+// 获取指定用户发布的作品（严格按 userId 匹配，杜绝把同名种子作品误算作用户作品）
 async function getUserArtworks(userId) {
   const all = await getAllArtworks();
-  // 先按userId精确匹配
-  const matched = all.filter(a => a.userId === userId);
-  // 如果没有匹配结果，可能是因为用户发布了种子数据作品（没有userId字段）
-  // 此时通过用户名匹配
-  if (matched.length === 0) {
-    try {
-      const user = await getUserById(userId);
-      if (user && user.username) {
-        const normalized = user.username.trim().toLowerCase();
-        return all.filter(a => {
-          const author = (a.author || '').trim().toLowerCase();
-          return author === normalized;
-        });
-      }
-    } catch (e) { /* 忽略 */ }
-  }
-  return matched;
+  const uid = _keepId(userId);
+  return all.filter(a => _keepId(a.userId) === uid && a.userId != null);
 }
 
 // 获取指定作者名的作品（用于种子数据中的作者）
@@ -445,9 +799,9 @@ function getAllUsers() {
   return runRequest('users', 'readonly', store => store.getAll());
 }
 
-// 根据 id 获取用户
+// 根据 id 获取用户（兼容云端 UUID 与本地数字 id）
 function getUserById(id) {
-  id = Number(id);
+  id = _keepId(id);
   return runRequest('users', 'readonly', store => store.get(id));
 }
 
@@ -513,7 +867,7 @@ async function loginUser(username, password) {
 
 // 更新用户信息
 async function updateUser(id, data) {
-  id = Number(id);
+  id = _keepId(id);
   const user = await getUserById(id);
   if (!user) throw new Error('用户不存在');
   const updated = { ...user, ...data, id };
@@ -522,10 +876,166 @@ async function updateUser(id, data) {
   return safe;
 }
 
+// ------------------------------------------------------------
+// 云端(Supabase)用户在本地 users 表的惰性同步（幂等）
+// 使艺术家主页/关注/粉丝等本地数据能力对云端用户同样可用
+// ------------------------------------------------------------
+async function ensureLocalUserForCloudUser(cu) {
+  if (!cu || !cu.id) return null;
+  const id = _keepId(cu.id);
+  const existing = await runRequest('users', 'readonly', store => store.get(id)).catch(() => null);
+  if (existing) return existing;
+  // 用户名唯一索引：同名不同 id 时跳过，避免 ConstraintError
+  let conflict = null;
+  try { conflict = await getUserByUsername(cu.username); } catch (e) { /* 忽略 */ }
+  if (conflict) return conflict.id === id ? conflict : null;
+  const record = {
+    id,
+    username: cu.username || '用户',
+    email: cu.email || '',
+    passwordHash: '',
+    avatar: null,
+    createdAt: cu.createdAt || new Date().toISOString(),
+    isAdmin: !!cu.isAdmin,
+    bio: cu.bio || '',
+    followersCount: 0,
+    followingCount: 0,
+    worksCount: 0
+  };
+  await runRequest('users', 'readwrite', store => store.put(record));
+  return record;
+}
+
+// ------------------------------------------------------------
+// 为种子(虚拟)艺术家惰性建立本地用户记录（幂等）
+// 使关注/粉丝数据真实落库，替代原随机假数据
+// ------------------------------------------------------------
+async function ensureVirtualArtist(username, bio) {
+  const name = String(username || '').trim();
+  if (!name) return null;
+  let user = null;
+  try { user = await getUserByUsername(name); } catch (e) { /* 忽略 */ }
+  if (user) return user;
+  const record = {
+    username: name,
+    email: '',
+    passwordHash: '',
+    avatar: null,
+    createdAt: new Date().toISOString(),
+    isAdmin: false,
+    bio: bio || '梦境艺术家，专注于创造独特的视觉体验。',
+    isVirtual: true,
+    followersCount: 0,
+    followingCount: 0,
+    worksCount: 0
+  };
+  const newId = await new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('users', 'readwrite');
+    const req = tx.objectStore('users').add(record);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  return { id: newId, ...record };
+}
+
 // 更新用户作品数
 async function _updateUserWorksCount(userId) {
   const arts = await getUserArtworks(userId);
   await updateUser(userId, { worksCount: arts.length });
+}
+
+// ============================================================
+// 管理后台 API（v5 新增）
+// ============================================================
+
+// 记录管理员操作日志
+async function addAdminLog(entry) {
+  const record = {
+    adminId: entry && entry.adminId != null ? entry.adminId : null,
+    adminName: (entry && entry.adminName) || 'unknown',
+    action: (entry && entry.action) || '',
+    targetType: (entry && entry.targetType) || '',
+    targetId: entry && entry.targetId != null ? String(entry.targetId) : '',
+    detail: (entry && entry.detail) || '',
+    createdAt: new Date().toISOString()
+  };
+  return runRequest('admin_logs', 'readwrite', store => store.add(record));
+}
+
+// 获取操作日志（倒序，默认 100 条）
+function getAdminLogs(limit) {
+  limit = limit || 100;
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('admin_logs', 'readonly');
+    const req = tx.objectStore('admin_logs').getAll();
+    req.onsuccess = () => {
+      const list = (req.result || []).sort((a, b) => (b.id || 0) - (a.id || 0)).slice(0, limit);
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 清空操作日志
+function clearAdminLogs() {
+  return runRequest('admin_logs', 'readwrite', store => store.clear());
+}
+
+// 读取单个站点设置
+async function getSiteSetting(key, defaultValue) {
+  const row = await runRequest('site_settings', 'readonly', store => store.get(key));
+  return row ? row.value : defaultValue;
+}
+
+// 读取全部站点设置（返回 KV 对象）
+async function getAllSiteSettings() {
+  const rows = await runRequest('site_settings', 'readonly', store => store.getAll());
+  const obj = {};
+  (rows || []).forEach(r => { obj[r.key] = r.value; });
+  return obj;
+}
+
+// 写入站点设置
+async function setSiteSetting(key, value) {
+  const row = { key, value, updatedAt: new Date().toISOString() };
+  await runRequest('site_settings', 'readwrite', store => store.put(row));
+  return row;
+}
+
+// 按索引删除一个 store 中匹配值的所有行（级联删除辅助）
+function _deleteRowsByIndex(storeName, indexName, value) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction(storeName, 'readwrite');
+    const idx = tx.objectStore(storeName).index(indexName);
+    const req = idx.openCursor(IDBKeyRange.only(value));
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) { cursor.delete(); cursor.continue(); }
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// 级联删除用户（作品/评论/点赞/收藏/关注/通知/AI记忆）
+async function deleteUserCascade(id) {
+  id = Number(id);
+  const user = await getUserById(id);
+  if (!user) throw new Error('用户不存在');
+  const arts = await getUserArtworks(id);
+  for (const a of arts) {
+    try { await deleteArtwork(a.id); } catch (e) { /* 单条失败继续 */ }
+  }
+  await _deleteRowsByIndex('comments', 'userId', id);
+  await _deleteRowsByIndex('likes', 'userId', id);
+  await _deleteRowsByIndex('favorites', 'userId', id);
+  await _deleteRowsByIndex('follows', 'followerId', id);
+  await _deleteRowsByIndex('follows', 'followingId', id);
+  await _deleteRowsByIndex('notifications', 'userId', id);
+  await _deleteRowsByIndex('ai_memories', 'userId', id);
+  try { await _deleteRowsByIndex('culture_footprints', 'userId', id); } catch (e) { /* 旧库无表 */ }
+  await runRequest('users', 'readwrite', store => store.delete(id));
+  return user;
 }
 
 // ============================================================
@@ -594,6 +1104,21 @@ async function toggleLike(artworkId, userId) {
     req.onerror = () => reject(req.error);
   });
 
+  // 先计算点赞基线（种子作品的初始热度），确保列表/详情/个人主页计数一致
+  // 基线 = 作品记录当前 likes - 已有点赞记录数（兼容旧逻辑曾把 likes 覆盖为裸计数的存量数据）
+  let baseLikes = null;
+  try {
+    const art = await getArtworkById(artworkId);
+    if (art) {
+      if (art.baseLikes != null) {
+        baseLikes = Number(art.baseLikes);
+      } else {
+        const countBefore = await getLikes(artworkId);
+        baseLikes = Math.max(0, (Number(art.likes) || 0) - countBefore);
+      }
+    }
+  } catch (e) { /* 基线计算失败不阻塞点赞 */ }
+
   let liked;
   if (existing) {
     // 取消点赞
@@ -628,10 +1153,14 @@ async function toggleLike(artworkId, userId) {
     } catch (e) { /* 忽略通知错误 */ }
   }
 
-  // 同步作品表中的 likes 计数（便于快速展示）
+  // 同步作品表中的 likes 计数：基线 + 真实点赞记录数（单一数据源，列表/详情一致）
   const count = await getLikes(artworkId);
   try {
-    await updateArtwork(artworkId, { likes: count });
+    if (baseLikes != null) {
+      await updateArtwork(artworkId, { likes: baseLikes + count, baseLikes });
+    } else {
+      await updateArtwork(artworkId, { likes: count });
+    }
   } catch (e) { /* 忽略计数同步错误 */ }
 
   return liked;
@@ -734,8 +1263,8 @@ async function getUserTotalLikes(userId) {
 
 // 切换关注
 async function toggleFollow(followerId, followingId) {
-  followerId = Number(followerId);
-  followingId = Number(followingId);
+  followerId = _keepId(followerId);
+  followingId = _keepId(followingId);
 
   if (followerId === followingId) {
     throw new Error('不能关注自己');
@@ -801,8 +1330,8 @@ async function _updateFollowCounts(followerId, followingId) {
 
 // 检查是否已关注
 function isFollowing(followerId, followingId) {
-  followerId = Number(followerId);
-  followingId = Number(followingId);
+  followerId = _keepId(followerId);
+  followingId = _keepId(followingId);
   return new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('follows', 'readonly');
     const req = tx.objectStore('follows').index('by_follower_following').get([followerId, followingId]);
@@ -811,9 +1340,17 @@ function isFollowing(followerId, followingId) {
   });
 }
 
+// 云端用户 id 为 UUID 字符串：Number 强转会变 NaN 并导致 IDBIndex 查询抛 DataError
+// 本函数：数字样式（含纯数字字符串）保持 Number，其余原样返回
+function _keepId(v) {
+  if (v === null || v === undefined || v === '') return v;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : v;
+}
+
 // 获取粉丝数
 function getFollowersCount(userId) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   return new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('follows', 'readonly');
     const req = tx.objectStore('follows').index('followingId').count(userId);
@@ -824,7 +1361,7 @@ function getFollowersCount(userId) {
 
 // 获取关注数
 function getFollowingCount(userId) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   return new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('follows', 'readonly');
     const req = tx.objectStore('follows').index('followerId').count(userId);
@@ -835,7 +1372,7 @@ function getFollowingCount(userId) {
 
 // 获取粉丝列表（返回用户对象数组）
 async function getFollowers(userId) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   const records = await new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('follows', 'readonly');
     const req = tx.objectStore('follows').index('followingId').getAll(userId);
@@ -855,7 +1392,7 @@ async function getFollowers(userId) {
 
 // 获取关注列表（返回用户对象数组）
 async function getFollowing(userId) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   const records = await new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('follows', 'readonly');
     const req = tx.objectStore('follows').index('followerId').getAll(userId);
@@ -880,10 +1417,10 @@ async function getFollowing(userId) {
 // 添加通知
 function addNotification(notification) {
   const record = {
-    userId: Number(notification.userId),
+    userId: _keepId(notification.userId),
     type: notification.type,
-    fromUserId: notification.fromUserId ? Number(notification.fromUserId) : null,
-    artworkId: notification.artworkId ? Number(notification.artworkId) : null,
+    fromUserId: notification.fromUserId ? _keepId(notification.fromUserId) : null,
+    artworkId: notification.artworkId ? _keepId(notification.artworkId) : null,
     content: notification.content || '',
     read: false,
     createdAt: new Date().toISOString()
@@ -898,7 +1435,7 @@ function addNotification(notification) {
 
 // 获取用户通知列表
 async function getUserNotifications(userId, unreadOnly = false) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   let records;
   if (unreadOnly) {
     records = await new Promise((resolve, reject) => {
@@ -930,7 +1467,7 @@ async function markNotificationRead(id) {
 
 // 标记所有通知为已读
 async function markAllNotificationsRead(userId) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   const records = await getUserNotifications(userId, true);
   const tx = dbInstance.transaction('notifications', 'readwrite');
   const store = tx.objectStore('notifications');
@@ -946,7 +1483,7 @@ async function markAllNotificationsRead(userId) {
 
 // 获取未读通知数
 function getUnreadNotificationCount(userId) {
-  userId = Number(userId);
+  userId = _keepId(userId);
   return new Promise((resolve, reject) => {
     const tx = dbInstance.transaction('notifications', 'readonly');
     const req = tx.objectStore('notifications').index('by_user_read').count([userId, false]);
@@ -1034,6 +1571,858 @@ function getMemoryCount(userId) {
   });
 }
 
+// ============================================================
+// AI评分定级 API（v4新增：aesthetic_scores）
+// 字段: id, artworkId, userId, scores{composition,lighting,color,clarity,theme},
+//      totalScore, grade, similarWorks[], teachingComments, aiDescription, createdAt
+// ============================================================
+
+// 添加评分记录
+function addAestheticScore(data) {
+  const record = {
+    artworkId: Number(data.artworkId),
+    userId: data.userId,
+    scores: data.scores || {},
+    totalScore: data.totalScore || 0,
+    grade: data.grade || '入门',
+    similarWorks: Array.isArray(data.similarWorks) ? data.similarWorks : [],
+    teachingComments: data.teachingComments || '',
+    aiDescription: data.aiDescription || '',
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('aesthetic_scores', 'readwrite');
+    const req = tx.objectStore('aesthetic_scores').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 根据 id 获取评分记录
+function getAestheticScore(id) {
+  id = Number(id);
+  return runRequest('aesthetic_scores', 'readonly', store => store.get(id));
+}
+
+// 获取作品的所有评分记录（按时间倒序）
+function getAestheticScoresByArtwork(artworkId) {
+  artworkId = Number(artworkId);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('aesthetic_scores', 'readonly');
+    const req = tx.objectStore('aesthetic_scores').index('artworkId').getAll(artworkId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 更新评分记录
+async function updateAestheticScore(id, data) {
+  id = Number(id);
+  const old = await getAestheticScore(id);
+  if (!old) throw new Error('评分记录不存在');
+  const updated = { ...old, ...data, id };
+  await runRequest('aesthetic_scores', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+// 删除评分记录
+function deleteAestheticScore(id) {
+  id = Number(id);
+  return runRequest('aesthetic_scores', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 同类作品对比 API（v4新增：similar_works）
+// 字段: id, artworkId, similarArtworkId, similarityScore,
+//      matchDimensions{composition,lighting,color,theme}, createdAt
+// ============================================================
+
+function addSimilarWork(data) {
+  const record = {
+    artworkId: Number(data.artworkId),
+    similarArtworkId: Number(data.similarArtworkId),
+    similarityScore: data.similarityScore || 0,
+    matchDimensions: data.matchDimensions || {},
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('similar_works', 'readwrite');
+    const req = tx.objectStore('similar_works').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getSimilarWork(id) {
+  id = Number(id);
+  return runRequest('similar_works', 'readonly', store => store.get(id));
+}
+
+function getSimilarWorksByArtwork(artworkId) {
+  artworkId = Number(artworkId);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('similar_works', 'readonly');
+    const req = tx.objectStore('similar_works').index('artworkId').getAll(artworkId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => (b.similarityScore || 0) - (a.similarityScore || 0));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function updateSimilarWork(id, data) {
+  id = Number(id);
+  const old = await getSimilarWork(id);
+  if (!old) throw new Error('同类作品记录不存在');
+  const updated = { ...old, ...data, id };
+  await runRequest('similar_works', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+function deleteSimilarWork(id) {
+  id = Number(id);
+  return runRequest('similar_works', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 修图版本 API（v4新增：edit_versions）
+// 字段: id, artworkId, userId, versionType(original/ai-edit/manual-edit),
+//      parameters{exposure,contrast,saturation,sharpness,hsl}, filterName,
+//      imageData, parentVersionId, createdAt
+// ============================================================
+
+function addEditVersion(data) {
+  const record = {
+    artworkId: Number(data.artworkId),
+    userId: data.userId,
+    versionType: data.versionType || 'original',
+    parameters: data.parameters || {},
+    filterName: data.filterName || '',
+    imageData: data.imageData || '',
+    parentVersionId: data.parentVersionId || null,
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('edit_versions', 'readwrite');
+    const req = tx.objectStore('edit_versions').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getEditVersion(id) {
+  id = Number(id);
+  return runRequest('edit_versions', 'readonly', store => store.get(id));
+}
+
+function getEditVersionsByArtwork(artworkId) {
+  artworkId = Number(artworkId);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('edit_versions', 'readonly');
+    const req = tx.objectStore('edit_versions').index('artworkId').getAll(artworkId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function updateEditVersion(id, data) {
+  id = Number(id);
+  const old = await getEditVersion(id);
+  if (!old) throw new Error('修图版本记录不存在');
+  const updated = { ...old, ...data, id };
+  await runRequest('edit_versions', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+function deleteEditVersion(id) {
+  id = Number(id);
+  return runRequest('edit_versions', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 发布草稿箱 API（v6新增：publish_drafts）
+// 字段: id, userId, title, description, category,
+//       imageData(base64), mediaType(image/video), sourceArtworkId,
+//       createdAt, updatedAt
+// ============================================================
+
+function addPublishDraft(data) {
+  const now = new Date().toISOString();
+  const record = {
+    userId: data.userId,
+    title: data.title || '',
+    description: data.description || '',
+    category: data.category || null,
+    imageData: data.imageData || '',
+    mediaType: data.mediaType || 'image',
+    sourceArtworkId: data.sourceArtworkId || null,
+    createdAt: now,
+    updatedAt: now
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('publish_drafts', 'readwrite');
+    const req = tx.objectStore('publish_drafts').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getPublishDrafts(userId) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('publish_drafts', 'readonly');
+    const req = tx.objectStore('publish_drafts').index('userId').getAll(userId);
+    req.onsuccess = () => resolve((req.result || []).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || '')));
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function updatePublishDraft(id, data) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('publish_drafts', 'readwrite');
+    const store = tx.objectStore('publish_drafts');
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const old = getReq.result;
+      if (!old) return reject(new Error('草稿不存在或已被删除'));
+      const updated = { ...old, ...data, updatedAt: new Date().toISOString() };
+      const putReq = store.put(updated);
+      putReq.onsuccess = () => resolve(updated);
+      putReq.onerror = () => reject(putReq.error);
+    };
+    getReq.onerror = () => reject(getReq.error);
+  });
+}
+
+function deletePublishDraft(id) {
+  return runRequest('publish_drafts', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// AI文创衍生品 API（v4新增：ai_crafts）
+// 字段: id, artworkId, userId, craftType(wallpaper/poster/collectible/postcard/template),
+//      styleTheme(国风/非遗纹样/现代极简), imageData, aiPrompt, createdAt
+// ============================================================
+
+function addAiCraft(data) {
+  const record = {
+    artworkId: Number(data.artworkId),
+    userId: data.userId,
+    craftType: data.craftType || 'wallpaper',
+    styleTheme: data.styleTheme || '现代极简',
+    imageData: data.imageData || '',
+    aiPrompt: data.aiPrompt || '',
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('ai_crafts', 'readwrite');
+    const req = tx.objectStore('ai_crafts').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getAiCraft(id) {
+  id = Number(id);
+  return runRequest('ai_crafts', 'readonly', store => store.get(id));
+}
+
+function getAiCraftsByArtwork(artworkId) {
+  artworkId = Number(artworkId);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('ai_crafts', 'readonly');
+    const req = tx.objectStore('ai_crafts').index('artworkId').getAll(artworkId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 按用户查询其所有文创衍生品（数字文创馆用）
+// userId 可为数字或字符串；空 userId 返回空数组
+function getAiCraftsByUser(userId) {
+  if (userId === null || userId === undefined || userId === '') return Promise.resolve([]);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('ai_crafts', 'readonly');
+    const req = tx.objectStore('ai_crafts').index('userId').getAll(userId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function updateAiCraft(id, data) {
+  id = Number(id);
+  const old = await getAiCraft(id);
+  if (!old) throw new Error('文创衍生品记录不存在');
+  const updated = { ...old, ...data, id };
+  await runRequest('ai_crafts', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+function deleteAiCraft(id) {
+  id = Number(id);
+  return runRequest('ai_crafts', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 智能策展展馆 API（v4新增：curated_halls）
+// 字段: id, name, description, theme(非遗/地域/季节光影等), artworkIds[],
+//      aiGeneratedSummary, status(draft/published), createdBy,
+//      publishedAt, createdAt
+// ============================================================
+
+function addCuratedHall(data) {
+  const record = {
+    name: data.name || '未命名展馆',
+    description: data.description || '',
+    theme: data.theme || '',
+    artworkIds: Array.isArray(data.artworkIds) ? data.artworkIds : [],
+    aiGeneratedSummary: data.aiGeneratedSummary || '',
+    status: data.status || 'draft',
+    createdBy: data.createdBy || null,
+    publishedAt: data.publishedAt || null,
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('curated_halls', 'readwrite');
+    const req = tx.objectStore('curated_halls').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getCuratedHall(id) {
+  id = Number(id);
+  return runRequest('curated_halls', 'readonly', store => store.get(id));
+}
+
+function getCuratedHallsByTheme(theme) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('curated_halls', 'readonly');
+    const req = tx.objectStore('curated_halls').index('theme').getAll(theme);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function updateCuratedHall(id, data) {
+  id = Number(id);
+  const old = await getCuratedHall(id);
+  if (!old) throw new Error('策展展馆记录不存在');
+  const updated = { ...old, ...data, id };
+  // 发布时自动写入 publishedAt
+  if (data.status === 'published' && !updated.publishedAt) {
+    updated.publishedAt = new Date().toISOString();
+  }
+  await runRequest('curated_halls', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+function deleteCuratedHall(id) {
+  id = Number(id);
+  return runRequest('curated_halls', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 陪练会话 API（v4新增：tutor_sessions）
+// 字段: id, userId, sessionType(构图法则/作品改进/摄影史/非遗文化),
+//      messages[{role,content,timestamp,toolCall}], artworkId, createdAt
+// ============================================================
+
+function addTutorSession(data) {
+  const record = {
+    userId: data.userId,
+    sessionType: data.sessionType || '构图法则',
+    messages: Array.isArray(data.messages) ? data.messages : [],
+    artworkId: data.artworkId != null ? Number(data.artworkId) : null,
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('tutor_sessions', 'readwrite');
+    const req = tx.objectStore('tutor_sessions').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getTutorSession(id) {
+  id = Number(id);
+  return runRequest('tutor_sessions', 'readonly', store => store.get(id));
+}
+
+function getTutorSessionsByUser(userId) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('tutor_sessions', 'readonly');
+    const req = tx.objectStore('tutor_sessions').index('userId').getAll(userId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function updateTutorSession(id, data) {
+  id = Number(id);
+  const old = await getTutorSession(id);
+  if (!old) throw new Error('陪练会话记录不存在');
+  const updated = { ...old, ...data, id };
+  await runRequest('tutor_sessions', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+function deleteTutorSession(id) {
+  id = Number(id);
+  return runRequest('tutor_sessions', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 合伙人申请 API（v4新增：partner_applications）
+// 字段: id, organizationName, organizationType(景区/博物馆/非遗传承人),
+//      contactName, contactPhone, contactEmail, cooperationIntent,
+//      status(pending/approved/rejected), reviewedBy, reviewedAt, createdAt
+// ============================================================
+
+function addPartnerApplication(data) {
+  const record = {
+    organizationName: data.organizationName || '',
+    organizationType: data.organizationType || '',
+    contactName: data.contactName || '',
+    contactPhone: data.contactPhone || '',
+    contactEmail: data.contactEmail || '',
+    cooperationIntent: data.cooperationIntent || '',
+    status: data.status || 'pending',
+    reviewedBy: data.reviewedBy || null,
+    reviewedAt: data.reviewedAt || null,
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('partner_applications', 'readwrite');
+    const req = tx.objectStore('partner_applications').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getPartnerApplication(id) {
+  id = Number(id);
+  return runRequest('partner_applications', 'readonly', store => store.get(id));
+}
+
+function getPartnerApplicationsByStatus(status) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('partner_applications', 'readonly');
+    const req = tx.objectStore('partner_applications').index('status').getAll(status);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function updatePartnerApplication(id, data) {
+  id = Number(id);
+  const old = await getPartnerApplication(id);
+  if (!old) throw new Error('合伙人申请记录不存在');
+  const updated = { ...old, ...data, id };
+  // 审批时自动写入 reviewedAt
+  if ((data.status === 'approved' || data.status === 'rejected') && !updated.reviewedAt) {
+    updated.reviewedAt = new Date().toISOString();
+  }
+  await runRequest('partner_applications', 'readwrite', store => store.put(updated));
+  return updated;
+}
+
+function deletePartnerApplication(id) {
+  id = Number(id);
+  return runRequest('partner_applications', 'readwrite', store => store.delete(id));
+}
+
+// ============================================================
+// 文化探索足迹 API（v7 新增）
+// ============================================================
+
+// 记录足迹（幂等点亮：同一 user+theme+action 只记一次）
+// 返回 true=本次新点亮 / false=此前已点亮
+async function recordFootprint(userId, themeId, action, extra = {}) {
+  const key = [userId, themeId, action];
+  const existing = await new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('culture_footprints', 'readonly');
+    const req = tx.objectStore('culture_footprints').index('by_user_theme_action').get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  if (existing) return false;
+
+  const record = {
+    userId: userId,
+    themeId: String(themeId),
+    action: String(action),
+    createdAt: new Date().toISOString(),
+    ...extra
+  };
+  await runRequest('culture_footprints', 'readwrite', store => store.add(record));
+  return true;
+}
+
+// 获取用户全部足迹（按时间正序，便于足迹地图按探索先后排列）
+function getFootprintsByUser(userId) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('culture_footprints', 'readonly');
+    const req = tx.objectStore('culture_footprints').index('userId').getAll(userId);
+    req.onsuccess = () => {
+      const list = req.result || [];
+      list.sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 获取用户在某文化主题下已点亮的行为集合（用于徽章分级：铜/银/金）
+async function getFootprintActions(userId, themeId) {
+  const list = await getFootprintsByUser(userId);
+  return list.filter(r => r.themeId === String(themeId)).map(r => r.action);
+}
+
+// 清空用户足迹（隐私/管理场景）
+function clearFootprintsByUser(userId) {
+  return _deleteRowsByIndex('culture_footprints', 'userId', userId);
+}
+
+// ============================================================
+// 游客攻略共创 API（v8 新增，智慧导览 P1-5 降级版）
+// ============================================================
+
+// 发布攻略（降级版：提交即展示，status 默认 'pending' 待审核角标）
+// username 取调用方传入（页面侧用 window.currentUser?.username || '游客' 兜底）
+function addScenicGuide({ areaId, username, title, content } = {}) {
+  const record = {
+    areaId: String(areaId || ''),
+    username: String(username || '游客'),
+    title: String(title || '').trim(),
+    content: String(content || '').trim(),
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('scenic_guides', 'readwrite');
+    const req = tx.objectStore('scenic_guides').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 按景区读取攻略（createdAt 倒序，最多 limit 条，默认 10）
+function getScenicGuidesByArea(areaId, limit = 10) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('scenic_guides', 'readonly');
+    const req = tx.objectStore('scenic_guides').index('areaId').getAll(String(areaId));
+    req.onsuccess = () => {
+      const list = (req.result || [])
+        .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
+        .slice(0, limit);
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ============================================================
+// 文创订单 API（v9 新增，P3 演示级一键下单）
+// ============================================================
+
+// 创建订单（演示级模拟支付：成功即 status='paid'；未登录 userId 用 'guest'）
+// orderNo 由调用方生成（DC+年月日+4位确定性随机），此处只负责落库
+// v10 扩展：product（具体落地产品名）/ timeline（物流时间线，初始 paid 节点）/ trackingNo
+function addOrder({ userId, artworkId, craftType, product, scene, price, status, orderNo, timeline, trackingNo, material, size, receiver, phone, address } = {}) {
+  const st = ORDER_STATES.includes(status) ? status : 'paid';
+  const record = {
+    userId: userId != null ? userId : 'guest',
+    artworkId: String(artworkId || ''),
+    craftType: String(craftType || ''),
+    product: String(product || ''), // v10：AI 推荐/用户选定的具体落地产品名（品类无关）
+    scene: scene != null ? scene : 1,
+    price: Number(price) || 0,
+    // v11：规格（材质/尺寸）与收货信息，供订单详情展示
+    material: String(material || ''),
+    size: String(size || ''),
+    receiver: String(receiver || ''),
+    phone: String(phone || ''),
+    address: String(address || ''),
+    status: st,
+    orderNo: String(orderNo || ''),
+    // v10：物流时间线（JSON 数组 [{state, ts, note}]，首个节点 = 当前状态）
+    timeline: Array.isArray(timeline) && timeline.length
+      ? timeline
+      : [{ state: st, ts: new Date().toISOString(), note: ORDER_STATE_LABELS[st] }],
+    trackingNo: String(trackingNo || ''), // v10：物流单号（shipped 态生成）
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('orders', 'readwrite');
+    const req = tx.objectStore('orders').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record });
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// v10 新增：推进订单物流状态机（5 态顺序流转，不可跳跃/回退）
+// updateOrderStatus(id, { status, note })
+//   · status 省略 → 自动推进到下一态（演示快进按钮即用此语义）
+//   · status 显式给定 → 仅接受顺序前进（index ≥ 当前），delivered 为终态
+//   · shipped 态自动生成模拟物流单号（SF + 13 位数字）
+// 返回更新后的完整订单记录；已签收/非法状态返回 null
+function updateOrderStatus(id, { status, note } = {}) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('orders', 'readwrite');
+    const store = tx.objectStore('orders');
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const rec = getReq.result;
+      if (!rec) { resolve(null); return; }
+      const curIdx = Math.max(0, ORDER_STATES.indexOf(rec.status));
+      let nextIdx;
+      if (status == null) {
+        nextIdx = curIdx + 1; // 自动快进一态
+      } else {
+        if (!ORDER_STATES.includes(status)) { resolve(null); return; }
+        nextIdx = ORDER_STATES.indexOf(status);
+        if (nextIdx < curIdx) { resolve(null); return; } // 拒绝回退
+      }
+      if (nextIdx >= ORDER_STATES.length || nextIdx === curIdx) { resolve(rec); return; } // 终态/原地不动
+      const nextState = ORDER_STATES[nextIdx];
+      rec.status = nextState;
+      if (!Array.isArray(rec.timeline)) rec.timeline = [];
+      rec.timeline.push({
+        state: nextState,
+        ts: new Date().toISOString(),
+        note: String(note || ORDER_STATE_LABELS[nextState])
+      });
+      if (nextState === 'shipped' && !rec.trackingNo) {
+        // 模拟物流单号：SF + 13 位（时间戳 10 位 + 3 位随机，仅演示用）
+        rec.trackingNo = 'SF' + String(Date.now()) + String(100 + Math.floor(Math.random() * 900));
+      }
+      const putReq = store.put(rec);
+      putReq.onsuccess = () => resolve(rec);
+      putReq.onerror = () => reject(putReq.error);
+    };
+    getReq.onerror = () => reject(getReq.error);
+  });
+}
+
+// v11 新增：管理员编辑订单收货信息 / 物流单号（任意阶段可改，不影响状态机）
+// updateOrderAddr(id, { receiver, phone, address, trackingNo })
+function updateOrderAddr(id, { receiver, phone, address, trackingNo } = {}) {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('orders', 'readwrite');
+    const store = tx.objectStore('orders');
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const rec = getReq.result;
+      if (!rec) { resolve(null); return; }
+      if (receiver != null) rec.receiver = receiver;
+      if (phone != null) rec.phone = phone;
+      if (address != null) rec.address = address;
+      if (trackingNo != null) rec.trackingNo = trackingNo;
+      const putReq = store.put(rec);
+      putReq.onsuccess = () => resolve(rec);
+      putReq.onerror = () => reject(putReq.error);
+    };
+    getReq.onerror = () => reject(getReq.error);
+  });
+}
+
+// 读取全部订单（createdAt 倒序，供运营看板聚合）
+function getAllOrders() {
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('orders', 'readonly');
+    const req = tx.objectStore('orders').getAll();
+    req.onsuccess = () => {
+      const list = (req.result || [])
+        .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ============================================================
+// v11 新增：自定义 3D 模型 API（运营后台品类模型替换）
+// 校验常量（const 暴露给前端统一使用）
+// ============================================================
+const CUSTOM_3D_VALIDATION = {
+  MAX_SIZE: 100 * 1024 * 1024,  // 100MB
+  MAX_TRI: 100000,              // 10万面 — 本地demo优先预览效果（AI生成模型默认3~8万面）
+  ALLOWED_FORMATS: ['glb', 'fbx', 'usdz']
+};
+
+// 表是否存在（前置守卫：避免 upgrade 竞争时事务抛 "object stores was not found"）
+function _hasCustom3dStore() {
+  return !!(dbInstance && dbInstance.objectStoreNames && dbInstance.objectStoreNames.contains('custom_3d_models'));
+}
+
+// addCustom3dModel({ name, file(ArrayBuffer), size, format, triCount, productKey, uploadedBy, previewImage })
+//   · 基础校验：格式合法性、大小 ≤10MB、面数 ≤2000、productKey 非空
+//   · 前端（three.js 环境）需先调用 validateCustom3dModelFile 做解析级面数校验，再传入 triCount
+function addCustom3dModel({ name, file, size, format, triCount, productKey, uploadedBy, previewImage } = {}) {
+  // 前置守卫：表不存在（极早期 init / upgrade 竞争）→ 友好降级不崩
+  if (!_hasCustom3dStore()) {
+    return Promise.reject(new Error('数据库版本过低，请刷新页面升级（custom_3d_models 表尚未就绪）'));
+  }
+  // 基础校验
+  const fmt = String(format || '').toLowerCase();
+  if (!CUSTOM_3D_VALIDATION.ALLOWED_FORMATS.includes(fmt)) {
+    throw new Error(`格式不支持：${format || '(空)'}，仅允许 glb / fbx / usdz（推荐 glb）`);
+  }
+  if (!(file instanceof ArrayBuffer)) {
+    throw new Error('模型文件必须是 ArrayBuffer（Blob.arrayBuffer() 产物）');
+  }
+  const sz = size != null ? Number(size) : file.byteLength;
+  if (sz > CUSTOM_3D_VALIDATION.MAX_SIZE) {
+    throw new Error(`文件过大：${(sz / 1024 / 1024).toFixed(2)}MB，上限 ${CUSTOM_3D_VALIDATION.MAX_SIZE / 1024 / 1024}MB`);
+  }
+  if (!productKey) {
+    throw new Error('必须绑定品类（productKey 不可为空）');
+  }
+  const tri = Number(triCount) || 0;
+  if (tri > CUSTOM_3D_VALIDATION.MAX_TRI) {
+    throw new Error(`面数过多：${tri}，上限 ${CUSTOM_3D_VALIDATION.MAX_TRI}（建议使用低面数模型保证 WebGL 流畅）`);
+  }
+
+  // 防御：previewImage 必须足够大（空 PNG dataURL 只有 ~200B，正常缩略图 ≥ 2KB）
+  // 根因拦截：preserveDrawingBuffer 缺失导致 toDataURL 取到空白帧
+  let safePreview = '';
+  if (previewImage) {
+    const s = String(previewImage);
+    if (s.length >= 2000 && s.startsWith('data:image/')) {
+      safePreview = s;
+    } else {
+      console.warn('[DB C3D] 拒绝写入可疑 previewImage（长度 ' + s.length + '），将在后台自动补齐');
+    }
+  }
+
+  const record = {
+    name: String(name || `自定义模型-${new Date().toISOString().slice(0, 10)}`),
+    file,
+    size: sz,
+    format: fmt,
+    triCount: tri,
+    productKey: String(productKey),
+    uploadedBy: String(uploadedBy || 'admin'),
+    previewImage: safePreview,
+    createdAt: new Date().toISOString()
+  };
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('custom_3d_models', 'readwrite');
+    const req = tx.objectStore('custom_3d_models').add(record);
+    req.onsuccess = () => resolve({ id: req.result, ...record, file: undefined }); // 返回不含 file 的元数据
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// getAllCustom3dModels() —— 全部模型（含 file 原始数据，前端加载时用）
+function getAllCustom3dModels() {
+  // 前置守卫：表不存在 → 空数组降级
+  if (!_hasCustom3dStore()) return Promise.resolve([]);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('custom_3d_models', 'readonly');
+    const req = tx.objectStore('custom_3d_models').getAll();
+    req.onsuccess = () => {
+      const list = (req.result || [])
+        .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      resolve(list);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// getCustom3dModelsMeta() —— 仅元数据（管理后台列表用，省略 file 减小 payload）
+function getCustom3dModelsMeta() {
+  return getAllCustom3dModels().then(list =>
+    list.map(({ file, ...meta }) => meta)
+  );
+}
+
+// getCustom3dModelByProductKey(productKey) —— 某品类绑定的最新模型（含 file）
+function getCustom3dModelByProductKey(productKey) {
+  // 前置守卫
+  if (!_hasCustom3dStore()) return Promise.resolve(null);
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('custom_3d_models', 'readonly');
+    const req = tx.objectStore('custom_3d_models').index('productKey').getAll(String(productKey));
+    req.onsuccess = () => {
+      const list = req.result || [];
+      if (list.length === 0) { resolve(null); return; }
+      // 取最新创建的一条
+      list.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      resolve(list[0]);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// updateCustom3dModel(id, { name, productKey, previewImage }) —— 仅元数据更新（file 不可热替换，需删了重传）
+function updateCustom3dModel(id, data) {
+  // 前置守卫
+  if (!_hasCustom3dStore()) {
+    return Promise.reject(new Error('数据库版本过低，请刷新页面升级（custom_3d_models 表尚未就绪）'));
+  }
+  id = Number(id);
+  return runRequest('custom_3d_models', 'readwrite', async (store) => {
+    const rec = await new Promise((res, rej) => {
+      const r = store.get(id);
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    if (!rec) throw new Error('自定义 3D 模型不存在');
+    const updated = { ...rec, id };
+    if (data.name != null) updated.name = String(data.name);
+    if (data.productKey != null) updated.productKey = String(data.productKey);
+    if (data.previewImage != null) updated.previewImage = String(data.previewImage);
+    if (data.uploadedBy != null) updated.uploadedBy = String(data.uploadedBy);
+    await new Promise((res, rej) => {
+      const r = store.put(updated);
+      r.onsuccess = () => res();
+      r.onerror = () => rej(r.error);
+    });
+    const { file, ...meta } = updated;
+    return meta;
+  });
+}
+
+// deleteCustom3dModel(id) —— 删除模型（解绑品类）
+function deleteCustom3dModel(id) {
+  if (!_hasCustom3dStore()) {
+    return Promise.reject(new Error('数据库版本过低，请刷新页面升级（custom_3d_models 表尚未就绪）'));
+  }
+  id = Number(id);
+  return runRequest('custom_3d_models', 'readwrite', store => store.delete(id));
+}
+
 // 暴露到全局（ES Module 向后兼容）
 window.hashPassword = hashPassword;
 window.initDB = initDB;
@@ -1056,6 +2445,8 @@ window.getUserByUsername = getUserByUsername;
 window.registerUser = registerUser;
 window.loginUser = loginUser;
 window.updateUser = updateUser;
+window.ensureLocalUserForCloudUser = ensureLocalUserForCloudUser;
+window.ensureVirtualArtist = ensureVirtualArtist;
 window._updateUserWorksCount = _updateUserWorksCount;
 window.addComment = addComment;
 window.getComments = getComments;
@@ -1084,6 +2475,78 @@ window.getMemoriesByType = getMemoriesByType;
 window.clearMemories = clearMemories;
 window.deleteMemory = deleteMemory;
 window.getMemoryCount = getMemoryCount;
+// v4 新增：7个表的 CRUD API
+window.addAestheticScore = addAestheticScore;
+window.getAestheticScore = getAestheticScore;
+window.getAestheticScoresByArtwork = getAestheticScoresByArtwork;
+window.updateAestheticScore = updateAestheticScore;
+window.deleteAestheticScore = deleteAestheticScore;
+window.addSimilarWork = addSimilarWork;
+window.getSimilarWork = getSimilarWork;
+window.getSimilarWorksByArtwork = getSimilarWorksByArtwork;
+window.updateSimilarWork = updateSimilarWork;
+window.deleteSimilarWork = deleteSimilarWork;
+window.addEditVersion = addEditVersion;
+window.getEditVersion = getEditVersion;
+window.getEditVersionsByArtwork = getEditVersionsByArtwork;
+window.updateEditVersion = updateEditVersion;
+window.deleteEditVersion = deleteEditVersion;
+window.addPublishDraft = addPublishDraft;
+window.getPublishDrafts = getPublishDrafts;
+window.updatePublishDraft = updatePublishDraft;
+window.deletePublishDraft = deletePublishDraft;
+window.addAiCraft = addAiCraft;
+window.getAiCraft = getAiCraft;
+window.getAiCraftsByArtwork = getAiCraftsByArtwork;
+window.getAiCraftsByUser = getAiCraftsByUser;
+window.updateAiCraft = updateAiCraft;
+window.deleteAiCraft = deleteAiCraft;
+window.addCuratedHall = addCuratedHall;
+window.getCuratedHall = getCuratedHall;
+window.getCuratedHallsByTheme = getCuratedHallsByTheme;
+window.updateCuratedHall = updateCuratedHall;
+window.deleteCuratedHall = deleteCuratedHall;
+window.addTutorSession = addTutorSession;
+window.getTutorSession = getTutorSession;
+window.getTutorSessionsByUser = getTutorSessionsByUser;
+window.updateTutorSession = updateTutorSession;
+window.deleteTutorSession = deleteTutorSession;
+window.addPartnerApplication = addPartnerApplication;
+window.getPartnerApplication = getPartnerApplication;
+window.getPartnerApplicationsByStatus = getPartnerApplicationsByStatus;
+window.updatePartnerApplication = updatePartnerApplication;
+window.deletePartnerApplication = deletePartnerApplication;
+// v5 新增：管理后台 API
+window.addAdminLog = addAdminLog;
+window.getAdminLogs = getAdminLogs;
+window.clearAdminLogs = clearAdminLogs;
+window.getSiteSetting = getSiteSetting;
+window.getAllSiteSettings = getAllSiteSettings;
+window.setSiteSetting = setSiteSetting;
+window.deleteUserCascade = deleteUserCascade;
+// v7 新增：文化探索足迹 API
+window.recordFootprint = recordFootprint;
+window.getFootprintsByUser = getFootprintsByUser;
+window.getFootprintActions = getFootprintActions;
+window.clearFootprintsByUser = clearFootprintsByUser;
+// v8 新增：游客攻略共创 API（智慧导览 P1-5）
+window.addScenicGuide = addScenicGuide;
+window.getScenicGuidesByArea = getScenicGuidesByArea;
+// v9 新增：文创订单 API（P3 演示级一键下单）
+window.addOrder = addOrder;
+window.getAllOrders = getAllOrders;
+window.updateOrderStatus = updateOrderStatus;
+window.updateOrderAddr = updateOrderAddr;
+window.ORDER_STATES = ORDER_STATES;
+window.ORDER_STATE_LABELS = ORDER_STATE_LABELS;
+// v11 新增：自定义 3D 模型 API（运营后台品类模型替换）
+window.addCustom3dModel = addCustom3dModel;
+window.getAllCustom3dModels = getAllCustom3dModels;
+window.getCustom3dModelsMeta = getCustom3dModelsMeta;
+window.getCustom3dModelByProductKey = getCustom3dModelByProductKey;
+window.updateCustom3dModel = updateCustom3dModel;
+window.deleteCustom3dModel = deleteCustom3dModel;
+window.CUSTOM_3D_VALIDATION = CUSTOM_3D_VALIDATION;
 
 // ES Module export
 export {
@@ -1108,6 +2571,8 @@ export {
   registerUser,
   loginUser,
   updateUser,
+  ensureLocalUserForCloudUser,
+  ensureVirtualArtist,
   _updateUserWorksCount,
   addComment,
   getComments,
@@ -1135,5 +2600,74 @@ export {
   getMemoriesByType,
   clearMemories,
   deleteMemory,
-  getMemoryCount
+  getMemoryCount,
+  // v4 新增：AI评分定级
+  addAestheticScore,
+  getAestheticScore,
+  getAestheticScoresByArtwork,
+  updateAestheticScore,
+  deleteAestheticScore,
+  // v4 新增：同类作品对比
+  addSimilarWork,
+  getSimilarWork,
+  getSimilarWorksByArtwork,
+  updateSimilarWork,
+  deleteSimilarWork,
+  // v4 新增：修图版本
+  addEditVersion,
+  getEditVersion,
+  getEditVersionsByArtwork,
+  updateEditVersion,
+  deleteEditVersion,
+  addPublishDraft,
+  getPublishDrafts,
+  updatePublishDraft,
+  deletePublishDraft,
+  // v4 新增：AI文创衍生品
+  addAiCraft,
+  getAiCraft,
+  getAiCraftsByArtwork,
+  getAiCraftsByUser,
+  updateAiCraft,
+  deleteAiCraft,
+  // v4 新增：智能策展展馆
+  addCuratedHall,
+  getCuratedHall,
+  getCuratedHallsByTheme,
+  updateCuratedHall,
+  deleteCuratedHall,
+  // v4 新增：陪练会话
+  addTutorSession,
+  getTutorSession,
+  getTutorSessionsByUser,
+  updateTutorSession,
+  deleteTutorSession,
+  // v4 新增：合伙人申请
+  addPartnerApplication,
+  getPartnerApplication,
+  getPartnerApplicationsByStatus,
+  updatePartnerApplication,
+  deletePartnerApplication,
+  // v7 新增：文化探索足迹
+  recordFootprint,
+  getFootprintsByUser,
+  getFootprintActions,
+  clearFootprintsByUser,
+  addScenicGuide,
+  getScenicGuidesByArea,
+  // v9 新增：文创订单（v10 扩展物流状态机）
+  addOrder,
+  getAllOrders,
+  updateOrderStatus,
+  updateOrderAddr,
+  ORDER_STATES,
+  ORDER_STATE_LABELS,
+  // v11 新增：自定义 3D 模型（运营后台品类模型替换）
+  addCustom3dModel,
+  getAllCustom3dModels,
+  getCustom3dModelsMeta,
+  getCustom3dModelByProductKey,
+  updateCustom3dModel,
+  deleteCustom3dModel,
+  CUSTOM_3D_VALIDATION
 };

@@ -1,0 +1,11 @@
+﻿1. 打开独立测试页...
+node : ❌ page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/test-mug-uv.html
+At line:15 char:3492
++ ... ces\app\node_modules\@vscode\ripgrep\bin'; node shot.mjs 2>&1 | Out-F ...
++                                                ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (❌ page.goto: ne...est-mug-uv.html:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Call log:
+[2m  - navigating to "http://localhost:5173/test-mug-uv.html", waiting until "networkidle"[22m
+

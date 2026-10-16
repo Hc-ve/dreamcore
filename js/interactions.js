@@ -19,6 +19,20 @@ async function handleLike(artworkId, btnEl) {
     const liked = await toggleLike(artworkId, user.id);
     if (typeof Sound !== 'undefined') Sound.playSound('like');
 
+    // 统一从作品记录读取最新计数（基线+真实记录），保证灯箱/卡片/列表一致
+    let newCount = null;
+    try {
+      const art = await getArtworkById(artworkId);
+      if (art) newCount = Number(art.likes) || 0;
+    } catch (_) { /* 读取失败时下面用记录数兜底 */ }
+    if (newCount === null) newCount = await getLikes(artworkId).catch(() => 0);
+
+    // 同步灯箱当前列表的内存数据，避免左右切换后显示旧值
+    if (window.Gallery && Array.isArray(Gallery.lightboxList)) {
+      const art = Gallery.lightboxList.find(a => a.id === Number(artworkId));
+      if (art) art.likes = newCount;
+    }
+
     // 更新按钮 UI
     if (btnEl) {
       btnEl.classList.toggle('active', liked);
@@ -26,18 +40,17 @@ async function handleLike(artworkId, btnEl) {
       if (icon) {
         icon.className = liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
       }
-      // 更新计数：从数据库获取真实计数，避免解析格式化文本出错
+      // 更新计数：使用作品记录的真实计数
       const countEl = btnEl.querySelector('.lb-like-count');
       if (countEl) {
-        const realCount = await getLikes(artworkId);
-        countEl.textContent = _fmtNum(realCount);
+        countEl.textContent = _fmtNum(newCount);
       }
       // 点赞动画：粒子飞出
       if (liked) _burstParticles(btnEl);
     }
 
     // 同步画廊卡片上的点赞数
-    _syncCardLike(artworkId, liked);
+    _syncCardLike(artworkId, newCount);
   } catch (err) {
     console.error('点赞失败:', err);
   }
@@ -184,16 +197,14 @@ function _favAnimation(btnEl) {
 }
 
 // ----------------------------------------------------------
-// 同步画廊卡片上的点赞数
+// 同步画廊卡片上的点赞数（newCount 为作品记录中的最新计数）
 // ----------------------------------------------------------
-function _syncCardLike(artworkId, liked) {
+function _syncCardLike(artworkId, newCount) {
   const card = document.querySelector(`.artwork-card[data-id="${artworkId}"]`);
   if (!card) return;
   const stat = card.querySelector('.card-likes');
   if (stat) {
-    let cur = parseInt(card.dataset.likes || '0', 10);
-    if (isNaN(cur)) cur = 0;
-    cur = liked ? cur + 1 : Math.max(0, cur - 1);
+    const cur = Number(newCount) || 0;
     card.dataset.likes = cur;
     stat.innerHTML = `<i class="fa-solid fa-heart"></i> ${_fmtNum(cur)}`;
   }

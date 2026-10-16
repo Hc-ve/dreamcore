@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>UV Test Viewer</title>
+<style>
+body{margin:0;background:#222;color:#fff;font-family:monospace}
+#controls{padding:8px;background:#333;display:flex;gap:12px;align-items:center}
+#controls label{cursor:pointer}
+#info{padding:8px;font-size:12px;background:#111;color:#0f0}
+canvas{display:block}
+</style></head>
+<body>
+<div id="controls">
+  <label><input type="radio" name="model" value="orig" checked> 原始 书签.glb</label>
+  <label><input type="radio" name="model" value="fixed"> 修复 书签_fixed.glb</label>
+  <label><input type="radio" name="tex" value="checker" checked> 棋盘格</label>
+  <label><input type="radio" name="tex" value="grid"> 坐标网格</label>
+  <label><input type="radio" name="tex" value="uv"> UV 坐标渐变</label>
+  <label><input type="checkbox" id="wire"> 线框</label>
+</div>
+<div id="info">loading...</div>
+<canvas id="c"></canvas>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight - 80);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x333344);
+
+const camera = new THREE.PerspectiveCamera(45, canvas.width/canvas.height, 0.01, 100);
+camera.position.set(1.5, 1.5, 1.5);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+dir.position.set(2, 3, 2);
+scene.add(dir);
+
+// 生成测试纹理
+function makeChecker(w=512, h=512, size=8){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+  for(let i=0;i<size;i++)for(let j=0;j<size;j++){
+    if((i+j)%2===0){ctx.fillStyle='#222';ctx.fillRect(i*w/size,j*h/size,w/size,h/size);}
+  }
+  return new THREE.CanvasTexture(c);
+}
+function makeGrid(w=512,h=512){
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='#e33';ctx.lineWidth=2;
+  for(let i=0;i<=10;i++){
+    ctx.beginPath();ctx.moveTo(i*w/10,0);ctx.lineTo(i*w/10,h);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i*h/10);ctx.lineTo(w,i*h/10);ctx.stroke();
+  }
+  ctx.fillStyle='#00e';ctx.font='bold 20px monospace';
+  for(let i=0;i<10;i++)for(let j=0;j<10;j++){
+    ctx.fillText(`${i},${j}`,i*w/10+5,j*h/10+20);
+  }
+  return new THREE.CanvasTexture(c);
+}
+function makeUVGrad(w=512,h=512){
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const ctx=c.getContext('2d');
+  const img=ctx.createImageData(w,h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const i=(y*w+x)*4;
+    img.data[i]=Math.round(x/w*255);      // R = U
+    img.data[i+1]=Math.round(y/h*255);    // G = V
+    img.data[i+2]=128;                    // B = const
+    img.data[i+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+let currentTex = makeChecker();
+let currentMesh = null;
+
+const loader = new GLTFLoader();
+const draco = new DRACOLoader();
+draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+loader.setDRACOLoader(draco);
+
+function loadModel(name){
+  if(currentMesh){scene.remove(currentMesh);currentMesh.geometry.dispose();}
+  const path = name==='fixed' ? '书签_fixed.glb' : '文创设计参考/模型/书签.glb';
+  document.getElementById('info').textContent = 'loading '+path+'...';
+  loader.load(path, gltf => {
+    const mesh = gltf.scene.children[0] || gltf.scene;
+    mesh.traverse(o => {
+      if(o.isMesh){
+        o.material = new THREE.MeshStandardMaterial({ 
+          map: currentTex, 
+          metalness: 0.1, roughness: 0.7,
+          side: THREE.DoubleSide
+        });
+        o.material.wireframe = document.getElementById('wire').checked;
+      }
+    });
+    
+    // 居中
+    const box = new THREE.Box3().setFromObject(mesh);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    mesh.position.sub(center);
+    const maxDim = Math.max(size.x,size.y,size.z);
+    mesh.scale.setScalar(1/maxDim);
+    
+    scene.add(mesh);
+    currentMesh = mesh;
+    
+    // 打印 UV 信息
+    mesh.traverse(o => {
+      if(o.isMesh){
+        const g = o.geometry;
+        const uv = g.attributes.uv;
+        const info = `Model: ${name} | Faces: ${g.index?g.index.count/3:g.attributes.position.count/3} | UV vertices: ${uv?uv.count:'NONE'}`;
+        let uvRange = '';
+        if(uv){
+          let mn=[2,2],mx=[-2,-2];
+          for(let i=0;i<uv.count;i++){
+            mn[0]=Math.min(mn[0],uv.getX(i));mn[1]=Math.min(mn[1],uv.getY(i));
+            mx[0]=Math.max(mx[0],uv.getX(i));mx[1]=Math.max(mx[1],uv.getY(i));
+          }
+          uvRange = ` | U[${mn[0].toFixed(2)},${mx[0].toFixed(2)}] V[${mn[1].toFixed(2)},${mx[1].toFixed(2)}]`;
+        }
+        document.getElementById('info').textContent = info + uvRange;
+      }
+    });
+  }, null, e => {
+    document.getElementById('info').textContent = 'ERROR: '+e.message;
+  });
+}
+
+// 事件
+document.querySelectorAll('input[name=model]').forEach(el => {
+  el.addEventListener('change', e => loadModel(e.target.value));
+});
+document.querySelectorAll('input[name=tex]').forEach(el => {
+  el.addEventListener('change', e => {
+    if(e.target.value==='checker') currentTex = makeChecker();
+    else if(e.target.value==='grid') currentTex = makeGrid();
+    else currentTex = makeUVGrad();
+    if(currentMesh){
+      currentMesh.traverse(o => {
+        if(o.isMesh) o.material.map = currentTex;
+      });
+    }
+  });
+});
+document.getElementById('wire').addEventListener('change', e => {
+  if(currentMesh){
+    currentMesh.traverse(o => {
+      if(o.isMesh) o.material.wireframe = e.target.checked;
+    });
+  }
+});
+
+loadModel('orig');
+function animate(){
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body></html>

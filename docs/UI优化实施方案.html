@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dreamcore · UI 布局优化实施方案（墨韵丹青 2.0 · 收口计划）</title>
+<style>
+:root{
+  --paper:#faf6ee; --card:#fffdf9; --ink:#1a1614; --ink2:#3d3630; --ink3:#6b6156;
+  --cinnabar:#a8261f; --indigo:#2d4a6b; --jade:#4a6b52; --ochre:#b8892a;
+  --line:#e6dccb; --line2:#f0e8d8;
+}
+[data-theme="dark"]{
+  --paper:#14110e; --card:#1e1a16; --ink:#f2ece1; --ink2:#d4cbb9; --ink3:#a89a88;
+  --cinnabar:#d4564c; --indigo:#7da2c9; --jade:#8fb894; --ochre:#d9b25e;
+  --line:#3a3228; --line2:#2a241e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.75;padding-top:56px}
+.serif{font-family:"Noto Serif SC","Songti SC",STSong,serif}
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px;z-index:99}
+.topbar .logo{font-weight:700;font-size:16px;letter-spacing:1px}
+.topbar .logo b{color:var(--cinnabar)}
+.topbar nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.topbar nav a{color:var(--ink2);text-decoration:none;font-size:13px;padding:6px 10px;border-radius:4px}
+.topbar nav a:hover{background:var(--line2);color:var(--cinnabar)}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px}
+.cover{border:1px solid var(--line);background:var(--card);border-radius:4px;padding:36px 40px;position:relative;overflow:hidden}
+.cover::after{content:'施';position:absolute;right:-20px;bottom:-46px;font-size:200px;font-family:"Noto Serif SC",serif;opacity:.05;color:var(--indigo)}
+.cover h1{font-size:34px;line-height:1.3;letter-spacing:2px}
+.cover h1 b{color:var(--cinnabar)}
+.cover .sub{color:var(--ink3);margin-top:8px;font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:24px;margin-top:24px;padding-top:20px;border-top:1px dashed var(--line)}
+.meta div{font-size:13px;color:var(--ink3)}
+.meta b{display:block;color:var(--ink);font-size:14px;margin-top:2px;font-weight:600}
+section{margin-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:24px}
+.sec-head .no{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--cinnabar);font-weight:600;letter-spacing:2px}
+.sec-head h2{font-size:24px;letter-spacing:1px}
+.sec-head .en{margin-left:auto;font-size:11px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase}
+h3{font-size:17px;margin:28px 0 12px;color:var(--ink)}
+h3::before{content:'§';color:var(--cinnabar);margin-right:8px;font-weight:400}
+p{color:var(--ink2);margin-bottom:10px}
+strong{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:16px 0;border:1px solid var(--line)}
+th{background:var(--line2);text-align:left;padding:10px 12px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink2)}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{background:var(--line2);padding:1px 6px;border-radius:3px;font-size:12px;font-family:Consolas,monospace;color:var(--cinnabar)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:2px;font-weight:600;letter-spacing:.5px;white-space:nowrap}
+.t-a{background:var(--cinnabar);color:#fff}
+.t-b{background:var(--ochre);color:#fff}
+.t-c{background:var(--indigo);color:#fff}
+.t-d{background:var(--jade);color:#fff}
+.t-new{background:transparent;color:var(--cinnabar);border:1px solid var(--cinnabar)}
+.t-mod{background:transparent;color:var(--indigo);border:1px solid var(--indigo)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);background:var(--card);border-radius:4px;padding:18px 20px;margin:14px 0}
+.panel .ph{font-weight:600;font-size:14px;margin-bottom:8px;color:var(--ink)}
+.panel .ph .tag{margin-right:8px;vertical-align:1px}
+.callout{border-left:3px solid var(--cinnabar);background:var(--line2);padding:14px 18px;border-radius:0 4px 4px 0;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.callout b{color:var(--cinnabar)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.sw{width:86px;border:1px solid var(--line);border-radius:4px;overflow:hidden;font-size:11px;text-align:center}
+.sw i{display:block;height:44px}
+.sw span{display:block;padding:4px;color:var(--ink2);line-height:1.4}
+.sw b{color:var(--ink)}
+ul{margin:6px 0 10px 20px}
+li{margin:4px 0;color:var(--ink2)}
+.footer-note{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3);text-align:center}
+.kbd{background:var(--line2);border:1px solid var(--line);border-radius:3px;padding:1px 6px;font-size:12px;font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo serif">Dream<b>core</b> · 方案</span>
+  <nav>
+    <a href="#d1">风格</a><a href="#d2">色彩</a><a href="#d3">字体</a><a href="#d4">图标</a><a href="#d5">栅格</a><a href="#d6">组件</a><a href="#d7">动效</a><a href="#plan">计划</a><a href="#risk">风险</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <h1 class="serif">UI 布局优化实施方案<br><b>「墨韵丹青 2.0 · 收口计划」</b></h1>
+  <div class="sub">基于《UI 诊断报告》13 项问题的闭环方案 —— 7 维度 · 4 阶段 · 全部落到文件路径与验收标准</div>
+  <div class="meta">
+    <div>设计语言<b>东方美学体系 · 传统纹样 · 低饱和矿物色 · 印章叙事</b></div>
+    <div>总原则<b>不动 style.css 6620 行 · 零新增依赖 · ink-theme.css 单一覆盖入口</b></div>
+    <div>输入依据<b>《UI 诊断报告》Q-01 ~ Q-13 · docs/ui-audit/ 证据</b></div>
+    <div>验证门槛<b>tailtest 42/42 全绿 + PROD build + 截图回归 + 对比度审计</b></div>
+    <div>文档日期<b>2026-10-15</b></div>
+  </div>
+</div>
+
+<!-- 总纲 -->
+<section>
+  <div class="sec-head"><span class="no">00</span><h2 class="serif">总纲：一句话战略</h2><span class="en">Strategy</span></div>
+  <div class="callout"><b>诊断结论复述：</b>问题不是缺元素，而是新旧两套身份并行。因此本方案的核心动作只有三个字——<strong>「收口」</strong>：把紫调默认档、金色徽章、emoji 图标、外部字体四条「旧身份尾巴」全部收进「墨韵丹青」体系，再补两处排版事故。不做推倒重来的大改版。</div>
+  <table>
+    <tr><th style="width:90px">阶段</th><th style="width:190px">目标（对应诊断项）</th><th>涉及文件</th><th style="width:96px">规模</th></tr>
+    <tr><td><span class="tag t-a">A · 收口</span></td><td>紫调默认档迁移 + 金色印章化 + 空令牌补齐（Q-03/04/09）</td><td><code>css/ink-theme.css</code>、<code>js/particles.js</code>、<code>js/settings.js</code></td><td>约 +160 行</td></tr>
+    <tr><td><span class="tag t-b">B · 排版</span></td><td>Hero 孤字修复 + 字阶规范 + 滚动显现渐进增强（Q-01/05）</td><td><code>index.html</code>、<code>css/ink-theme.css</code>、<code>js/main.js</code>（1 处开关）</td><td>约 +40 行</td></tr>
+    <tr><td><span class="tag t-c">C · 精修</span></td><td>SVG 图标替换 emoji + 小梦水墨化 + 滑块/选中态/暗色边（Q-02/06/08/10/11/12）</td><td><code>css/ink-theme.css</code>、<code>js/icons.js</code>（新增）、<code>js/xiaomeng*.js</code>、<code>js/settings.js</code></td><td>约 +220 行</td></tr>
+    <tr><td><span class="tag t-d">D · 验证</span></td><td>四道门槛全过 + 截图回归对比诊断基线</td><td><code>tests/theme-regression.spec.js</code>、<code>docs/ui-audit/</code></td><td>—</td></tr>
+  </table>
+</section>
+
+<!-- D1 视觉风格 -->
+<section id="d1">
+  <div class="sec-head"><span class="no">01</span><h2 class="serif">维度一 · 视觉风格定义</h2><span class="en">Visual Identity</span></div>
+  <h3>风格宣言：「纸 · 墨 · 印」三层视觉秩序</h3>
+  <p>确立「墨韵丹青 2.0」的唯一身份表述：<strong>宣纸为底（空间）、焦墨为骨（文字与结构）、朱砂为魂（行动与强调）</strong>，辅以缃金作器物高光、黛青/石绿作功能辅助色。任何界面元素的色彩必须能归入这五色体系，否则视为缺陷。</p>
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>默认风格档 → 国风化（修 Q-03）</div>
+      <p style="font-size:13px">机制：页面已存在 <code>[data-style="guofeng"|"feiyi"|"minimal"]</code> 三套风格（style.css L6387-6454），问题仅在「默认档 = 旧紫调」。方案：<br>① <code>js/settings.js</code>：DEFAULTS.style 由 <code>''</code>（默认）改为 <code>'guofeng'</code>，新用户与清空 localStorage 后直接落入国风档；<br>② <code>css/ink-theme.css</code> 追加「默认档兜底覆盖」：在 <code>html:not([data-style])</code> 选择器下将 <code>--dream-gold</code>、hero 光斑色等旧令牌重映射为五色体系——保证即使 data-style 丢失也不出现紫调；<br>③ 风格选择器 UI 文案「默认/国风/非遗/极简」改为「国风/非遗/极简」，移除「默认」项（四选变三选，国风即默认）。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>粒子氛围层同源化（修 Q-03）</div>
+      <p style="font-size:13px"><code>js/particles.js</code>：<br>① L66 紫色回退色 <code>[0x8e44ad,0x9b59b6,0x3498db,0x1abc9c]</code> → 墨金黛青系 <code>[0x2d4a6b,0xa8261f,0xb8892a,0x4a6b52]</code>（与 L32 国风回退色对齐）；<br>② 粒子尺寸与透明度整体下调 20%（墨点应似「宿墨飞白」而非星尘）；<br>③ Hero 粉紫光斑（style.css 中 hero 径向渐变）经 ink-theme.css 的 <code>html:not([data-style])</code> 兜底覆盖为黛青 4% + 赭石 3% 的极淡晕染，维持「云烟」意象。<br>不动 three.js 场景结构，仅换色值与参数。</p>
+    </div>
+  </div>
+  <p><strong>验收标准</strong>：清空 localStorage 冷启动 → 首页无任何紫色/粉色像素（截图采样四角+中心 5 点做色相断言，色相落在 20°-50°（赭金）与 200°-215°（黛青）区间）；风格选择器三选项切换均无违和色残留。</p>
+</section>
+
+<!-- D2 色彩 -->
+<section id="d2">
+  <div class="sec-head"><span class="no">02</span><h2 class="serif">维度二 · 色彩体系重构</h2><span class="en">Color System</span></div>
+  <h3>五色体系：全部色值可溯源到矿物颜料</h3>
+  <div class="swatches">
+    <div class="sw"><i style="background:#a8261f"></i><span><b>朱砂</b><br>#A8261F<br>行动/强调/印章</span></div>
+    <div class="sw"><i style="background:#2d4a6b"></i><span><b>黛青</b><br>#2D4A6B<br>次级/信息/链接</span></div>
+    <div class="sw"><i style="background:#4a6b52"></i><span><b>石绿</b><br>#4A6B52<br>成功/上升/生态</span></div>
+    <div class="sw"><i style="background:#b8892a"></i><span><b>赭金</b><br>#B8892A<br>器物/荣誉/高光</span></div>
+    <div class="sw"><i style="background:#1a1614"></i><span><b>焦墨</b><br>#1A1614<br>正文/结构</span></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>金色徽章印章化（修 Q-04）</div>
+      <p style="font-size:13px">将「鎏金勋章+emoji」重构为<strong>方印章</strong>体系（ink-theme.css 新增 §8）：<br>① <code>SSS·顶级神作</code> → 朱砂底白字方章「<strong>神</strong>」；<code>SS·大师级</code> → 赭金底白字「<strong>妙</strong>」；<code>SS·大师级</code>以下 → 黛青底「<strong>逸</strong>」/ 石绿底「<strong>佳</strong>」；<br>② 选择器锁定 <code>.card-grade, [class*="grade-badge"]</code>（现挂 <code>--grade-color</code> 的元素，style.css L6160-6162），用 <code>attr(data-grade)</code> 或类名映射；emoji 字符以 <code>font-size:0</code> 隐匿并以 <code>::before content</code> 输出汉字；<br>③ 排行榜：<code>.lb-title i</code> 的 <code>#ffd700</code>（L6485）→ 赭金 <code>var(--ochre)</code>；行内分数金黄 → 焦墨加粗（分数是数据，不是奖章）；SSS/SS 徽章列同样走印章映射；<br>④ 「总榜」选中胶囊墨绿 → 朱砂。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>令牌缺口补齐 + 暗色边框（修 Q-09/12/13）</div>
+      <p style="font-size:13px">① ink-theme.css <code>:root</code> 补 <code>--accent-hover: #8f1e18</code>（朱砂加深 12%）、<code>--accent-hover-dark: #e06b60</code>、<code>--font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, serif</code>，并将既有字体栈改引变量；<br>② 暗色卡片边框 <code>[data-theme="dark"]</code> 下统一 <code>rgba(242,236,225,.10)</code>（熟宣 10%），分隔恢复可见；<br>③ 硬编码色收口采取「抓大放小」：仅收口用户可见的 22 处（徽章/分数/选中态/光斑），其余 311 处深藏于状态色与边框，随版本迭代渐进收口，不在本计划内强改。</p>
+    </div>
+  </div>
+  <p><strong>验收标准</strong>：① 全站截图采样无 <code>#fbbf24/#ffd700</code> 纯金黄像素；② 对比度复测：印章白字/朱砂底 ≥ 4.5:1、赭金底白字 ≥ 4.5:1（#B8892A 上白字 = 3.2:1 不达标 → 印章文字改焦墨 #1A1614 = 6.4:1 ✓）；③ tailtest 现有断言不回归。</p>
+</section>
+
+<!-- D3 字体 -->
+<section id="d3">
+  <div class="sec-head"><span class="no">03</span><h2 class="serif">维度三 · 字体层级规范</h2><span class="en">Typography</span></div>
+  <h3>五级字阶 + 流式缩放 + 孤字防御</h3>
+  <table>
+    <tr><th style="width:120px">层级</th><th style="width:190px">规格</th><th style="width:150px">字体</th><th>用例</th></tr>
+    <tr><td>Display 标题</td><td><code>clamp(40px, 5.2vw, 68px)</code> / 600 / 行高 1.25 / <code>text-wrap:balance</code></td><td>Noto Serif SC</td><td>Hero「当AI遇见文旅，让传统美学数字新生」</td></tr>
+    <tr><td>区块标题</td><td><code>clamp(26px, 3vw, 36px)</code> / 600</td><td>Noto Serif SC</td><td>「文旅画廊」「创作者排行榜」</td></tr>
+    <tr><td>组件标题</td><td>18px / 600</td><td>Noto Serif SC</td><td>卡片作品名、弹窗标题</td></tr>
+    <tr><td>正文</td><td>15-16px / 400 / 行高 1.75</td><td>Noto Sans SC</td><td>描述、评论、表单</td></tr>
+    <tr><td>辅助说明</td><td>12.5px / 400 / <code>--ink3</code></td><td>Noto Sans SC</td><td>时间、来源、统计标签</td></tr>
+  </table>
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>Hero 孤字修复（修 Q-01，P0）</div>
+      <p style="font-size:13px">双保险：<br>① <code>index.html</code> hero H1 文案加手动断点：「当AI遇见文旅，<code>&lt;br&gt;</code>让传统美学数字新生」——语义断行，任何视口下不会产生单字孤行；文案加逗号增强节奏；<br>② ink-theme.css 覆盖 <code>.hero h1 / [class*="hero-title"]</code>：<code>font-size: clamp(40px, 5.2vw, 68px)</code>（替代现 96px 固定值，1440px 下约 68px，两行排布）+ <code>text-wrap: balance</code> 兜底 + <code>letter-spacing: 0.04em</code> 提升宋体大字呼吸感。<br>h2 同步降至 clamp(26px,3vw,36px)。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>字体本地化兜底（修 Q-07）</div>
+      <p style="font-size:13px">竞赛演示离线是常态，字体必须不漂移：<br>① <code>index.html</code> 保留 loli.net CDN 作为在线加速，但 <code>&lt;link&gt;</code> 增加 <code>onerror</code> 无操作兜底（现有 <code>media="print" onload</code> 模式已异步化 ✓）；<br>② 关键改进——<strong>本地字体栈前置兜底已存在</strong>（"Songti SC", STSong → Windows 落到 <strong>SimSun/宋体</strong>），在 ink-theme.css 中把 Windows 缺失的「Noto Serif SC」回退链显式补上 <code>"SimSun","STSong"</code>，确保离线时标题仍是衬线宋体而非黑体；<br>③ 正文栈补 <code>"Microsoft YaHei"</code> 已存在 ✓。<br>（不下载字体文件入仓——避免 3MB+ 字重包拖累项目体积，符合「精简可传输」约束。）</p>
+    </div>
+  </div>
+  <p><strong>验收标准</strong>：1440/1024/768/390 四档视口 Hero 均两行内排布、无单字孤行；离线模式（DevTools Network offline 刷新）标题仍为衬线字形。</p>
+</section>
+
+<!-- D4 图标 -->
+<section id="d4">
+  <div class="sec-head"><span class="no">04</span><h2 class="serif">维度四 · 图标库选型</h2><span class="en">Iconography</span></div>
+  <h3>自绘线性 SVG 微图标（零依赖、1.5px 朱砂描边）</h3>
+  <p>选型结论：<strong>不引入第三方图标库</strong>（Font Awesome/Material 全量包 100KB+，违背零依赖与体积约束；CDN 引入又有离线风险）。自绘 <strong>12 枚内联 SVG 线性图标</strong>，统一语法：24×24 viewBox、1.5px 描边、<code>currentColor</code> 继承、圆头线帽——气质近「工笔白描」，与宋体同源。</p>
+  <div class="panel">
+    <div class="ph"><span class="tag t-new">新增</span><code>js/icons.js</code> 图标注册模块（修 Q-06）</div>
+    <p style="font-size:13px">模块导出 <code>icon(name, size)</code> → 返回 SVG 字符串；首批 12 枚：<code>trophy</code>（替换🏆奖杯）、<code>medal-seal</code>（替换🏅，或直接由印章组件替代）、<code>lotus</code>（替换🌸今日文化话语）、<code>scroll</code>（卷轴/图鉴）、<code>compass</code>（足迹）、<code>camera</code>（识图）、<code>brush</code>（创作）、<code>seal</code>（印章/认证）、<code>spark</code>（AI 火花）、<code>sound</code>（TTS 播报）、<code>arrow-up</code>（返回顶部）、<code>crown-seal</code>（三甲）。<br>接入方式：在 <code>js/main.js</code> 渲染钩子处将含 emoji 的 innerHTML 节点替换为 <code>icon('trophy')</code>；存量 DOM 用一次性 <code>document.querySelectorAll</code> 文本替换挂载（约 4 处：排行榜标题、画廊徽章、今日话语、小梦气泡装饰）。<br>无障碍：隐藏态 🥇🥈🥉（font-size:0）直接从模板删除而非隐藏（修读屏噪音）。</p>
+  </div>
+  <p><strong>验收标准</strong>：全站 <code>innerHTML</code> 扫描 emoji 覆盖集（🏆🏅🌸🥇🥈🥉✨⚡）命中数为 0；图标在深浅两主题下均为 currentColor 正确着色；新增模块 ≤ 4KB。</p>
+</section>
+
+<!-- D5 栅格 -->
+<section id="d5">
+  <div class="sec-head"><span class="no">05</span><h2 class="serif">维度五 · 版式栅格系统</h2><span class="en">Grid &amp; Layout</span></div>
+  <h3>8pt 间距基准 + 12 栏内容栅格 + 渐进增强显现</h3>
+  <table>
+    <tr><th style="width:150px">断点</th><th>栅格行为</th></tr>
+    <tr><td>≥1280px</td><td>内容区 1200px 居中；画廊 4 栏；hero 单列居中限宽 760px</td></tr>
+    <tr><td>1024-1279px</td><td>画廊 3 栏；区块标题左对齐（回纹随行）</td></tr>
+    <tr><td>768-1023px</td><td>画廊 2 栏；导航折叠为汉堡</td></tr>
+    <tr><td>&lt;768px</td><td>画廊 1-2 栏；hero 字阶落至 40px；按钮全宽纵排（现状 ✓ 保持）</td></tr>
+  </table>
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>滚动显现 → 渐进增强（修 Q-05，P1）</div>
+      <p style="font-size:13px">原则：<strong>内容默认可见，动画只是增强</strong>。<br>① <code>js/main.js</code> 中滚动入场动画（IntersectionObserver 添加 <code>.reveal</code> 类那套）的初始态由「opacity:0 translateY(24px)」改为「由 JS 启动时才注入初始隐藏类」——即 <code>document.documentElement.classList.add('js-anim')</code> 后 CSS 才应用 <code>.js-anim .reveal{opacity:0}</code>；无 JS/爬虫/打印场景内容直出；<br>② 优先尝试 CSS 原生 scroll-driven animations（<code>animation-timeline: view()</code>，Chromium 115+ 原生支持，符合「浏览器已固定 Chromium/Edge」的演示环境），JS 方案作回退；<br>③ <code>prefers-reduced-motion: reduce</code> 时全部显现动画禁用（一并覆盖粒子，README 已有降级原则）。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>间距与密度刻度（P2 打磨）</div>
+      <p style="font-size:13px">① ink-theme.css 声明间距令牌 <code>--sp-1:8px / --sp-2:16px / --sp-3:24px / --sp-4:40px / --sp-5:64px</code>（8pt 基准），区块间距统一到 <code>--sp-4/5</code>、组件内间距到 <code>--sp-1/2</code>；<br>② hero 首屏从「100vh 独占」调整为 <code>min-height: 86vh</code>，让「今日文化话语」卡片钩子在 900px 高度视口内露出上半——首屏即见内容；<br>③ 卡片圆角虽已统一 4px，卡片内边距统一 16px，图片区与文字区比例固定 4:3 封面 + 自适应题注。</p>
+    </div>
+  </div>
+  <p><strong>验收标准</strong>：禁用 JS 刷新 → 全部内容可见；fullPage 截图不再出现空白区；820-1440px 拖拽窗口宽度无横向滚动条。</p>
+</section>
+
+<!-- D6 组件 -->
+<section id="d6">
+  <div class="sec-head"><span class="no">06</span><h2 class="serif">维度六 · 通用组件设计</h2><span class="en">Components</span></div>
+  <h3>组件清单：五处精修 + 一处重绘</h3>
+  <div class="grid2">
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>印章徽章组件（配合 Q-04）</div>
+      <p style="font-size:13px">形态：24×24 至 48×48 方形，<code>border-radius:2px</code>，微旋 <code>-2deg</code> 模拟手工钤印，边缘用 <code>box-shadow: inset 0 0 0 1px rgba(255,255,255,.25)</code> 做印泥厚度。分级：<strong>神</strong>=朱砂底白字、<strong>妙</strong>=赭金底焦墨字、<strong>逸</strong>=黛青底白字、<strong>佳</strong>=石绿底白字。落位：画廊卡片题注行右端、排行榜行、作品详情头。三甲徽章保留现有宋体「一二三」并补印框。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>亮度滑块 + 排行榜选中态（修 Q-10/11）</div>
+      <p style="font-size:13px">① 滑块（<code>css/settings.css</code> 允许小改，或 ink-theme 覆盖 <code>input[type=range]</code>）：轨道 <code>background: linear-gradient(to right, var(--cinnabar) p%, var(--line) p%)</code> 用 CSS 变量 <code>--p</code> 由 settings.js 同步填充百分比；轨道高 4px、把手 14px 朱砂圆点带白描边；两端加「50」「150」微刻度标注，消除「100% 居中」歧义；<br>② 排行榜周期 tab 选中态：墨绿胶囊 → 朱砂底白字（ink-theme 覆盖 <code>.lb-tab.active</code> 类）。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-new">新增</span>小梦 2.0「墨童」挂件（修 Q-02/08，P0+P1）</div>
+      <p style="font-size:13px">重绘为水墨灵宠：墨色圆脸（#1a1614）、石绿头饰小髻、朱砂腮红两点、眼为两点焦墨——内联 SVG 约 30 行，替换现粉紫二次元贴纸。<br><strong>移动端收合策略</strong>（修 P0 裁切）：<code>&lt;768px</code> 视口下默认收合为 44×44 头像圆钮（可点击展开气泡），气泡最大宽度 <code>min(260px, calc(100vw - 88px))</code> 并右对齐锚定视口内缘，<code>overflow-wrap:anywhere</code> 防裁切；z-index 低于 Toast。<br>涉及文件：<code>js/</code> 下小梦挂件渲染模块 + <code>css/ink-theme.css</code> 尺寸/定位覆盖。</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="tag t-mod">修改</span>弹窗「题跋」化 + 占位链接（Q-13）</div>
+      <p style="font-size:13px">① 排行榜等大弹窗标题行左侧加竖排小字「题」印章锚点（::before 竖排 writing-mode），标题用宋体 18px——低成本建立仪式感；弹窗已有缠枝渐变边 ✓ 保留；<br>② <code>a[href="#"]</code> 1 处：定位后改为真实锚点或移除（诊断 metrics counts.placeholderLinks=1）；<br>③ Toast、按钮、卡片 hover 已达标不动。</p>
+    </div>
+  </div>
+  <p><strong>验收标准</strong>：390px 视口小梦收合态不遮挡任何正文且无裁切；滑块拖动填充实时跟随；印章徽章在深浅主题下对比度均 ≥ 4.5:1。</p>
+</section>
+
+<!-- D7 动效 -->
+<section id="d7">
+  <div class="sec-head"><span class="no">07</span><h2 class="serif">维度七 · 交互动效设计</h2><span class="en">Motion</span></div>
+  <h3>基准曲线不变，补三枚「东方时刻」</h3>
+  <p>现有 <code>cubic-bezier(.22,.61,.36,1)</code> 慢出落笔曲线已全站统一（实测按钮 0.25s ✓），<strong>保持为唯一基准曲线</strong>，新增动效全部复用，不引入第二曲线。</p>
+  <table>
+    <tr><th style="width:170px">动效</th><th style="width:130px">规格</th><th>说明与落点</th></tr>
+    <tr><td><strong>印章盖章</strong>（新增）</td><td>0.4s · 基准曲线</td><td>评级印章首次进入视口：<code>scale(1.6) rotate(-8deg) opacity:0</code> → <code>scale(1) rotate(-2deg)</code>，模拟钤印落纸；配合轻微 <code>blur(2px)→0</code>。落点：画廊卡片与排行榜（CSS <code>animation-timeline: view()</code> 优先，JS 回退）</td></tr>
+    <tr><td><strong>水墨晕染页面切换</strong>（新增）</td><td>0.3s · 基准曲线</td><td>hash 路由切换时，新页面容器以径向 mask 从中心晕开（<code>mask-image: radial-gradient</code> 动画 <code>mask-size 0%→220%</code>），似墨滴入纸；路由钩子在 <code>js/router.js</code> 渲染完成后给容器加 <code>.ink-in</code> 类，动画结束自动移除。低性能设备（<code>prefers-reduced-motion</code>）直接跳过</td></tr>
+    <tr><td><strong>回纹呼吸</strong>（新增，克制）</td><td>6s 循环 · 线性</td><td>页脚回纹带透明度 0.3↔0.45 缓慢呼吸，赋予「纸面活气」；仅此一处循环动画，不做大面积常驻动效</td></tr>
+    <tr><td>卡片 hover 抬升</td><td>0.35s · 基准曲线</td><td>现有 transform 保持；角花 opacity 过渡保持；统一 shadow 层级令牌 <code>--lg-shadow-soft/medium</code></td></tr>
+    <tr><td>粒子降级</td><td>—</td><td><code>prefers-reduced-motion</code> 时粒子静止为单帧墨点（README 降级原则一致）</td></tr>
+  </table>
+  <p><strong>验收标准</strong>：全站 transition/animation 中 <code>cubic-bezier</code> 字面量仅允许 <code>(.22,.61,.36,1)</code> 与线性两种（grep 断言）；<code>prefers-reduced-motion</code> 模拟下无任何位移动画；帧率（DevTools Performance）滚动无长任务 &gt; 50ms。</p>
+</section>
+
+<!-- 实施计划 -->
+<section id="plan">
+  <div class="sec-head"><span class="no">08</span><h2 class="serif">落地计划 · 文件清单 · 验收门槛</h2><span class="en">Roadmap</span></div>
+  <h3>新增 / 修改文件总表</h3>
+  <table>
+    <tr><th style="width:250px">文件路径</th><th style="width:70px">动作</th><th>改动内容（对应维度）</th></tr>
+    <tr><td><code>css/ink-theme.css</code></td><td><span class="tag t-mod">修改</span></td><td>追加 §8 默认档兜底覆盖（D1）、§9 印章徽章体系（D2/D6）、§10 字阶与 Hero 断行（D3）、§11 滑块与选中态（D6）、§12 三枚东方动效（D7）、§13 暗色边框与令牌补齐（D2）——预计 +420 行，仍为唯一覆盖入口</td></tr>
+    <tr><td><code>js/settings.js</code></td><td><span class="tag t-mod">修改</span></td><td>DEFAULTS.style → 'guofeng'（D1）；滑块 --p 变量同步（D6）；风格选择器「默认」项移除（D1）</td></tr>
+    <tr><td><code>js/particles.js</code></td><td><span class="tag t-mod">修改</span></td><td>L66 紫色回退色 → 墨金黛青系；粒子尺寸/透明度 -20%（D1）</td></tr>
+    <tr><td><code>js/icons.js</code></td><td><span class="tag t-new">新增</span></td><td>12 枚内联 SVG 线性图标模块（D4），≤ 4KB，零依赖</td></tr>
+    <tr><td><code>js/main.js</code></td><td><span class="tag t-mod">修改</span></td><td>① 滚动显现改 JS 注入初始类（渐进增强，D5）；② emoji 节点 → icon() 挂载点（D4，约 4 处）</td></tr>
+    <tr><td><code>js/router.js</code></td><td><span class="tag t-mod">修改</span></td><td>路由渲染完成钩子加 <code>.ink-in</code> 晕染类（D7，2 行）</td></tr>
+    <tr><td><code>index.html</code></td><td><span class="tag t-mod">修改</span></td><td>Hero H1 文案手动断点 + 逗号（D3）；字体回退链注释（D3）</td></tr>
+    <tr><td>小梦挂件渲染模块（<code>js/</code> 内定位后确认文件名）</td><td><span class="tag t-mod">修改</span></td><td>水墨化重绘 SVG + 移动端收合策略（D6）</td></tr>
+    <tr><td><code>tests/theme-regression.spec.js</code></td><td><span class="tag t-mod">修改</span></td><td>新增断言：① 冷启动无紫调采样；② 无 JS 内容可见；③ emoji 覆盖集为 0；④ 390px 小梦不遮挡（在现有 14×3 结构上追加 3-4 用例）</td></tr>
+    <tr><td><code>style.css / settings.css</code></td><td><span class="tag t-mut" style="border:1px solid var(--ink3)">不动</span></td><td>遵守既有约束：6620 行既有规则零修改，全部经 ink-theme.css 覆盖实现（settings.css 滑块如必须原生改，控制在 ≤ 10 行并单独提交说明）</td></tr>
+  </table>
+
+  <h3>执行顺序与验证门槛</h3>
+  <p><strong>每阶段完成后立即跑四道门槛</strong>，任何一道不过不进入下一阶段：</p>
+  <ul>
+    <li><span class="kbd">npx playwright test tests/theme-regression.spec.js</span> → 42+ 用例全绿（tailtest）</li>
+    <li><span class="kbd">npm run build</span> → PROD 构建成功</li>
+    <li><span class="kbd">npm run dev</span> + 截图回归 → 与 docs/ui-audit/ 基线对比，逐项核对 Q-01~Q-13 关闭状态</li>
+    <li>对比度审计 → 印章/正文/按钮关键对 ≥ 4.5:1</li>
+  </ul>
+  <table>
+    <tr><th style="width:90px">阶段</th><th>内容</th><th style="width:220px">关闭的诊断项</th></tr>
+    <tr><td><span class="tag t-a">A</span></td><td>令牌收口：默认档兜底 + 粒子/光斑去紫 + 金色印章化映射 + 空令牌补齐</td><td>Q-03、Q-04、Q-09、Q-11、Q-12</td></tr>
+    <tr><td><span class="tag t-b">B</span></td><td>排版修复：Hero 断点 + 字阶 clamp + 渐进增强显现 + 首屏 86vh</td><td>Q-01、Q-05</td></tr>
+    <tr><td><span class="tag t-c">C</span></td><td>组件精修：icons.js + emoji 替换 + 小梦水墨化与移动端收合 + 滑块填充 + 题跋弹窗 + 占位链接</td><td>Q-02、Q-06、Q-07、Q-08、Q-10、Q-13</td></tr>
+    <tr><td><span class="tag t-d">D</span></td><td>回归验证：新增 3-4 条 Playwright 用例 + 基线截图对比 + 输出前后对照图</td><td>全部复核</td></tr>
+  </table>
+</section>
+
+<!-- 风险 -->
+<section id="risk">
+  <div class="sec-head"><span class="no">09</span><h2 class="serif">风险与回滚</h2><span class="en">Risks</span></div>
+  <table>
+    <tr><th style="width:200px">风险</th><th>缓解</th></tr>
+    <tr><td>印章字符替换影响 E2E 既有文案断言（400+ 用例中可能存在「SSS·顶级神作」文本匹配）</td><td>阶段 C 先 grep tests/ 目录定位文案断言；保留 <code>data-grade</code> 原始值于 DOM，断言优先读属性；如影响面大则印章仅改视觉、文本节点保留（font-size:0 隐藏 + aria-label 供读屏）</td></tr>
+    <tr><td>滚动显现改渐进增强可能暴露布局抖动（原动画隐藏了未排版完成的帧）</td><td>灰度顺序：先加 <code>js-anim</code> 开关保持现状行为，再逐区块切换默认可见，每步截图对比</td></tr>
+    <tr><td>默认风格档切到国风影响老用户 localStorage（已存 style='' 的用户）</td><td>settings.js 读取时 <code>'' || 'guofeng'</code> 空值归一；已有显式选择的用户不受影响</td></tr>
+    <tr><td>ink-theme.css 膨胀（590 行 → 约 1000 行）</td><td>仍单文件、零依赖；章节注释严格分区；超 1200 行时再考虑拆分（本期不做）</td></tr>
+    <tr><td>整体回滚</td><td>每阶段独立 git 提交；最坏情况 <code>git revert</code> 单阶段提交即可，互不牵连</td></tr>
+  </table>
+  <div class="callout"><b>明确不做（Out of Scope）：</b>① 不重排首页信息架构（画廊/排行榜承载方式不变，仅视觉收口）；② 不更换技术栈、不引入 UI 框架与图标库依赖；③ 不下载字体文件入仓；④ 不改 style.css 既有规则（覆盖层之外零侵入）；⑤ 不做管理后台改版（非评委动线）。</div>
+</section>
+
+<div class="footer-note">Dreamcore 项目组 · UI 优化实施方案 v2 · 2026-10-15 · 配套证据：docs/UI诊断报告.html + docs/ui-audit/ · 本方案仅输出设计文档，未做任何代码修改</div>
+</div>
+</body>
+</html>

@@ -1,20 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
-  <defs>
-    <linearGradient id="allg1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#150d24"/>
-      <stop offset="100%" stop-color="#0a0612"/>
-    </linearGradient>
-    <radialGradient id="allg2" cx="50%" cy="40%" r="60%">
-      <stop offset="0%" stop-color="#c9b6ff" stop-opacity="0.15"/>
-      <stop offset="50%" stop-color="#ffd1e8" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="transparent"/>
-    </radialGradient>
-  </defs>
-  <rect width="800" height="600" fill="url(#allg1)"/>
-  <circle cx="400" cy="280" r="200" fill="url(#allg2)"/>
-  <circle cx="400" cy="280" r="160" fill="none" stroke="#c9b6ff" stroke-width="0.8" opacity="0.15"/>
-  <circle cx="400" cy="280" r="120" fill="none" stroke="#ffd1e8" stroke-width="0.6" opacity="0.12"/>
-  <circle cx="400" cy="280" r="80" fill="none" stroke="#7ec8e3" stroke-width="0.5" opacity="0.1"/>
-  <text x="400" y="295" text-anchor="middle" fill="#c9b6ff" font-family="system-ui, sans-serif" font-size="20" font-weight="300" letter-spacing="6" opacity="0.35">DREAMCORE</text>
-  <text x="400" y="325" text-anchor="middle" fill="#ffd1e8" font-family="system-ui, sans-serif" font-size="12" font-weight="300" letter-spacing="3" opacity="0.25">梦境数字艺术平台</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 442">
+  <!-- 宣纸底 -->
+  <rect width="320" height="442" fill="#faf6ee"/>
+  <!-- 细边框 -->
+  <rect x="10" y="10" width="300" height="422" fill="none" stroke="#e6dccb" stroke-width="1"/>
+  <!-- 几何篆刻：三角 / 方 / 圆 -->
+  <!-- 圆 -->
+  <circle cx="100" cy="140" r="42" fill="none" stroke="#a8261f" stroke-width="2.5" opacity="0.85"/>
+  <circle cx="100" cy="140" r="30" fill="none" stroke="#a8261f" stroke-width="1" opacity="0.5"/>
+  <circle cx="100" cy="140" r="18" fill="#a8261f" opacity="0.1"/>
+  <!-- 方 -->
+  <rect x="165" y="100" width="80" height="80" fill="none" stroke="#2d4a6b" stroke-width="2.5" opacity="0.85"/>
+  <rect x="175" y="110" width="60" height="60" fill="none" stroke="#2d4a6b" stroke-width="1" opacity="0.5"/>
+  <rect x="185" y="120" width="40" height="40" fill="#2d4a6b" opacity="0.1"/>
+  <!-- 三角 -->
+  <polygon points="80,260 150,370 10,370" fill="none" stroke="#4a6b52" stroke-width="2.5" opacity="0.85"/>
+  <polygon points="90,280 140,360 40,360" fill="none" stroke="#4a6b52" stroke-width="1" opacity="0.5"/>
+  <!-- 菱形 -->
+  <polygon points="240,260 280,320 240,380 200,320" fill="none" stroke="#b8892a" stroke-width="2.5" opacity="0.85"/>
+  <polygon points="240,280 270,320 240,360 210,320" fill="none" stroke="#b8892a" stroke-width="1" opacity="0.5"/>
+  <!-- 朱砂方印（大） -->
+  <rect x="218" y="388" width="60" height="40" fill="#a8261f" opacity="0.85"/>
+  <text x="248" y="415" text-anchor="middle" font-family="SimSun,serif" font-size="20" fill="#faf6ee" font-weight="700">创</text>
+  <!-- 编号 -->
+  <text x="22" y="432" font-family="SimSun,serif" font-size="11" fill="#7a6650" opacity="0.6">陆 · 篆刻</text>
+  <!-- 印章侧记 -->
+  <text x="218" y="210" font-family="SimSun,serif" font-size="9" fill="#a8261f" opacity="0.5">· 东方几何 ·</text>
 </svg>

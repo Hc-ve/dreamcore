@@ -1,0 +1,133 @@
+{
+  "home": {
+    "nav": {
+      "w": 1440,
+      "h": 74,
+      "x": 0,
+      "y": 0,
+      "bg": "rgba(255, 253, 249, 0.85)",
+      "links": 16
+    },
+    "h1": {
+      "w": 860,
+      "h": 311,
+      "x": 290,
+      "y": 189,
+      "fs": "96px",
+      "fw": "600",
+      "lh": "103.68px",
+      "font": "\"Noto Serif SC\""
+    },
+    "h2": {
+      "fs": "52px",
+      "fw": "600"
+    },
+    "body": {
+      "fs": "16px",
+      "lh": "25.6px",
+      "font": "\"Noto Sans SC\""
+    },
+    "cta": {
+      "w": 83,
+      "h": 35,
+      "x": 1004,
+      "y": 19,
+      "fs": "13px",
+      "pad": "8px 16px",
+      "radius": "4px"
+    },
+    "cards": {
+      "count": 20,
+      "first": {
+        "w": 320,
+        "h": 442,
+        "x": 48,
+        "y": 1230,
+        "radius": "4px",
+        "bg": "rgb(255, 253, 249)",
+        "border": "1px solid rgb(240, 232, 216)",
+        "shadow": "rgba(26, 22, 20, 0.06) 0px 1px 3px 0px, rgba(230, 220, 203, 0.8) 0px 0"
+      }
+    },
+    "chip": {
+      "w": 74,
+      "h": 40,
+      "x": 341,
+      "y": 1146,
+      "fs": "14px",
+      "radius": "4px"
+    },
+    "tokens": {
+      "bg": "#faf6ee",
+      "card": "#fffdf9",
+      "accent": "#a8261f",
+      "border": "#e6dccb",
+      "radius": "4px",
+      "text": "#1a1614",
+      "grade": "#a8261f"
+    },
+    "contrast": {
+      "bodyOnBg": "16.67",
+      "accentWhite": "7.09"
+    },
+    "docHeight": 4088,
+    "horizontalOverflow": false
+  },
+  "leaderboard": {
+    "medals": [
+      "二",
+      "一",
+      "三"
+    ],
+    "grades": [
+      {
+        "text": "SSS",
+        "color": "rgb(184, 137, 42)"
+      },
+      {
+        "text": "SSS",
+        "color": "rgb(168, 38, 31)"
+      },
+      {
+        "text": "SSS",
+        "color": "rgb(45, 74, 107)"
+      }
+    ],
+    "podItems": [
+      {
+        "w": 200,
+        "h": 261
+      },
+      {
+        "w": 200,
+        "h": 279
+      },
+      {
+        "w": 200,
+        "h": 261
+      }
+    ],
+    "emojiLeak": null
+  },
+  "residue": {
+    "bannedHits": [],
+    "emojis": [
+      "🎭"
+    ]
+  },
+  "mobile": {
+    "h1": {
+      "fs": "32px",
+      "lh": "35.2px"
+    },
+    "navH": 74,
+    "hOverflow": false,
+    "scrollW": 390,
+    "btnHeights": {
+      "min": 18,
+      "under44": 37,
+      "sampled": 56
+    },
+    "tutor": null
+  }
+}

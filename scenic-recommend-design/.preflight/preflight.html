@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preflight</title>
+    <style id="theme-vars">
+/* ============================================================
+   Dreamcore · 热门景区模块 高保真原型品牌令牌
+   1:1 取自线上产品 css/style.css + js/scenic-recommend.js
+   全局：梦幻粉紫蓝玻璃拟态；景区模块主色：青绿 #34d399
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- 品牌主色（景区青绿，源自 #/scenic） ---- */
+  --sn-primary: #34d399;
+  --sn-primary-strong: #10b981;
+  --sn-primary-soft: #6ee7b7;
+  --sn-primary-deep: #047857;
+  --sn-primary-ink: #065f46;
+  --sn-primary-tint: rgba(52, 211, 153, 0.14);
+  --sn-primary-tint-strong: rgba(52, 211, 153, 0.2);
+  --sn-primary-border: rgba(52, 211, 153, 0.32);
+  --sn-primary-border-strong: rgba(52, 211, 153, 0.55);
+  --sn-primary-gradient: linear-gradient(90deg, #34d399, #6ee7b7);
+
+  /* ---- 全局梦幻辅色（源自 :root --dream-*，仅用于品牌渐变/胶囊，不作身份分类色） ---- */
+  --sn-dream-pink: #ffd1e8;
+  --sn-dream-purple: #c9b6ff;
+  --sn-dream-blue: #a8d8ff;
+  --sn-dream-mint: #b8f0d4;
+  --sn-dream-gold: #fff4c2;
+  --sn-grad-dream: linear-gradient(135deg, #ffd1e8 0%, #c9b6ff 50%, #a8d8ff 100%);
+  --sn-grad-dream-soft: linear-gradient(135deg, rgba(255, 209, 232, 0.25), rgba(201, 182, 255, 0.25), rgba(168, 216, 255, 0.25));
+
+  /* ---- 状态色（语义用途） ---- */
+  --state-success: #34d399;
+  --state-warning: #fbbf24;
+  --state-error: #f87171;
+  --state-info: #60a5fa;
+
+  /* ---- 背景与文字（亮色，WCAG AA） ---- */
+  --sn-bg-page: #f5f3fa;
+  --sn-bg-card: rgba(255, 255, 255, 0.6);
+  --sn-bg-surface: rgba(0, 0, 0, 0.04);
+  --sn-bg-surface-hover: rgba(0, 0, 0, 0.06);
+  --sn-text: #1a1a2e;
+  --sn-text-secondary: rgba(26, 26, 46, 0.78);
+  --sn-text-tertiary: rgba(26, 26, 46, 0.62);
+
+  /* ---- 玻璃拟态（源自 --lg-*） ---- */
+  --sn-glass-bg: rgba(255, 255, 255, 0.6);
+  --sn-glass-border: rgba(0, 0, 0, 0.1);
+  --sn-lg-blur: 28px;
+  --sn-lg-saturate: 180%;
+  --sn-lg-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 0 40px rgba(201, 182, 255, 0.06);
+  --sn-shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --sn-shadow-medium: 0 8px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --sn-shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --sn-glow-primary: 0 6px 18px rgba(52, 211, 153, 0.3);
+
+  /* ---- 圆角体系（产品真实值：大圆角语言） ---- */
+  --sn-radius: 18px;
+  --sn-radius-sm: 12px;
+  --sn-radius-card: 14px;
+  --sn-radius-tag: 10px;
+  --sn-radius-pill: 100px;
+
+  /* ---- 间距体系（4px 基准） ---- */
+  --sn-space-1: 4px;
+  --sn-space-2: 8px;
+  --sn-space-3: 12px;
+  --sn-space-4: 16px;
+  --sn-space-5: 20px;
+  --sn-space-6: 24px;
+  --sn-space-7: 28px;
+
+  /* ---- 字体体系 ---- */
+  --sn-font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", -apple-system, "Segoe UI", sans-serif;
+
+  /* ---- 语义别名（head-contract 所需，映射到上述单一令牌体系） ---- */
+  --sn-background: var(--sn-bg-page);
+  --sn-foreground: var(--sn-text);
+  --sn-card: var(--sn-glass-bg);
+  --sn-card-foreground: var(--sn-text);
+  --sn-popover: #ffffff;
+  --sn-popover-foreground: var(--sn-text);
+  --sn-primary-foreground: #04301f;
+  --sn-muted: rgba(0, 0, 0, 0.04);
+  --sn-muted-foreground: var(--sn-text-tertiary);
+  --sn-border: var(--sn-glass-border);
+  --sn-input: rgba(0, 0, 0, 0.12);
+  --sn-ring: rgba(52, 211, 153, 0.55);
+  --sn-radius-small: 12px;
+  --sn-radius-medium: 14px;
+  --sn-radius-large: 18px;
+
+  /* 无前缀兜底别名 */
+  --background: var(--sn-bg-page);
+  --foreground: var(--sn-text);
+  --card: var(--sn-glass-bg);
+  --card-foreground: var(--sn-text);
+  --popover: #ffffff;
+  --popover-foreground: var(--sn-text);
+  --primary: var(--sn-primary);
+  --primary-foreground: #04301f;
+  --muted: rgba(0, 0, 0, 0.04);
+  --muted-foreground: var(--sn-text-tertiary);
+  --border: var(--sn-glass-border);
+  --input: rgba(0, 0, 0, 0.12);
+  --ring: rgba(52, 211, 153, 0.55);
+  --radius-small: 12px;
+  --radius-medium: 14px;
+  --radius-large: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--sn-font-sans);
+  color: var(--sn-text);
+  background:
+    radial-gradient(900px 480px at 12% -8%, rgba(201, 182, 255, 0.18), transparent 60%),
+    radial-gradient(820px 460px at 92% -10%, rgba(255, 209, 232, 0.16), transparent 60%),
+    radial-gradient(760px 520px at 50% 118%, rgba(168, 216, 255, 0.14), transparent 62%),
+    var(--sn-bg-page);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--sn-background);
+    --color-foreground: var(--sn-foreground);
+    --color-card: var(--sn-card);
+    --color-card-foreground: var(--sn-card-foreground);
+    --color-popover: var(--sn-popover);
+    --color-popover-foreground: var(--sn-popover-foreground);
+    --color-primary: var(--sn-primary);
+    --color-primary-foreground: var(--sn-primary-foreground);
+    --color-muted: var(--sn-muted);
+    --color-muted-foreground: var(--sn-muted-foreground);
+    --color-border: var(--sn-border);
+    --color-input: var(--sn-input);
+    --color-ring: var(--sn-ring);
+    --radius-sm: var(--sn-radius-sm);
+    --radius-md: var(--sn-radius-medium);
+    --radius-lg: var(--sn-radius-large);
+  }
+  @layer base {
+    body { background: var(--sn-background); color: var(--sn-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--sn-background); }
+      .text-background { color: var(--sn-background); }
+      .border-background { border-color: var(--sn-background); }
+      .ring-background { --tw-ring-color: var(--sn-background); }
+      .bg-foreground { background-color: var(--sn-foreground); }
+      .text-foreground { color: var(--sn-foreground); }
+      .border-foreground { border-color: var(--sn-foreground); }
+      .ring-foreground { --tw-ring-color: var(--sn-foreground); }
+      .bg-card { background-color: var(--sn-card); }
+      .text-card { color: var(--sn-card); }
+      .border-card { border-color: var(--sn-card); }
+      .ring-card { --tw-ring-color: var(--sn-card); }
+      .bg-card-foreground { background-color: var(--sn-card-foreground); }
+      .text-card-foreground { color: var(--sn-card-foreground); }
+      .border-card-foreground { border-color: var(--sn-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--sn-card-foreground); }
+      .bg-popover { background-color: var(--sn-popover); }
+      .text-popover { color: var(--sn-popover); }
+      .border-popover { border-color: var(--sn-popover); }
+      .ring-popover { --tw-ring-color: var(--sn-popover); }
+      .bg-popover-foreground { background-color: var(--sn-popover-foreground); }
+      .text-popover-foreground { color: var(--sn-popover-foreground); }
+      .border-popover-foreground { border-color: var(--sn-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--sn-popover-foreground); }
+      .bg-primary { background-color: var(--sn-primary); }
+      .text-primary { color: var(--sn-primary); }
+      .border-primary { border-color: var(--sn-primary); }
+      .ring-primary { --tw-ring-color: var(--sn-primary); }
+      .bg-primary-foreground { background-color: var(--sn-primary-foreground); }
+      .text-primary-foreground { color: var(--sn-primary-foreground); }
+      .border-primary-foreground { border-color: var(--sn-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--sn-primary-foreground); }
+      .bg-muted { background-color: var(--sn-muted); }
+      .text-muted { color: var(--sn-muted); }
+      .border-muted { border-color: var(--sn-muted); }
+      .ring-muted { --tw-ring-color: var(--sn-muted); }
+      .bg-muted-foreground { background-color: var(--sn-muted-foreground); }
+      .text-muted-foreground { color: var(--sn-muted-foreground); }
+      .border-muted-foreground { border-color: var(--sn-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--sn-muted-foreground); }
+      .bg-border { background-color: var(--sn-border); }
+      .text-border { color: var(--sn-border); }
+      .border-border { border-color: var(--sn-border); }
+      .ring-border { --tw-ring-color: var(--sn-border); }
+      .bg-input { background-color: var(--sn-input); }
+      .text-input { color: var(--sn-input); }
+      .border-input { border-color: var(--sn-input); }
+      .ring-input { --tw-ring-color: var(--sn-input); }
+      .bg-ring { background-color: var(--sn-ring); }
+      .text-ring { color: var(--sn-ring); }
+      .border-ring { border-color: var(--sn-ring); }
+      .ring-ring { --tw-ring-color: var(--sn-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

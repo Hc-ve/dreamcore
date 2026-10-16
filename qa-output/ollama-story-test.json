@@ -1,0 +1,1 @@
+{"model":"dreamcraft-story-1.5b","messages":[{"role":"user","content":"请介绍文化主体「敦煌壁画」的历史与文化内涵。严格只返回如下 JSON：{\"name\":\"主体名\",\"era\":\"一句话年代\",\"connotation\":\"文化内涵讲解，180-280字，2-3个自然段（用\\n分段）\",\"legend\":\"相关的经典典故，100-160字\",\"creationTip\":\"文创创作建议，50字以内\"}"}],"max_tokens":1024,"temperature":0.3}

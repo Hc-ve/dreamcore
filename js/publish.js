@@ -1,8 +1,11 @@
 // ============================================================
 // js/publish.js — 作品发布系统
 // 功能: 拖拽/点击上传、实时预览、表单校验、base64 存储
+//       M1接入：AI生成描述文案、上传完成异步触发AI评分定级
 // 限制: 图片<5MB(JPG/PNG/WEBP)，视频<20MB(MP4/WebM)
 // ============================================================
+
+import { scoreImage, scoreArtwork, renderAestheticReport } from './ai-aesthetic.js';
 
 const Publish = {
   modalEl: null,
@@ -18,16 +21,29 @@ const Publish = {
 
   // ----------------------------------------------------------
   // 显示发布弹窗（需登录）
+  // prefill（可选）: { dataUrl, name } — 由 AI修图工作台「保存作品」流程传入，
+  // 预先把修图结果填入上传预览，用户只需补标题/描述即可发布
   // ----------------------------------------------------------
-  showPublishModal() {
+  showPublishModal(prefill) {
     if (!window.currentUser) {
       if (window.Auth) Auth.requireLogin();
       return;
     }
+    this.prefill = prefill || null;
     this._buildModal();
     if (typeof Sound !== 'undefined') Sound.playSound('pop');
     if (window.ModalScrollLock) ModalScrollLock.lock();
     requestAnimationFrame(() => this.modalEl.classList.add('open'));
+    // M8: 修图结果预填充 — 直接进入预览态，跳过手动上传
+    if (this.prefill && this.prefill.dataUrl) {
+      this.currentFile = {
+        file: { name: this.prefill.name || '修图作品.jpg', size: Math.round(this.prefill.dataUrl.length * 3 / 4) },
+        dataUrl: this.prefill.dataUrl,
+        type: 'image'
+      };
+      this._renderPreview();
+      if (window.showToast) showToast('已带入修图结果，填写信息后即可发布', 'info');
+    }
   },
 
   // ----------------------------------------------------------
@@ -66,23 +82,41 @@ const Publish = {
             <div class="ai-suggest-panel" id="ai-suggest-panel" style="display:none;"></div>
           </div>
           <div class="field">
-            <label>介绍文案 <span class="req">*</span></label>
+            <div class="pub-field-label" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="margin-bottom:0;">介绍文案 <span class="req">*</span></label>
+              </div>
+              <button type="button" class="ai-suggest-btn" id="ai-desc-btn" aria-label="AI生成描述">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI生成描述✨
+              </button>
+            </div>
             <textarea id="pub-desc-input" placeholder="描述作品的灵感与故事…" rows="3" maxlength="300" required></textarea>
+            <div class="ai-desc-panel" id="ai-desc-panel" style="display:none;"></div>
           </div>
           <div class="field">
             <label>分类</label>
             <div class="pub-categories" id="pub-categories">
-              <button type="button" class="pub-cat active" data-cat="digital-art">数字艺术</button>
-              <button type="button" class="pub-cat" data-cat="photography">摄影</button>
-              <button type="button" class="pub-cat" data-cat="illustration">插画</button>
-              <button type="button" class="pub-cat" data-cat="abstract">抽象</button>
-              <button type="button" class="pub-cat" data-cat="3d-art">3D艺术</button>
+              <button type="button" class="pub-cat active" data-cat="scenic-photo">文旅摄影</button>
+              <button type="button" class="pub-cat" data-cat="heritage-craft">非遗文创</button>
+              <button type="button" class="pub-cat" data-cat="guofeng-art">国风绘画</button>
+              <button type="button" class="pub-cat" data-cat="ai-art">AI数字艺术</button>
+              <button type="button" class="pub-cat" data-cat="museum-culture">博物文创</button>
+              <button type="button" class="pub-cat" data-cat="creative-design">创意设计</button>
             </div>
           </div>
           <div class="pub-error" id="pub-error"></div>
           <button type="submit" class="btn-primary btn-block" id="pub-submit">
             <i class="fa-solid fa-paper-plane"></i> 发布作品
           </button>
+          <div class="pub-draft-bar">
+            <button type="button" class="btn-ghost pub-draft-save" id="pub-draft-save" title="暂存当前填写内容，稍后继续发布">
+              <i class="fa-solid fa-box-archive"></i> 存入草稿箱
+            </button>
+            <button type="button" class="pub-draft-toggle" id="pub-draft-toggle">
+              <i class="fa-solid fa-folder-open"></i> 草稿箱 <span id="pub-draft-count">0</span> 篇
+            </button>
+          </div>
+          <div class="pub-draft-list" id="pub-draft-list" hidden></div>
         </form>
       </div>
     `;
@@ -93,8 +127,152 @@ const Publish = {
     this._bindCategories();
     this._bindSubmit();
     this._bindAISuggest();
+    this._bindAIDesc();
+    this._bindDrafts();
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay || e.target.closest('[data-close]')) this._close();
+    });
+  },
+
+  // ----------------------------------------------------------
+  // M8: 草稿箱 — 暂存/恢复/删除发布草稿（IndexedDB publish_drafts）
+  // ----------------------------------------------------------
+  _bindDrafts() {
+    const saveBtn = this.modalEl.querySelector('#pub-draft-save');
+    const toggleBtn = this.modalEl.querySelector('#pub-draft-toggle');
+
+    // 存入草稿箱：暂存当前 标题/描述/分类/图片
+    saveBtn.addEventListener('click', async () => {
+      const user = window.currentUser;
+      if (!user) return;
+      const title = this.modalEl.querySelector('#pub-title-input').value.trim();
+      const desc = this.modalEl.querySelector('#pub-desc-input').value.trim();
+      const img = this.currentFile ? this.currentFile.dataUrl : '';
+      if (!title && !desc && !img) {
+        if (window.showToast) showToast('请先填写标题/描述或上传图片，再存入草稿箱', 'warn');
+        return;
+      }
+      if (typeof Sound !== 'undefined') Sound.playSound('click');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 暂存中…';
+      try {
+        const activeCat = this.modalEl.querySelector('#pub-categories .pub-cat.active');
+        await addPublishDraft({
+          userId: user.id || user.username,
+          title,
+          description: desc,
+          category: activeCat ? activeCat.dataset.cat || activeCat.textContent.trim() : null,
+          imageData: img,
+          mediaType: this.currentFile ? this.currentFile.type : 'image',
+          sourceArtworkId: this.prefill && this.prefill.artworkId ? Number(this.prefill.artworkId) : null
+        });
+        if (window.showToast) showToast('已存入草稿箱，可稍后从草稿箱恢复继续发布', 'success');
+        await this._refreshDraftCount(true);
+      } catch (err) {
+        console.error('[Publish] 存草稿失败:', err);
+        if (window.showToast) showToast('存草稿失败：' + (err && err.message || '未知错误'), 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-box-archive"></i> 存入草稿箱';
+      }
+    });
+
+    // 展开/收起草稿箱列表
+    toggleBtn.addEventListener('click', () => {
+      if (typeof Sound !== 'undefined') Sound.playSound('click');
+      const list = this.modalEl.querySelector('#pub-draft-list');
+      if (list.hidden) {
+        list.hidden = false;
+        this._renderDraftList();
+      } else {
+        list.hidden = true;
+      }
+    });
+
+    this._refreshDraftCount(false);
+  },
+
+  // 刷新草稿计数（expandList=true 时同时刷新列表）
+  async _refreshDraftCount(expandList) {
+    const user = window.currentUser;
+    if (!user) return;
+    try {
+      const drafts = await getPublishDrafts(user.id || user.username);
+      const countEl = this.modalEl && this.modalEl.querySelector('#pub-draft-count');
+      if (countEl) countEl.textContent = String(drafts.length);
+      if (expandList && this.modalEl) {
+        const list = this.modalEl.querySelector('#pub-draft-list');
+        if (list && !list.hidden) this._renderDraftList();
+      }
+    } catch (_) { /* 静默 */ }
+  },
+
+  // 渲染草稿列表（恢复 / 删除）
+  async _renderDraftList() {
+    const user = window.currentUser;
+    const list = this.modalEl.querySelector('#pub-draft-list');
+    if (!user || !list) return;
+    let drafts = [];
+    try { drafts = await getPublishDrafts(user.id || user.username); }
+    catch (_) { /* 静默 */ }
+
+    if (!drafts.length) {
+      list.innerHTML = '<div class="pub-draft-empty">草稿箱是空的 — 填写内容后点击「存入草稿箱」暂存</div>';
+      return;
+    }
+    list.innerHTML = drafts.map(d => `
+      <div class="pub-draft-item" data-id="${d.id}">
+        ${d.imageData ? `<img class="pub-draft-thumb" src="${d.imageData}" alt="草稿缩略图" />` : '<div class="pub-draft-thumb pub-draft-thumb--empty"><i class="fa-regular fa-image"></i></div>'}
+        <div class="pub-draft-info">
+          <div class="pub-draft-title">${this._esc(d.title || '未命名草稿')}</div>
+          <div class="pub-draft-meta">${this._esc((d.description || '暂无描述').slice(0, 40))}${(d.description || '').length > 40 ? '…' : ''}</div>
+        </div>
+        <div class="pub-draft-actions">
+          <button type="button" class="pub-draft-restore" title="恢复到此草稿继续编辑"><i class="fa-solid fa-pen-to-square"></i> 恢复</button>
+          <button type="button" class="pub-draft-delete" title="删除此草稿"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.pub-draft-item').forEach(item => {
+      const id = Number(item.dataset.id);
+      const draft = drafts.find(d => d.id === id);
+      // 恢复草稿：回填表单 + 预览
+      item.querySelector('.pub-draft-restore')?.addEventListener('click', () => {
+        if (!draft) return;
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        this.modalEl.querySelector('#pub-title-input').value = draft.title || '';
+        this.modalEl.querySelector('#pub-desc-input').value = draft.description || '';
+        if (draft.category) {
+          this.modalEl.querySelectorAll('#pub-categories .pub-cat').forEach(b => {
+            b.classList.toggle('active', (b.dataset.cat || b.textContent.trim()) === draft.category);
+          });
+        }
+        if (draft.imageData) {
+          this.currentFile = {
+            file: { name: (draft.title || '草稿') + '.jpg', size: Math.round(draft.imageData.length * 3 / 4) },
+            dataUrl: draft.imageData,
+            type: draft.mediaType === 'video' ? 'video' : 'image'
+          };
+        } else {
+          this.currentFile = null;
+        }
+        this._renderPreview();
+        list.hidden = true;
+        if (window.showToast) showToast(`已恢复草稿「${draft.title || '未命名'}」，继续完善后发布`, 'info');
+      });
+      // 删除草稿
+      item.querySelector('.pub-draft-delete')?.addEventListener('click', async () => {
+        if (!confirm('确认删除这篇草稿？此操作不可撤销')) return;
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        try {
+          await deletePublishDraft(id);
+          await this._refreshDraftCount(true);
+          if (window.showToast) showToast('草稿已删除', 'info');
+        } catch (err) {
+          if (window.showToast) showToast('删除草稿失败：' + (err && err.message || '未知错误'), 'error');
+        }
+      });
     });
   },
 
@@ -261,6 +439,8 @@ const Publish = {
   async handlePublish(file, title, description, category) {
     const user = window.currentUser;
     if (window.Sentry) Sentry.addBreadcrumb({ category: 'publish', message: 'Artwork publish attempt', data: { title, category, fileType: file.type, fileName: file.file.name } });
+
+    // === Step 1: 先入库拿到 id ===
     const artwork = await addArtwork({
       title,
       description,
@@ -271,18 +451,137 @@ const Publish = {
       userId: user.id
     });
 
-    // 成功提示动画
-    this._successAnimation();
-
-    // 关闭弹窗
-    setTimeout(() => this._close(), 900);
-
-    // 刷新画廊
-    if (window.Gallery) {
-      setTimeout(() => Gallery.refreshGallery(), 1000);
+    // === Step 2: 前台 AI 评分（不阻塞用户操作，但在 confirm 前必须完成）===
+    const errEl = this.modalEl.querySelector('#pub-error');
+    const submitBtn = this.modalEl.querySelector('#pub-submit');
+    const isImage = file.type === 'image' || file.type === 'image/';
+    let scoreResult = null;
+    if (isImage) {
+      try {
+        scoreResult = await scoreArtwork(artwork.id, user.id);
+      } catch (err) {
+        console.warn('[Publish] 发布前评分失败:', err);
+        // 评分失败不阻塞发布（降级到无评分状态）
+      }
     }
-    if (typeof Sound !== 'undefined') Sound.playSound('success');
+
+    // === Step 3: 展示 confirm 面板（等级徽章 + 确认发布）===
+    this._showConfirmPanel(artwork, scoreResult, file, user);
   },
+
+  // ----------------------------------------------------------
+  // 发布 confirm 面板：展示等级徽章 + AI评分简要 + 确认/取消
+  // ----------------------------------------------------------
+  _showConfirmPanel(artwork, scoreResult, file, user) {
+    this._lastArtwork = artwork;
+    const modal = this.modalEl;
+    const form = modal.querySelector('#pub-form');
+    const isImage = file.type === 'image' || file.type === 'image/';
+
+    // 隐藏原表单内容
+    form.style.display = 'none';
+
+    // 评分结果
+    const score = scoreResult || (artwork && artwork._latestScore) || null;
+    const hasScore = !!score;
+    // M6a-1 修复：mapGrade 返回 {key,...} 对象，需取 .key；兼容旧字符串
+    const gradeKey = hasScore && score.grade ? String(score.grade.key || score.grade).toLowerCase() : null;
+    // M6a-1 修复：五维分数在 scores 嵌套对象中（FALLBACK_SCORE 为平铺，做兼容）
+    const sc = hasScore ? (score.scores || score) : null;
+
+    // 六等级徽章样式（直接内联，避免改 css/style.css 大面积）
+    const TIER_BADGE = {
+      sss: { bg: 'linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24)', text: '顶级神作 SSS', border: '#fbbf24' },
+      ss:  { bg: 'linear-gradient(135deg, #f97316, #ea580c)',         text: '大师级 SS',   border: '#f97316' },
+      s:   { bg: 'linear-gradient(135deg, #f59e0b, #d97706)',         text: '优秀 S',      border: '#f59e0b' },
+      a:   { bg: 'linear-gradient(135deg, #60a5fa, #3b82f6)',         text: '良好 A',      border: '#60a5fa' },
+      b:   { bg: 'linear-gradient(135deg, #34d399, #10b981)',         text: '合格 B',      border: '#34d399' },
+      c:   { bg: 'linear-gradient(135deg, #9ca3af, #6b7280)',         text: '待提升 C',    border: '#9ca3af' }
+    };
+    const meta = hasScore && TIER_BADGE[gradeKey]
+      ? TIER_BADGE[gradeKey]
+      : { bg: 'linear-gradient(135deg, #9ca3af, #6b7280)', text: '未评分', border: '#9ca3af' };
+
+    const confirm = document.createElement('div');
+    confirm.className = 'pub-confirm-panel';
+    confirm.innerHTML = `
+      <div class="pub-confirm-inner">
+        <h3 style="margin:0 0 12px;font-size:1.15rem;"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--dream-violet)"></i> AI评分完成</h3>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+          <img src="${file.dataUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border-color);" />
+          <div style="flex:1;">
+            <div style="font-weight:600;margin-bottom:4px;">${this._esc(artwork.title)}</div>
+            <div style="display:inline-block;padding:6px 14px;border-radius:20px;color:#fff;font-weight:700;font-size:0.95rem;background:${meta.bg};border:1.5px solid ${meta.border};box-shadow:0 4px 16px rgba(0,0,0,.15);">
+              ${meta.text}
+              ${hasScore ? '<span style="margin-left:6px;font-weight:500;opacity:.9;">⭐ ' + Number(score.totalScore || 0).toFixed(1) + '</span>' : ''}
+            </div>
+          </div>
+        </div>
+        ${hasScore ? `
+          <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.85rem;color:var(--text-secondary);">
+            <strong>五维评分：</strong>
+            构图 ${Number(sc.composition||0).toFixed(1)} ·
+            光影 ${Number(sc.lighting||0).toFixed(1)} ·
+            色彩 ${Number(sc.color||0).toFixed(1)} ·
+            清晰度 ${Number(sc.clarity||0).toFixed(1)} ·
+            主题 ${Number(sc.theme||0).toFixed(1)}
+          </div>
+          ${score.aiDescription ? '<div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.85rem;color:var(--text-secondary);line-height:1.6;"><em>💭 ' + this._esc(score.aiDescription).replace(/AI辅助生成/, '').trim() + '</em></div>' : ''}
+        ` : '<div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.85rem;color:var(--text-secondary);">AI评分暂不可用，作品将以无评分状态发布。</div>'}
+        <div style="display:flex;gap:10px;">
+          <button type="button" class="btn-ghost" id="pub-confirm-cancel" style="flex:1;padding:12px;">取消发布</button>
+          <button type="button" class="btn-primary" id="pub-confirm-ok" style="flex:2;padding:12px;">
+            <i class="fa-solid fa-paper-plane"></i> 确认发布
+          </button>
+        </div>
+      </div>
+    `;
+    form.parentNode.appendChild(confirm);
+
+    // 确认按钮
+    confirm.querySelector('#pub-confirm-ok').addEventListener('click', async () => {
+      if (typeof Sound !== 'undefined') Sound.playSound('success');
+      confirm.remove(); form.style.display = '';
+      this._onPublishConfirmed();
+    });
+    // 取消按钮：删除刚创建的 artwork
+    confirm.querySelector('#pub-confirm-cancel').addEventListener('click', async () => {
+      if (typeof Sound !== 'undefined') Sound.playSound('close');
+      try { await deleteArtwork(artwork.id); } catch (_) { /* ignore */ }
+      confirm.remove(); form.style.display = '';
+      errEl.textContent = '已取消发布';
+      const submitBtn = form.querySelector('#pub-submit');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> 发布作品';
+    });
+  },
+
+  // ----------------------------------------------------------
+  // 用户确认发布 → success 动画 + 关窗 + 刷新画廊
+  // ----------------------------------------------------------
+  async _onPublishConfirmed() {
+    try {
+      const lastArt = this._lastArtwork || null;
+      if (lastArt && lastArt.id && typeof updateArtwork === 'function') {
+        await updateArtwork(lastArt.id, { aiScored: true });
+      }
+      // 方案B：作品发布即上云（最小双写同步）
+      // fire-and-forget：云端断连/失败时静默降级，绝不阻塞发布与演示流程；
+      // 未登录云端账号时自动跳过，稍后可手动 CloudMigrate.run() 补迁移。
+      if (lastArt && lastArt.id && window.CloudMigrate && typeof window.CloudMigrate.syncArtworkToCloud === 'function') {
+        Promise.resolve(window.CloudMigrate.syncArtworkToCloud(lastArt.id)).catch(() => { /* 静默 */ });
+      }
+    } catch (_) { /* ignore */ }
+    this._successAnimation();
+    setTimeout(() => this._close(), 900);
+    if (window.Gallery) setTimeout(() => Gallery.refreshGallery(), 1000);
+  },
+
+  // ----------------------------------------------------------
+  // [废弃] 异步触发评分 — 已由前台 confirm 面板覆盖
+  // 保留空实现避免 _triggerAsyncAestheticScore 调用报错
+  // ----------------------------------------------------------
+  _triggerAsyncAestheticScore() { /* no-op */ },
 
   // ----------------------------------------------------------
   // 成功动画：覆盖层 + 勾选
@@ -331,6 +630,71 @@ const Publish = {
       if (typeof Sound !== 'undefined') Sound.playSound('click');
       this._generateAITitles();
     });
+  },
+
+  // ----------------------------------------------------------
+  // AI生成描述：绑定触发按钮（M1附属能力，复用 scoreImage 的 aiDescription）
+  // ----------------------------------------------------------
+  _bindAIDesc() {
+    const btn = this.modalEl.querySelector('#ai-desc-btn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (typeof Sound !== 'undefined') Sound.playSound('click');
+      this._generateAIDescription();
+    });
+  },
+
+  // ----------------------------------------------------------
+  // 调用 scoreImage 生成作品描述文案，填充到描述输入框并标注"AI辅助生成"
+  // ----------------------------------------------------------
+  async _generateAIDescription() {
+    const btn = this.modalEl.querySelector('#ai-desc-btn');
+    const panel = this.modalEl.querySelector('#ai-desc-panel');
+    const descInput = this.modalEl.querySelector('#pub-desc-input');
+
+    if (!this.currentFile) {
+      if (panel) {
+        panel.style.display = '';
+        panel.innerHTML = '<div class="ai-suggest-desc" style="color:var(--dream-pink);">请先上传作品图片后再使用AI生成描述</div>';
+      }
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="animation: fa-spin 1s linear infinite;"></i> AI生成中…';
+    }
+    if (panel) {
+      panel.style.display = '';
+      panel.innerHTML = '<div class="ai-suggest-title"><i class="fa-solid fa-spinner fa-spin"></i> AI正在理解作品并生成描述…</div>';
+    }
+
+    try {
+      const artworkMeta = {
+        title: this.modalEl.querySelector('#pub-title-input').value.trim() || '',
+        description: '',
+        tags: []
+      };
+      // 复用 scoreImage：一次调用同时产出评分与描述文案（M1附属入口）
+      const result = await scoreImage(this.currentFile.dataUrl, artworkMeta, { timeout: 45000 });
+      const aiDesc = result && result.aiDescription ? String(result.aiDescription).trim() : '';
+      if (!aiDesc) {
+        if (panel) panel.innerHTML = '<div class="ai-suggest-desc" style="color:var(--dream-pink);">AI未能生成描述，请重试或手动填写</div>';
+        return;
+      }
+      descInput.value = aiDesc;
+      if (panel) {
+        panel.innerHTML = '<div class="ai-suggest-desc" style="display:flex; align-items:center; gap:6px; color:var(--dream-mint);"><i class="fa-solid fa-circle-check"></i> 已应用AI生成描述，可编辑后确认</div>';
+      }
+      if (typeof Sound !== 'undefined') Sound.playSound('success');
+    } catch (err) {
+      if (panel) panel.innerHTML = `<div class="ai-suggest-desc" style="color:var(--dream-pink);">${this._esc(err && err.message ? err.message : 'AI生成描述失败，请重试')}</div>`;
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI生成描述✨';
+      }
+    }
   },
 
   // ----------------------------------------------------------

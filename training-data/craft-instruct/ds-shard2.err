@@ -1,0 +1,38 @@
+
+校验失败 [做一个冰箱贴，把马头墙元素融进去]: layout postcard-torn 与 craftType card 不匹配
+
+校验失败 [做一个扎染的礼物，能体现文化底蕴]: 标题汉字数 5 不在 6-16
+
+校验失败 [把四方街做成文创纪念品]: 标题汉字数 5 不在 6-16
+
+校验失败 [景德镇陶阳里风景的冰箱贴]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [飞天主题的小众设计，不落俗套]: palette 含非法色名: 土红,石青,月白
+
+校验失败 [挂件上印敦煌纹样，古典一点]: layout postcard-circle 与 craftType poster 不匹配
+
+校验失败 [挂件上印三星堆纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [书签上印宏村纹样，古典一点]: layout postcard-torn 与 craftType card 不匹配
+
+校验失败 [宏村主题的小众设计，不落俗套]: layout postcard-torn 与 craftType poster 不匹配
+
+校验失败 [挂件上印徽派纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [挂件上印皮影纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [挂件上印苗银纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [挂件上印京剧纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [书签上印骆驼俑纹样，古典一点]: layout postcard-torn 与 craftType card 不匹配
+
+校验失败 [骆驼俑主题的小众设计，不落俗套]: 标题汉字数 5 不在 6-16
+
+校验失败 [挂件上印唐三彩纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [挂件上印故宫纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [书签上印蜡染纹样，古典一点]: layout postcard-torn 与 craftType card 不匹配
+
+校验失败 [挂件上印蓝染纹样，古典一点]: layout postcard-circle 与 craftType card 不匹配

@@ -1,0 +1,11 @@
+{
+  "menuToggleExists": true,
+  "fabSize": {
+    "w": 44,
+    "h": 44
+  },
+  "bubbleVisible": false,
+  "below44": 16,
+  "totalBtns": 61,
+  "overlapCount": 14
+}

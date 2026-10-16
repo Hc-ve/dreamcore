@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dreamcore · UI 诊断报告（文旅文创主题契合度专项）</title>
+<style>
+:root{
+  --paper:#faf6ee; --card:#fffdf9; --ink:#1a1614; --ink2:#3d3630; --ink3:#6b6156;
+  --cinnabar:#a8261f; --indigo:#2d4a6b; --jade:#4a6b52; --ochre:#b8892a;
+  --line:#e6dccb; --line2:#f0e8d8;
+}
+[data-theme="dark"]{
+  --paper:#14110e; --card:#1e1a16; --ink:#f2ece1; --ink2:#d4cbb9; --ink3:#a89a88;
+  --cinnabar:#d4564c; --indigo:#7da2c9; --jade:#8fb894; --ochre:#d9b25e;
+  --line:#3a3228; --line2:#2a241e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.75;padding-top:56px}
+.serif{font-family:"Noto Serif SC","Songti SC",STSong,serif}
+/* 顶栏 */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px;z-index:99}
+.topbar .logo{font-weight:700;font-size:16px;letter-spacing:1px}
+.topbar .logo b{color:var(--cinnabar)}
+.topbar nav{display:flex;gap:4px;margin-left:auto}
+.topbar nav a{color:var(--ink2);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:4px}
+.topbar nav a:hover{background:var(--line2);color:var(--cinnabar)}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px}
+/* 封面 */
+.cover{border:1px solid var(--line);background:var(--card);border-radius:4px;padding:36px 40px;position:relative;overflow:hidden}
+.cover::after{content:'診';position:absolute;right:-20px;bottom:-46px;font-size:200px;font-family:"Noto Serif SC",serif;opacity:.05;color:var(--cinnabar)}
+.cover h1{font-size:34px;line-height:1.3;letter-spacing:2px}
+.cover h1 b{color:var(--cinnabar)}
+.cover .sub{color:var(--ink3);margin-top:8px;font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:24px;margin-top:24px;padding-top:20px;border-top:1px dashed var(--line)}
+.meta div{font-size:13px;color:var(--ink3)}
+.meta b{display:block;color:var(--ink);font-size:14px;margin-top:2px;font-weight:600}
+/* 章节 */
+section{margin-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:24px}
+.sec-head .no{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--cinnabar);font-weight:600;letter-spacing:2px}
+.sec-head h2{font-size:24px;letter-spacing:1px}
+.sec-head .en{margin-left:auto;font-size:11px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase}
+h3{font-size:17px;margin:28px 0 12px;color:var(--ink)}
+h3::before{content:'§';color:var(--cinnabar);margin-right:8px;font-weight:400}
+p{color:var(--ink2);margin-bottom:10px}
+strong{color:var(--ink)}
+/* 截图 */
+figure{border:1px solid var(--line);background:var(--card);border-radius:4px;overflow:hidden;margin:20px 0}
+figure img{width:100%;display:block;border-bottom:1px solid var(--line)}
+figcaption{padding:14px 18px;font-size:13px;color:var(--ink2)}
+figcaption b{color:var(--cinnabar);margin-right:8px}
+.shot-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.shot-grid{grid-template-columns:1fr}}
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:16px 0;border:1px solid var(--line)}
+th{background:var(--line2);text-align:left;padding:10px 12px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--ink2)}
+tr:last-child td{border-bottom:none}
+td code, p code, li code{background:var(--line2);padding:1px 6px;border-radius:3px;font-size:12px;font-family:Consolas,monospace;color:var(--cinnabar)}
+/* 徽章 */
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:2px;font-weight:600;letter-spacing:.5px;white-space:nowrap}
+.t-p0{background:var(--cinnabar);color:#fff}
+.t-p1{background:var(--ochre);color:#fff}
+.t-p2{background:var(--indigo);color:#fff}
+.t-ok{background:var(--jade);color:#fff}
+.t-mut{background:var(--line2);color:var(--ink3)}
+/* 评分条 */
+.score-row{display:grid;grid-template-columns:150px 1fr 64px;gap:12px;align-items:center;margin-bottom:10px;font-size:13px}
+.score-row .bar{height:8px;background:var(--line2);border-radius:1px;overflow:hidden}
+.score-row .bar i{display:block;height:100%;background:var(--cinnabar)}
+.score-row .num{font-family:"Cormorant Garamond",serif;font-weight:600;text-align:right;color:var(--ink)}
+.bench{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:16px 0}
+.bench .b{border:1px solid var(--line);background:var(--card);padding:14px;text-align:center}
+.bench .b .name{font-weight:600;font-size:13px}
+.bench .b .s{font-family:"Cormorant Garamond",serif;font-size:26px;color:var(--cinnabar);font-weight:600}
+.bench .b .d{font-size:11px;color:var(--ink3);line-height:1.5}
+@media(max-width:800px){.bench{grid-template-columns:repeat(2,1fr)}}
+/* 卡片 */
+.callout{border-left:3px solid var(--cinnabar);background:var(--line2);padding:14px 18px;border-radius:0 4px 4px 0;margin:16px 0;font-size:13.5px;color:var(--ink2)}
+.callout b{color:var(--cinnabar)}
+.ok-list li,.bad-list li{margin:6px 0 6px 20px;color:var(--ink2)}
+.ok-list li::marker{content:'✓ ';color:var(--jade)}
+.bad-list li::marker{content:'✕ ';color:var(--cinnabar)}
+.footer-note{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3);text-align:center}
+.toc{columns:2;font-size:13.5px;margin:16px 0}
+.toc a{color:var(--indigo);text-decoration:none;display:block;padding:3px 0}
+@media(max-width:700px){.toc{columns:1}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo serif">Dream<b>core</b> · 诊断</span>
+  <nav>
+    <a href="#s1">现状截图</a><a href="#s2">七维拆解</a><a href="#s3">问题清单</a><a href="#s4">契合度对标</a><a href="#s5">结论</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+<!-- 封面 -->
+<div class="cover">
+  <h1 class="serif">Dreamcore <b>UI 诊断报告</b><br>文旅文创主题契合度专项</h1>
+  <div class="sub">「墨韵丹青」主题落地后的全面体检 —— 基于真实渲染证据与量化指标</div>
+  <div class="meta">
+    <div>评估对象<b>http://localhost:5173/（DEV 实时渲染）</b></div>
+    <div>项目定位<b>AI+文旅文创艺术共创社区（竞赛交付版 v1.0.0）</b></div>
+    <div>目标用户<b>景区 · 博物馆 · 非遗传承人 · 数字创作者</b></div>
+    <div>采集方式<b>Playwright Chromium 1440×900 / 390×844 · 7 节点截图 + 计算样式提取</b></div>
+    <div>报告日期<b>2026-10-15</b></div>
+  </div>
+</div>
+
+<!-- 0 结论速览 -->
+<section>
+  <div class="sec-head"><span class="no">00</span><h2 class="serif">结论速览</h2><span class="en">Executive Summary</span></div>
+  <p><strong>总体判断：主题迁移已完成「表层令牌」，但未完成「体系收口」。</strong>宣纸底、朱砂主色、宋体标题、4px 圆角、慢出动效等核心令牌已生效且质量达标；但「风格主题·默认」档仍是旧紫调世界，金色徽章体系、粒子配色、Hero 光斑、小梦挂件四处残留旧身份，形成「一纸宣墨、半窗紫梦」的割裂感。另有两处排版级缺陷（Hero 孤字断行、移动端气泡溢出）需要优先修复。</p>
+  <table>
+    <tr><th style="width:90px">评估维度</th><th style="width:110px">得分 / 10</th><th>一句话结论</th></tr>
+    <tr><td><strong>UI 风格主题</strong></td><td><b style="color:var(--cinnabar)">7.0</b></td><td>令牌层已东方化，但默认风格档与粒子系统仍输出紫粉调，新旧并存</td></tr>
+    <tr><td><strong>视觉表现</strong></td><td><b style="color:var(--cinnabar)">7.5</b></td><td>纸纹肌理与回纹装饰到位；Hero 光斑配色、emoji 图标拉低完成度</td></tr>
+    <tr><td><strong>色彩体系</strong></td><td><b style="color:var(--cinnabar)">7.0</b></td><td>主链路（底/字/主按钮）达标 AAA；金色徽章、紫色光斑游离于体系外</td></tr>
+    <tr><td><strong>字体层级</strong></td><td><b style="color:var(--cinnabar)">7.5</b></td><td>宋黑双层结构正确；但 96px 大标题孤字断行是排版事故，字阶偏粗放</td></tr>
+    <tr><td><strong>组件样式</strong></td><td><b style="color:var(--cinnabar)">7.5</b></td><td>卡片/导航/抽屉纸感统一；徽章体系金紫混杂，滑块轨道无填充</td></tr>
+    <tr><td><strong>布局结构</strong></td><td><b style="color:var(--cinnabar)">8.0</b></td><td>栅格清晰、移动端无横向溢出；内容显现强依赖滚动动画是结构性风险</td></tr>
+    <tr><td><strong>交互体验</strong></td><td><b style="color:var(--cinnabar)">8.0</b></td><td>三态主题/字号/亮度控制完备；动效曲线统一，小梦挂件负体验</td></tr>
+  </table>
+</section>
+
+<!-- 1 现状截图 -->
+<section id="s1">
+  <div class="sec-head"><span class="no">01</span><h2 class="serif">关键节点现状截图说明</h2><span class="en">Evidence · Screenshots</span></div>
+  <p>以下 7 张截图均于 2026-10-15 从 DEV 环境（http://localhost:5173）实拍，原始文件存于 <code>docs/ui-audit/</code>，量化数据存于 <code>docs/ui-audit/metrics.json</code>。</p>
+
+  <figure>
+    <img src="ui-audit/shot-01-hero-light.png" alt="首页 Hero 浅色主题">
+    <figcaption><b>图 1 · 首页 Hero（浅色 1440×900）</b>宣纸底+纸纹噪点已生效，朱砂主按钮正确；但① H1「让传统美学数字新<strong>生</strong>」96px 断行产生单字孤行；② 背景粉紫光斑（左上玫粉、右下薰衣草紫）与墨点粒子仍是旧紫调；③「今日文化话语」卡片用粉色莲花 emoji。三处均与「东方文旅」叙事冲突。</figcaption>
+  </figure>
+
+  <div class="shot-grid">
+    <figure>
+      <img src="ui-audit/shot-03-gallery.png" alt="画廊瀑布流">
+      <figcaption><b>图 3 · 画廊瀑布流（浅色）</b>四栏网格清晰、宋体作品名、评分黑章正确。问题：<strong>评级徽章「SSS·顶级神作 / SS·大师级」为鎏金底+勋章 emoji</strong>，是全页饱和度最高的异物；卡片角花需 hover 才显现，静态信息密度偏平。</figcaption>
+    </figure>
+    <figure>
+      <img src="ui-audit/shot-04-leaderboard.png" alt="排行榜">
+      <figcaption><b>图 4 · 创作者排行榜（弹层）</b>三甲宋体「一/二/三」+ 朱砂/靛青/石绿描边已正确落地 ✓。残留问题：<strong>SSS/SS 徽章与行内分数均为金黄</strong>，奖杯为 🏆 emoji，「总榜」选中态是墨绿胶囊而非朱砂——同一弹层内三套色彩语言。</figcaption>
+    </figure>
+    <figure>
+      <img src="ui-audit/shot-06-settings.png" alt="设置抽屉">
+      <figcaption><b>图 6 · 快捷设置抽屉（深色）</b>三态主题（浅选/深/视频）、四风格主题、三档字号、亮度滑轨、音效开关，信息架构完整 ✓，选中态朱砂正确 ✓。<strong>缺陷：亮度滑轨无填充进度色，100% 时轨道仍呈灰白，状态不可读</strong>。</figcaption>
+    </figure>
+    <figure>
+      <img src="ui-audit/shot-07-mobile.png" alt="移动端视口">
+      <figcaption><b>图 7 · 移动端 390×844</b>布局无横向溢出（scrollWidth=390=clientWidth ✓），按钮全宽触达良好。<strong>缺陷：「小梦」气泡「周末愉快~要不要欣赏…」在右缘被垂直裁切，且遮挡「今日文化话语」卡片文字</strong>——挂件在窄屏缺乏收合策略。</figcaption>
+    </figure>
+  </div>
+
+  <div class="shot-grid">
+    <figure>
+      <img src="ui-audit/shot-02-light-full.png" alt="浅色全页">
+      <figcaption><b>图 2 · 浅色全页截图</b>⚠️ <strong>结构性发现</strong>：fullPage 截图下 Hero 以下整片空白（文档高 3061px）——画廊等内容依赖滚动触发的入场动画（IntersectionObserver/GSAP），未滚动即不可见。对爬虫、打印、无 JS、以及「一张长图看全站」的评审场景均不友好。</figcaption>
+    </figure>
+    <figure>
+      <img src="ui-audit/shot-05-footer-dark.png" alt="深色画廊">
+      <figcaption><b>图 5 · 深色主题画廊</b>墨底 #14110e + 熟宣字 #f2ece1 层级清晰 ✓。但金色徽章在暗底上更刺眼；「小梦」粉紫气泡与二次元形象在墨色世界中违和感被进一步放大；右下角挂件与「欢迎回来」气泡 Again 遮挡内容。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 2 七维拆解 -->
+<section id="s2">
+  <div class="sec-head"><span class="no">02</span><h2 class="serif">七维度全面拆解 · 对标行业标准</h2><span class="en">7-Dimension Audit</span></div>
+
+  <h3>维度一 · UI 风格主题</h3>
+  <p><strong>现状</strong>：表层令牌（<code>--bg-dark:#faf6ee</code> 宣纸 / <code>--accent:#a8261f</code> 朱砂 / <code>--radius:4px</code> / <code>--lg-blur:10px</code>）已按「墨韵丹青」落地，深浅双主题完整。<strong>根因级问题</strong>：页面存在风格主题机制 <code>[data-style="guofeng"|"feiyi"|"minimal"]</code>（style.css L6387-6454），而<strong>默认档（无 data-style）仍保留旧紫调令牌</strong>（<code>--dream-gold:#fff4c2</code> 等）；粒子系统第三主题回退色为紫色系 <code>[0x8e44ad, 0x9b59b6, 0x3498db, 0x1abc9c]</code>（particles.js L66）——「默认」与「国风」两档视觉语言分裂，首访用户看到的是紫调。</p>
+  <p><strong>行业标准</strong>：主流文旅文创站（故宫文创、敦煌研究院、苏州博物馆、三星堆文创）均做到<strong>「主题即身份」</strong>——矿物色取自馆藏文物、无第二套并行色彩语言、氛围层（粒子/光斑/纹理）与主题色严格同源。</p>
+
+  <h3>维度二 · 视觉表现</h3>
+  <p><strong>已达</strong>：SVG feTurbulence 宣纸肌理（2.5% 噪点）、页脚回纹分隔带、区块标题回纹、卡片 hover 角花、Modal 缠枝渐变边——装饰语言有明确的东方语法。<strong>差距</strong>：① Hero 粉紫光斑破坏纸墨氛围（图1）；② emoji 直接充当 UI 图标（🏆 奖杯、🏅 勋章、🌸 莲花、🥇🥈🥉 以 font-size:0 隐匿但仍残留 DOM）；③ 「小梦」挂件为粉紫二次元贴纸风，与全站气质断层。行业做法是以<strong>线性图标 + 印章/题跋元素</strong>承载功能图标，装饰密度遵循「疏可走马、密不透风」。</p>
+
+  <h3>维度三 · 整体色彩体系</h3>
+  <p><strong>已达</strong>（实测计算样式）：浅色正文对比度 <strong>15.9:1</strong>（#1a1614 / #faf6ee，WCAG AAA），次级文本 10.4:1，朱砂按钮白字 7.4:1；深色正文 14.2:1——主链路全部达标。<strong>游离色</strong>：① 评级徽章 <code>--grade-color</code> 默认 <code>#fbbf24</code>（style.css L6160-6162）+ <code>#ffd700</code> 硬编码（L6485）；② 紫粒子与紫光斑；③ 全站统计 <strong>333 处硬编码十六进制色</strong>散布于 style.css，仅 20 处 <code>!important</code>（克制 ✓），但新令牌覆盖率不足五成。行业标准是「一色一职」：色彩取自矿物颜料（朱砂/黛青/石绿/赭石/缃金），每色绑定明确语义。</p>
+
+  <h3>维度四 · 字体层级规范</h3>
+  <p><strong>已达</strong>：宋黑双层结构正确——H1/H2 用 Noto Serif SC（600），正文 Noto Sans SC，数字西文 Cormorant Garamond，符合「标题衬线、正文无衬线」的文博排版惯例。<strong>事故</strong>：H1 96px 在 1440px 视口断行为「当AI遇见文旅 / 让传统美学数字新 / <strong>生</strong>」——末行孤字（图1），属排版硬伤；<strong>粗放</strong>：h2 52px 偏大挤压版心，中间字阶（h3/lead/caption）缺乏规范刻度；<strong>风险</strong>：字体经 <code>fonts.loli.net</code> CDN 加载（index.html L140-143），离线演示（竞赛场景常态）会整体回退系统字体，气质漂移。行业标准提供 5-6 级固定字阶 + <code>clamp()</code> 流式缩放 + 关键标题 <code>text-wrap:balance</code> 防孤字。</p>
+
+  <h3>维度五 · 通用组件样式</h3>
+  <p><strong>已达</strong>：卡片纸感 1px 边 + 4px 圆角统一，导航毛玻璃克制（blur 8px），设置抽屉控件齐整。<strong>差距</strong>：① 徽章体系三套语言并存（黑章评分/鎏金评级/彩色标签）未收敛为「印章」隐喻；② 亮度滑轨无填充进度；③ 排行榜选中态用墨绿胶囊而非主题色；④ 徽章内 emoji 与文字混排。行业范式：评级用<strong>方印章</strong>（朱砂底白字「神」/赭石「妙」/黛青「逸」），一眼可读且自带文化叙事。</p>
+
+  <h3>维度六 · 页面布局结构</h3>
+  <p><strong>已达</strong>：12imgs/12cards 首页信息密度合理；移动端 390px 无横向溢出（实测 scrollWidth=clientWidth=390）；页脚回纹带完整。<strong>结构性风险</strong>：① 内容显现强依赖滚动动画（图2 全页空白实证）——违背渐进增强；② Hero 占首屏 100% 高度后「今日文化话语」折叠在 900px 视口外，首屏信息效率偏低；③ 间距体系未见 8pt 基准刻度。行业范式：核心内容 CSS 直出、动画仅作增强（<code>prefers-reduced-motion</code> 与无 JS 均可读），首屏即见「内容钩子」。</p>
+
+  <h3>维度七 · 用户交互体验</h3>
+  <p><strong>已达</strong>：动效曲线统一 <code>cubic-bezier(.22,.61,.36,1)</code> 慢出落笔感（实测按钮 transition ✓）；三态主题（含「视频」观影模式）是同类站点少见的贴心功能；字号/亮度即时生效。<strong>负体验</strong>：① 小梦挂件移动端遮挡+裁切（图7）；② 排行榜以弹层呈现打断浏览动线（图4 背景），返回需额外交互；③ hover 才显现的角花缺少静态 rewarded 细节。行业范式：数字人/吉祥物挂件在移动端默认收合为头像点，点击展开；榜单用页面承载并用锚点直达。</p>
+</section>
+
+<!-- 3 问题清单 -->
+<section id="s3">
+  <div class="sec-head"><span class="no">03</span><h2 class="serif">可量化问题清单</h2><span class="en">Quantified Issues</span></div>
+  <p>共 13 项：P0 排版/遮挡级 2 项，P1 体系级 6 项，P2 打磨级 5 项。每项均附可复现证据。</p>
+  <table>
+    <tr><th style="width:52px">级别</th><th style="width:44px">#</th><th style="width:96px">维度</th><th>问题描述（量化证据）</th><th style="width:210px">证据位置</th></tr>
+    <tr><td><span class="tag t-p0">P0</span></td><td>Q-01</td><td>字体层级</td><td><strong>H1 96px 断行孤字「生」</strong>：1440px 视口下三行断行，末行仅 1 字；标题文案 16 字无标点无断点控制</td><td>图1/图2；metrics.json h1.fontSize=96px</td></tr>
+    <tr><td><span class="tag t-p0">P0</span></td><td>Q-02</td><td>交互体验</td><td><strong>移动端小梦气泡溢出+遮挡</strong>：气泡文本右缘垂直裁切，遮挡「今日文化话语」卡片正文</td><td>图7；390×844 实拍</td></tr>
+    <tr><td><span class="tag t-p1">P1</span></td><td>Q-03</td><td>UI 风格</td><td><strong>默认风格档仍为旧紫调</strong>：粒子第三主题回退色 <code>[0x8e44ad,0x9b59b6,…]</code> 紫系；默认档令牌 <code>--dream-gold:#fff4c2</code> 等未迁移；Hero 粉紫光斑与之同源</td><td>particles.js L66；style.css L12/6394；图1</td></tr>
+    <tr><td><span class="tag t-p1">P1</span></td><td>Q-04</td><td>色彩体系</td><td><strong>金色徽章未迁入东方色</strong>：<code>--grade-color</code> 默认 <code>#fbbf24</code>、<code>.lb-title i</code> 硬编码 <code>#ffd700</code>；画廊 SSS/SS 徽章 + 排行榜分数/奖杯均金黄</td><td>style.css L6145-6162/L6485；图3/图4</td></tr>
+    <tr><td><span class="tag t-p1">P1</span></td><td>Q-05</td><td>布局结构</td><td><strong>内容显现强依赖滚动动画</strong>：未滚动时文档 3061px 中 Hero 以下不可见（fullPage 截图空白），违背渐进增强，影响爬虫/打印/无 JS 场景</td><td>图2 实证</td></tr>
+    <tr><td><span class="tag t-p1">P1</span></td><td>Q-06</td><td>视觉表现</td><td><strong>emoji 充当功能图标</strong>：🏆 奖杯、🏅 勋章、🌸 莲花、隐藏态 🥇🥈🥉（font-size:0 残留 DOM，读屏软件仍会朗读「银牌」造成噪音）</td><td>图3/图4；metrics.json medalText 含 🥈</td></tr>
+    <tr><td><span class="tag t-p1">P1</span></td><td>Q-07</td><td>字体层级</td><td><strong>字体依赖外部 CDN</strong>：<code>fonts.loli.net</code> 加载 4 族字体，离线演示回退系统字体，气质漂移（竞赛评审常见离线环境）</td><td>index.html L140-143</td></tr>
+    <tr><td><span class="tag t-p1">P1</span></td><td>Q-08</td><td>UI 风格</td><td><strong>小梦挂件粉紫二次元风</strong>与墨韵主题断层（深色下更甚）</td><td>图5/图7</td></tr>
+    <tr><td><span class="tag t-p2">P2</span></td><td>Q-09</td><td>色彩体系</td><td>令牌缺口：<code>--accent-hover</code> 与 <code>--font-serif</code> 值为空，hover 态与衬线字族未令牌化</td><td>metrics.json vars</td></tr>
+    <tr><td><span class="tag t-p2">P2</span></td><td>Q-10</td><td>组件样式</td><td>亮度滑轨无填充进度色，数值 100% 与轨道视觉不对应（范围 50-150 时 100 居中，但无刻度无填充难以理解）</td><td>图6</td></tr>
+    <tr><td><span class="tag t-p2">P2</span></td><td>Q-11</td><td>组件样式</td><td>排行榜「总榜」选中态为墨绿胶囊，游离于朱砂/靛青/石绿体系之外</td><td>图4</td></tr>
+    <tr><td><span class="tag t-p2">P2</span></td><td>Q-12</td><td>布局结构</td><td>深色卡片边框沿用 <code>rgba(26,22,20,.08)</code>（近黑），暗底上不可见，卡片分隔仅靠底色差</td><td>metrics.json dark.card.border</td></tr>
+    <tr><td><span class="tag t-p2">P2</span></td><td>Q-13</td><td>交互体验</td><td>占位链接 <code>a[href="#"]</code> 残留 1 处；全站 333 处硬编码色仅少部分收口进令牌</td><td>metrics.json counts；style.css 全文</td></tr>
+  </table>
+</section>
+
+<!-- 4 契合度对标 -->
+<section id="s4">
+  <div class="sec-head"><span class="no">04</span><h2 class="serif">文旅文创主题契合度 · 专项差距分析</h2><span class="en">Benchmark &amp; Gap</span></div>
+  <p>对标国内文旅文创数字产品的五个代表：故宫文创（商业衍生标杆）、每日故宫（数字器物美学）、敦煌「数字敦煌」（壁画色体系）、苏州博物馆官网（水墨极简）、三星堆文创（考古神秘感）。五个维度 10 分制评分。</p>
+
+  <div class="bench">
+    <div class="b"><div class="name">Dreamcore 现状</div><div class="s">7.2</div><div class="d">令牌已迁，体系未收口</div></div>
+    <div class="b"><div class="name">故宫文创</div><div class="s">9.1</div><div class="d">朱红明黄 · 印章叙事 · 文物同源色</div></div>
+    <div class="b"><div class="name">每日故宫</div><div class="s">8.8</div><div class="d">深底金字 · 一日一器的仪式感</div></div>
+    <div class="b"><div class="name">数字敦煌</div><div class="s">8.9</div><div class="d">土黄土青石绿 · 壁画肌理直取</div></div>
+    <div class="b"><div class="name">苏州博物馆</div><div class="s">8.5</div><div class="d">水墨灰白 · 大留白 · 几何窗景</div></div>
+  </div>
+
+  <h3>分维度差距雷达（Dreamcore → 行业均值）</h3>
+  <table>
+    <tr><th>维度</th><th style="width:70px">Dreamcore</th><th style="width:70px">行业均值</th><th>差距根源</th></tr>
+    <tr><td><strong>色彩文化性</strong></td><td>7.0</td><td>9.0</td><td>主色已矿物化 ✓，但金色/紫色双残留（Q-03/Q-04），色彩「同源性」断裂——行业做法是全部色值可溯源到具体文物/壁画取色</td></tr>
+    <tr><td><strong>字体气质</strong></td><td>7.5</td><td>8.6</td><td>宋黑双层正确 ✓，缺孤字控制与字阶刻度（Q-01），缺竖排/题跋等仪式性排法</td></tr>
+    <tr><td><strong>纹样与装饰语言</strong></td><td>7.0</td><td>8.8</td><td>回纹/角花/缠枝已有 ✓，但 emoji 混入（Q-06）、纹样密度过低、缺少印章/篆刻锚点元素</td></tr>
+    <tr><td><strong>布局留白</strong></td><td>7.5</td><td>8.7</td><td>网格清晰 ✓，但首屏信息效率低、滚动显现依赖（Q-05）、8pt 间距体系未建立</td></tr>
+    <tr><td><strong>文化叙事与仪式感</strong></td><td>7.0</td><td>9.2</td><td>「今日文化话语」是好的叙事锚点 ✓，但评级/徽章/数字人未参与叙事——行业让每个组件都讲文化（印章、器物卡、卷轴展开）</td></tr>
+  </table>
+
+  <div class="callout"><b>专项结论：</b>Dreamcore 的东方化改造「骨相已立、皮相未丰」。骨架层（令牌/字体结构/动效曲线/装饰语法）已达行业 8 分水准；皮相层（色彩同源性、图标语言、组件叙事、首屏仪式感）仍是 6.5-7 分的「泛国风」。差距的本质不是缺元素，而是<strong>新旧两套身份并行</strong>——收口即可上一个台阶，无需推倒重来。</div>
+</section>
+
+<!-- 5 结论 -->
+<section id="s5">
+  <div class="sec-head"><span class="no">05</span><h2 class="serif">诊断结论与优先级建议</h2><span class="en">Conclusion</span></div>
+  <ul class="ok-list">
+    <li><strong>保持</strong>：宣纸/墨底双主题令牌、宋黑双层字体、慢出动效曲线、三态主题控制、回纹装饰语法、移动端无溢出——均已达标，不动。</li>
+    <li><strong>先修（P0，半天内）</strong>：Q-01 Hero 孤字断行；Q-02 移动端小梦气泡裁切遮挡。</li>
+    <li><strong>收口（P1，核心战役）</strong>：Q-03 默认风格档紫调迁移；Q-04 金色徽章印章化；Q-05 滚动显现改渐进增强；Q-06 emoji→SVG 图标；Q-07 字体本地化兜底；Q-08 小梦水墨化。</li>
+    <li><strong>打磨（P2）</strong>：空令牌补齐、滑块填充、选中态统一、暗色边框、硬编码色收口。</li>
+  </ul>
+  <p style="margin-top:16px">以上问题的逐项解决方案、涉及文件路径与验收标准，见配套文档 <strong>《UI 布局优化实施方案》</strong>（本报告的第二阶段产出）。</p>
+</section>
+
+<div class="footer-note">Dreamcore 项目组 · UI 诊断报告 v2 · 2026-10-15 · 证据存档 docs/ui-audit/（7 截图 + metrics.json）· 本报告由实拍渲染证据驱动生成</div>
+</div>
+</body>
+</html>

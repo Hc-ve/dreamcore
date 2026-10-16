@@ -1,0 +1,16 @@
+{
+  "modalOpen": false,
+  "modalOpenAlt": true,
+  "fabHidden": true,
+  "modalRadii": [
+    {
+      "cls": "modal-box welcome-box glass",
+      "radius": "8px"
+    },
+    {
+      "cls": "ai-dialog",
+      "radius": "8px"
+    }
+  ],
+  "modalOpenBodyClass": "gsap-ready modal-open"
+}

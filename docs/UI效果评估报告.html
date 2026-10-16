@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dreamcore UI 效果评估报告 · 墨韵丹青 2.0 验收</title>
+<style>
+  :root {
+    --bg: #faf6ee; --card: #fffdf9; --ink: #1a1614; --ink-2: #3d3630; --ink-3: #6b6157;
+    --line: #e6dccb; --cinnabar: #a8261f; --indigo: #2d4a6b; --jade: #4a6b52; --amber: #b8892a;
+    --p0: #a8261f; --p1: #b8892a; --p2: #4a6b52;
+  }
+  [data-theme="dark"] {
+    --bg: #14110e; --card: #1e1a16; --ink: #f2ece1; --ink-2: #d4cbb9; --ink-3: #9c8f7a;
+    --line: #3a3228; --cinnabar: #d4564c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.75;
+    transition: background .3s, color .3s;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px 80px; }
+
+  /* ---------- 封面 ---------- */
+  header.cover { padding: 72px 0 40px; border-bottom: 1px solid var(--line); margin-bottom: 48px; position: relative; }
+  .cover .kicker { font-size: 13px; letter-spacing: .35em; color: var(--cinnabar); font-weight: 600; margin-bottom: 18px; }
+  .cover h1 { font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif; font-size: 44px; font-weight: 700; line-height: 1.25; margin-bottom: 16px; }
+  .cover .sub { color: var(--ink-3); font-size: 15px; }
+  .cover .meta { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 28px; font-size: 13px; color: var(--ink-3); }
+  .cover .meta b { color: var(--ink-2); font-weight: 600; }
+  .theme-btn { position: absolute; top: 72px; right: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+    border-radius: 4px; padding: 7px 14px; font-size: 13px; cursor: pointer; }
+  .theme-btn:hover { border-color: var(--cinnabar); color: var(--cinnabar); }
+
+  /* ---------- 评分总览 ---------- */
+  .scoreboard { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center; background: var(--card);
+    border: 1px solid var(--line); border-radius: 4px; padding: 40px; margin-bottom: 56px; }
+  .score-total { text-align: center; }
+  .score-total .num { font-family: Georgia, serif; font-size: 88px; font-weight: 700; color: var(--cinnabar); line-height: 1; }
+  .score-total .num small { font-size: 30px; color: var(--ink-3); }
+  .score-total .lbl { margin-top: 8px; font-size: 14px; color: var(--ink-3); letter-spacing: .15em; }
+  .score-total .verdict { margin-top: 14px; display: inline-block; border: 1px solid var(--amber); color: var(--amber);
+    border-radius: 2px; padding: 3px 12px; font-size: 12px; letter-spacing: .1em; }
+  .bars { display: flex; flex-direction: column; gap: 18px; }
+  .bar-row { display: grid; grid-template-columns: 200px 1fr 52px; gap: 14px; align-items: center; font-size: 14px; }
+  .bar-row .name { color: var(--ink-2); }
+  .bar-track { height: 10px; background: color-mix(in srgb, var(--ink) 8%, transparent); border-radius: 1px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 1px; transition: width 1s ease; }
+  .bar-val { font-family: Georgia, serif; font-weight: 700; text-align: right; }
+  .s-good { background: var(--jade); } .s-mid { background: var(--amber); } .s-low { background: var(--cinnabar); }
+
+  h2.sec { font-family: "Noto Serif SC", serif; font-size: 26px; font-weight: 700; margin: 56px 0 8px;
+    padding-left: 14px; border-left: 4px solid var(--cinnabar); }
+  .sec-desc { color: var(--ink-3); font-size: 14px; margin-bottom: 28px; padding-left: 18px; }
+
+  /* ---------- 维度卡片 ---------- */
+  .dim { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 32px; margin-bottom: 28px; }
+  .dim-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+  .dim-head h3 { font-family: "Noto Serif SC", serif; font-size: 20px; }
+  .dim-score { font-family: Georgia, serif; font-size: 30px; font-weight: 700; }
+  .dim-score small { font-size: 15px; color: var(--ink-3); }
+  .dim-tag { font-size: 12px; padding: 2px 10px; border-radius: 2px; margin-left: 10px; vertical-align: middle; letter-spacing: .1em; }
+  .tag-good { background: color-mix(in srgb, var(--jade) 12%, transparent); color: var(--jade); border: 1px solid var(--jade); }
+  .tag-mid { background: color-mix(in srgb, var(--amber) 12%, transparent); color: var(--amber); border: 1px solid var(--amber); }
+  .tag-low { background: color-mix(in srgb, var(--cinnabar) 10%, transparent); color: var(--cinnabar); border: 1px solid var(--cinnabar); }
+
+  .dim h4 { font-size: 14px; margin: 22px 0 10px; color: var(--ink); }
+  .dim h4::before { content: "▎"; color: var(--cinnabar); }
+  .dim ul { padding-left: 20px; font-size: 14px; color: var(--ink-2); }
+  .dim ul li { margin-bottom: 7px; }
+  .dim ul.good li::marker { color: var(--jade); }
+  .dim ul.issue li::marker { color: var(--cinnabar); }
+  code { background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 1px 6px; border-radius: 2px;
+    font-family: Consolas, "Courier New", monospace; font-size: 12.5px; color: var(--cinnabar); }
+
+  figure { margin: 18px 0 6px; }
+  figure img { width: 100%; border: 1px solid var(--line); border-radius: 4px; display: block; }
+  figcaption { font-size: 12.5px; color: var(--ink-3); margin-top: 8px; padding-left: 4px; border-left: 2px solid var(--line); padding: 4px 0 4px 10px; }
+  .anno { color: var(--cinnabar); font-weight: 600; }
+
+  /* ---------- 指标表 ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--card); }
+  th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+  th { background: color-mix(in srgb, var(--indigo) 8%, var(--card)); font-weight: 600; color: var(--ink); white-space: nowrap; }
+  td code { font-size: 12px; }
+  .pass { color: var(--jade); font-weight: 700; }
+  .fail { color: var(--cinnabar); font-weight: 700; }
+  .warn { color: var(--amber); font-weight: 700; }
+
+  /* ---------- 问题清单 ---------- */
+  .issue-card { border: 1px solid var(--line); border-left-width: 4px; border-radius: 4px; background: var(--card);
+    padding: 20px 24px; margin-bottom: 14px; }
+  .issue-card.p0 { border-left-color: var(--p0); }
+  .issue-card.p1 { border-left-color: var(--p1); }
+  .issue-card.p2 { border-left-color: var(--p2); }
+  .issue-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .issue-id { font-family: Georgia, serif; font-weight: 700; font-size: 14px; }
+  .issue-title { font-weight: 700; font-size: 15px; }
+  .badge { font-size: 11px; padding: 2px 9px; border-radius: 2px; letter-spacing: .08em; color: #fff; }
+  .b-p0 { background: var(--p0); } .b-p1 { background: var(--p1); } .b-p2 { background: var(--p2); }
+  .issue-body { font-size: 13.5px; color: var(--ink-2); }
+  .issue-body .kv { display: grid; grid-template-columns: 86px 1fr; gap: 4px 14px; margin-top: 8px; }
+  .issue-body .kv dt { color: var(--ink-3); }
+  .issue-body .kv dd code { font-size: 12px; }
+
+  /* ---------- 建议 ---------- */
+  .roadmap { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .phase { border: 1px solid var(--line); border-radius: 4px; padding: 24px; background: var(--card); }
+  .phase h4 { font-family: "Noto Serif SC", serif; font-size: 17px; margin-bottom: 4px; }
+  .phase .when { font-size: 12px; color: #fff; background: var(--indigo); display: inline-block; padding: 2px 10px; border-radius: 2px; margin-bottom: 14px; }
+  .phase ul { padding-left: 18px; font-size: 13.5px; color: var(--ink-2); }
+  .phase ul li { margin-bottom: 9px; }
+  .phase ul li b { color: var(--ink); }
+
+  .conclusion { margin-top: 48px; padding: 32px 36px; border: 1px solid var(--cinnabar); border-radius: 4px;
+    background: color-mix(in srgb, var(--cinnabar) 5%, var(--card)); }
+  .conclusion h3 { font-family: "Noto Serif SC", serif; font-size: 20px; margin-bottom: 12px; }
+  .conclusion p { font-size: 14.5px; color: var(--ink-2); }
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-3); text-align: center; }
+
+  @media (max-width: 860px) {
+    .scoreboard { grid-template-columns: 1fr; gap: 28px; padding: 28px; }
+    .roadmap { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 110px 1fr 44px; }
+    .cover h1 { font-size: 30px; }
+    .theme-btn { position: static; margin-top: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="cover">
+    <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">切换深/浅色</button>
+    <div class="kicker">UI EVALUATION REPORT · 产品级验收</div>
+    <h1>Dreamcore「墨韵丹青 2.0」<br>UI 优化效果评估报告</h1>
+    <p class="sub">基于上一轮优化实施后的真实页面渲染，对标商业落地成熟产品标准进行五维量化验收</p>
+    <div class="meta">
+      <span><b>评估对象：</b>http://localhost:5173</span>
+      <span><b>评估日期：</b>2026-10-16</span>
+      <span><b>测试视口：</b>1440×900 桌面 / 390×844 移动</span>
+      <span><b>覆盖页面：</b>首页 · 画廊 · 排行榜 · 工作台 · 文化图鉴（浅/深双主题）</span>
+      <span><b>性质：</b>只读评估，未修改任何代码</span>
+    </div>
+  </header>
+
+  <!-- ============ 评分总览 ============ -->
+  <div class="scoreboard">
+    <div class="score-total">
+      <div class="num">6.5<small>/10</small></div>
+      <div class="lbl">综合评分</div>
+      <div class="verdict">风格成立 · 未达商用交付线</div>
+    </div>
+    <div class="bars">
+      <div class="bar-row"><span class="name">1. 整体 UI 界面呈现效果</span><div class="bar-track"><div class="bar-fill s-mid" style="width:65%"></div></div><span class="bar-val" style="color:var(--amber)">6.5</span></div>
+      <div class="bar-row"><span class="name">2. 视觉设计规范与一致性</span><div class="bar-track"><div class="bar-fill s-mid" style="width:70%"></div></div><span class="bar-val" style="color:var(--jade)">7.0</span></div>
+      <div class="bar-row"><span class="name">3. 美学创意与视觉吸引力</span><div class="bar-track"><div class="bar-fill s-mid" style="width:70%"></div></div><span class="bar-val" style="color:var(--jade)">7.0</span></div>
+      <div class="bar-row"><span class="name">4. 按钮及交互元素布局合理性</span><div class="bar-track"><div class="bar-fill s-low" style="width:55%"></div></div><span class="bar-val" style="color:var(--cinnabar)">5.5</span></div>
+      <div class="bar-row"><span class="name">5. 空间分配与视觉平衡</span><div class="bar-track"><div class="bar-fill s-mid" style="width:65%"></div></div><span class="bar-val" style="color:var(--amber)">6.5</span></div>
+    </div>
+  </div>
+
+  <p style="font-size:14px;color:var(--ink-2);background:var(--card);border:1px solid var(--line);border-left:4px solid var(--indigo);border-radius:4px;padding:18px 24px;margin-bottom:48px;">
+    <b>总评：</b>墨韵丹青的<b>设计语言骨架已经成立</b>——宣纸底色、宋体标题、朱砂主色、印章奖牌、回纹页脚在桌面端形成了可辨识的东方美学气质，色彩对比度全部达到 WCAG AAA。但本轮验收在「最后一公里」发现 <b>3 个 P0 级商用阻断问题</b>：移动端导航结构崩坏、AI 助手「小梦」浮标在桌面与移动端均遮挡核心内容（上一轮移动端头像化方案因 CSS 选择器失配而未生效）、画廊全部作品图依赖 <code>picsum.photos</code> 外链导致离线/弱网下整屏白卡。另存在 Hero 标题孤字断行、紫调光斑残留、弹窗圆角体系冲突等 5 个 P1 问题。<b>结论：当前完成度适合内部演示，距离可直接商业落地的成熟产品标准（8.5+）尚需一轮收口。</b>
+  </p>
+
+  <!-- ============ 维度 1 ============ -->
+  <h2 class="sec">维度一 · 整体 UI 界面呈现效果</h2>
+  <p class="sec-desc">首屏印象、完整页面的完成度与「设计稿→实物」还原度 · 权重 20%</p>
+  <div class="dim">
+    <div class="dim-head">
+      <h3>整体呈现 <span class="dim-tag tag-mid">良 · 6.5</span></h3>
+      <div class="dim-score" style="color:var(--amber)">6.5<small>/10</small></div>
+    </div>
+
+    <figure>
+      <img src="ui-audit/eval-01-hero.png" alt="桌面端首屏">
+      <figcaption>证据 1-1 ｜ 桌面 1440 首屏：宣纸底 + 宋体巨标题 + 朱砂 CTA 的东方气质成立；但右侧有明显粉紫/蓝紫光斑，标题末字「生」孤字换行，小梦气泡文字竖排。</figcaption>
+    </figure>
+
+    <h4>表现良好的部分</h4>
+    <ul class="good">
+      <li>桌面首屏气质统一：<code>#faf6ee</code> 宣纸底、Noto Serif SC 96px 宋体标题、朱砂 <code>#a8261f</code> 主按钮，品牌第一眼可辨识；</li>
+      <li>深浅双主题均可用，深色墨底 <code>#14110e</code> + 熟宣字的「夜间展卷」氛围优于多数同类产品；</li>
+      <li>导航半透纸毛玻璃（85% 不透明度 + 8px blur）克制不抢戏。</li>
+    </ul>
+
+    <h4>拉低呈现完成度的问题</h4>
+    <ul class="issue">
+      <li><b>画廊 20 张作品图全部加载失败</b>，首屏以下是一片白色矩形阵列（见证据 1-2），页面中后段视觉重量完全塌陷——这是当前对「整体呈现」伤害最大的问题；</li>
+      <li>移动端首屏导航元素互相重叠、按钮文字消失（见证据 1-3），完成度仅 4 分水平；</li>
+      <li>小梦浮标的粉紫卡通精灵与墨韵丹青体系在同一屏内气质冲突。</li>
+    </ul>
+
+    <figure>
+      <img src="ui-audit/eval-02-home-full.png" alt="首页全页">
+      <figcaption>证据 1-2 ｜ 首页全页（4088px）：Hero 区以下约 65% 的视域为空白卡片网格，瀑布流在无图状态下不产生任何视觉节奏；页脚回纹分隔带正常。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="ui-audit/eval-08-mobile-hero.png" alt="移动端首屏">
+      <figcaption>证据 1-3 ｜ 移动 390 首屏：顶部 logo / 发布钮 / 头像占位互相挤压重叠，「发布」文字被裁成红块；右侧小梦气泡竖排并压住正文与 CTA 区。</figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ 维度 2 ============ -->
+  <h2 class="sec">维度二 · 视觉设计规范与一致性</h2>
+  <p class="sec-desc">色彩令牌、字体阶梯、圆角、图标、组件状态的体系化程度 · 权重 20%</p>
+  <div class="dim">
+    <div class="dim-head">
+      <h3>规范一致性 <span class="dim-tag tag-good">较好 · 7.0</span></h3>
+      <div class="dim-score" style="color:var(--jade)">7.0<small>/10</small></div>
+    </div>
+
+    <h4>规范化亮点（达到商业产品水准）</h4>
+    <ul class="good">
+      <li>色彩令牌化完整：浅/深双主题 <code>--bg / --accent / --border / --text</code> 全部经 CSS 变量驱动，全站禁用色扫描（紫 <code>#8e44ad</code>、鎏金 <code>#fbbf24/#ffd700</code>）<b>计算样式 0 命中</b>；</li>
+      <li>可访问性优秀：正文/底色对比度 <b>16.67:1</b>、白字/朱砂 <b>7.09:1</b>，均超 WCAG AAA（7:1）；</li>
+      <li>字体阶梯清晰：96 / 52 / 16px 三级，宋体标题 + 黑体正文分工明确，正文行高 1.6 阅读舒适；</li>
+      <li>印章奖牌体系落地准确：排行榜「一/二/三」汉字奖牌 DOM 实测无 emoji 泄漏，冠/亚/季三色（朱砂/赭金/黛青）与设计方案一致。</li>
+    </ul>
+
+    <h4>体系破口（一致性扣分区）</h4>
+    <ul class="issue">
+      <li><b>圆角体系冲突：</b>全站令牌 <code>--radius: 4px</code>，但排行榜、图鉴、欢迎引导三个 Modal 容器均为约 16–20px 大圆角（见证据 2-1/2-2），同一屏内「卡片 4px + 弹窗 20px」语言分裂；</li>
+      <li><b>紫色残留转移到组件内部：</b>文化图鉴的分类 chip 仍是淡紫底紫字（证据 2-2「石窟艺术 / 青铜文明」），小梦精灵 SVG 渐变硬编码 <code>#ffd1e8→#c9b6ff</code> 粉紫色（<code>js/ai-tutor.js L496-506</code>），CSS 变量层管不到；</li>
+      <li><b>图标体系三套并存：</b>FontAwesome 线性图标（导航/按钮）+ emoji 彩绘（图鉴 12 个主题、今日卡片 🎭、排行榜 🏆）+ 自定义 SVG（小梦），跨平台渲染与精致度不一致；</li>
+      <li>移动端 CTA 按钮被既有样式覆盖为全宽胶囊（证据 1-3），与 4px 令牌矛盾。</li>
+    </ul>
+
+    <figure>
+      <img src="ui-audit/eval-04-leaderboard.png" alt="排行榜">
+      <figcaption>证据 2-1 ｜ 排行榜 Modal：外层容器约 20px 大圆角，内部领奖台卡片 4px；印章「二/一/三」识别度偏弱（「二」形似等号）；标题左侧金色 🏆 emoji 与矿物色系不协调；粉色圆环为小梦元素穿透到弹窗上层（z-index 破口）。</figcaption>
+    </figure>
+    <figure>
+      <img src="ui-audit/eval-06-atlas.png" alt="文化图鉴">
+      <figcaption>证据 2-2 ｜ 文化图鉴：3 列网格与留白规范，但 12 个主题全部使用 emoji 图标，分类 chip 为旧紫调色板，与墨韵丹青令牌脱节。</figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ 维度 3 ============ -->
+  <h2 class="sec">维度三 · 美学创意与视觉吸引力</h2>
+  <p class="sec-desc">东方美学表达、创意记忆点、情绪感染力 · 权重 20%</p>
+  <div class="dim">
+    <div class="dim-head">
+      <h3>美学创意 <span class="dim-tag tag-good">较好 · 7.0</span></h3>
+      <div class="dim-score" style="color:var(--jade)">7.0<small>/10</small></div>
+    </div>
+    <h4>创意加分项</h4>
+    <ul class="good">
+      <li><b>印章化等级系统</b>是全站最高记忆点：朱砂「一」、赭金「二」、黛青「三」取代西式金/银/铜牌，文化转译准确；</li>
+      <li>页脚回纹分隔带、标题宋体的选用、宣纸纤维肌理（2.5% 噪点）体现了对「克制的东方感」的理解，没有堆砌龙凤祥云；</li>
+      <li>深色主题下标题墨韵浓淡处理（证据 3-1）具备博物馆数字展陈的高级感。</li>
+    </ul>
+    <h4>创意扣分项</h4>
+    <ul class="issue">
+      <li><b>P1 排版硬伤：</b>主标题断为「当 AI 遇见文旅 / 让传统美学数字新 / 生」，末字孤悬（中文排版大忌「孤字成行」），商业官网上线前必须修正；</li>
+      <li><b>氛围光斑仍是旧梦核语言：</b>Hero 右下方大面积粉紫 + 蓝紫 radial-gradient 光晕（证据 1-1 右侧），与「矿物色 + 宣纸」的克制气质冲突，是当前最显眼的色彩不和谐源；</li>
+      <li>粒子背景的彩色小点（红/蓝/绿/金）在宣纸上近似「洒了彩屑」，建议降饱和或改为墨点+朱砂点两级；</li>
+      <li>白卡阵列使画廊区毫无吸引力——文创社区的核心视觉资产是作品图本身，无图时缺少国风降级占位（如水墨晕染底 + 题名篆印）。</li>
+    </ul>
+    <figure>
+      <img src="ui-audit/eval-07-dark.png" alt="深色主题">
+      <figcaption>证据 3-1 ｜ 深色主题：墨底 + 熟宣宋体的展陈感是全站美学最高点；但蓝紫光斑、孤字、竖排气泡三个问题在深色下同样存在。</figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ 维度 4 ============ -->
+  <h2 class="sec">维度四 · 按钮及交互元素布局合理性</h2>
+  <p class="sec-desc">信息架构、点击命中、状态反馈、层级与防误触 · 权重 20%（本轮最低分）</p>
+  <div class="dim">
+    <div class="dim-head">
+      <h3>交互布局 <span class="dim-tag tag-low">待整改 · 5.5</span></h3>
+      <div class="dim-score" style="color:var(--cinnabar)">5.5<small>/10</small></div>
+    </div>
+    <h4>达标项</h4>
+    <ul class="good">
+      <li>桌面 Hero 三按钮主次明确：朱砂实心「开始探索」+ 两个描边次按钮，间距 16px 均衡；</li>
+      <li>排行榜 Tab（日/周/月/总榜）选中态用朱砂渐变填充，状态清晰；</li>
+      <li>筛选 chip 横排、选中态明确，桌面端无横向溢出（实测 scrollWidth = clientWidth）。</li>
+    </ul>
+    <h4>阻断性问题（量化）</h4>
+    <ul class="issue">
+      <li><b>移动端触控目标不达标：</b>56 个可见按钮中 <b>37 个高度 &lt; 44px</b>，最小仅 18px，违反 WCAG 2.5.5 与 Apple HIG（44pt）/ Material（48dp）触控目标规范；</li>
+      <li><b>移动端导航缺失折叠策略：</b>390px 下仍平铺搜索框 + 发布 + 创作工坊 + 设置 + 登录 + 两个头像位，元素互相覆盖，无汉堡菜单；</li>
+      <li><b>小梦浮标遮挡：</b>桌面端竖排气泡压住正文与「今日文化画语」卡片右缘；移动端气泡直接压住 CTA 与正文。<span class="anno">根因已定位：</span>浮标真实类名为 <code>.ai-fab / #ai-fab</code>（<code>js/ai-tutor.js L487-488</code>），气泡为 <code>.ai-proactive-bubble</code>（L1779），上一轮移动端头像化 CSS 的选择器（<code>#tutor-float / .tutor-float-wrap</code> 等）与真实 DOM 全部失配，故未生效；</li>
+      <li><b>层级穿透：</b>排行榜/图鉴 Modal 打开时，小梦的粉色拖把手环仍浮在弹窗内容之上（证据 2-1/2-2 右上区域）；</li>
+      <li><b>弹窗内容超屏：</b>排行榜 Modal 第 8 名以下直接被视口底边裁切，未见内部滚动容器或收尾留白。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 维度 5 ============ -->
+  <h2 class="sec">维度五 · 页面元素的空间分配与视觉平衡</h2>
+  <p class="sec-desc">栅格、留白、对齐、视觉重量分布与响应式 · 权重 20%</p>
+  <div class="dim">
+    <div class="dim-head">
+      <h3>空间与平衡 <span class="dim-tag tag-mid">良 · 6.5</span></h3>
+      <div class="dim-score" style="color:var(--amber)">6.5<small>/10</small></div>
+    </div>
+    <h4>布局基本功</h4>
+    <ul class="good">
+      <li>桌面画廊 4 列瀑布流（卡片 320×442，间距统一）、图鉴 3 列网格、排行榜三领奖台居中对称，栅格意识成熟；</li>
+      <li>Hero 内容水平居中（标题容器 x=290 / 宽 860），CTA 组与每日卡片居中对齐，轴线稳定；</li>
+      <li>全页无横向溢出（桌面/390px 实测均 false）。</li>
+    </ul>
+    <h4>失衡点</h4>
+    <ul class="issue">
+      <li><b>视觉重量断层：</b>Hero（高饱和大标题）→ 白卡阵列（零重量）→ 深色页脚，三段重量不连续，滚动节奏在画廊区「断气」；</li>
+      <li>标题居中多行时因孤字导致视觉重心偏左；描述段在 390px 下左右边距过小且被气泡遮挡；</li>
+      <li>排行榜分数列小数位不统一（<code>103146.4</code> / <code>104813</code> / <code>80315.8</code>）且非等宽数字，右边缘参差，应启用 <code>font-variant-numeric: tabular-nums</code> 并统一精度；</li>
+      <li>导航 16 个可交互元素挤在 74px 高的单条内，搜索框与两组按钮争夺水平空间，桌面端已显拥挤。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 量化指标 ============ -->
+  <h2 class="sec">量化指标实测总表</h2>
+  <p class="sec-desc">数据由 Playwright（Chromium / Edge 同 Blink 内核）在真实渲染后读取 getComputedStyle 与 getBoundingClientRect 获得</p>
+  <table>
+    <thead><tr><th>指标</th><th>实测值</th><th>标准/期望</th><th>判定</th></tr></thead>
+    <tbody>
+      <tr><td>正文 / 底色对比度（浅）</td><td><code>16.67:1</code></td><td>WCAG AAA ≥ 7:1</td><td class="pass">PASS</td></tr>
+      <tr><td>白字 / 朱砂按钮对比度</td><td><code>7.09:1</code></td><td>WCAG AAA ≥ 7:1</td><td class="pass">PASS</td></tr>
+      <tr><td>紫调/鎏金禁用色（计算样式扫描）</td><td><code>0 命中</code></td><td>0</td><td class="pass">PASS</td></tr>
+      <tr><td>排行榜 emoji 奖牌泄漏</td><td><code>null</code>（汉字一/二/三）</td><td>0</td><td class="pass">PASS</td></tr>
+      <tr><td>横向溢出（桌面 / 390px）</td><td><code>无 / 无</code></td><td>无</td><td class="pass">PASS</td></tr>
+      <tr><td>移动端 h1 字号</td><td><code>32px</code>（断点 ≤480px）</td><td>≤ 40px</td><td class="pass">PASS</td></tr>
+      <tr><td>Hero 标题断行</td><td>3 行，「生」孤字</td><td>意群完整断行</td><td class="fail">FAIL</td></tr>
+      <tr><td>画廊作品图加载</td><td><code>0/20</code>（picsum.photos 外链）</td><td>20/20 或本地兜底</td><td class="fail">FAIL</td></tr>
+      <tr><td>移动端按钮 &lt;44px 数量</td><td><code>37 / 56</code></td><td>0（触控目标 ≥44px）</td><td class="fail">FAIL</td></tr>
+      <tr><td>移动端导航折叠</td><td>无汉堡菜单，元素重叠</td><td>≤768px 折叠抽屉</td><td class="fail">FAIL</td></tr>
+      <tr><td>小梦浮标响应式收合</td><td>未生效（CSS 选择器失配）</td><td>≤520px 收为 44px 圆钮</td><td class="fail">FAIL</td></tr>
+      <tr><td>Modal 圆角 vs 全站令牌</td><td><code>~20px</code> vs <code>4px</code></td><td>统一（建议 ≤8px）</td><td class="warn">WARN</td></tr>
+      <tr><td>小梦元素 z-index 穿透 Modal</td><td>存在（粉环压弹窗）</td><td>弹窗打开时隐藏/降层</td><td class="fail">FAIL</td></tr>
+      <tr><td>首页文档高度 / 导航元素数</td><td><code>4088px / 16</code></td><td>—</td><td class="warn">INFO</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ 问题清单 ============ -->
+  <h2 class="sec">问题清单（按优先级）</h2>
+  <p class="sec-desc">P0 = 商用阻断，3 项 ｜ P1 = 明显体验损伤，5 项 ｜ P2 = 精修项，5 项</p>
+
+  <div class="issue-card p0">
+    <div class="issue-top"><span class="issue-id">E-01</span><span class="badge b-p0">P0</span><span class="issue-title">移动端导航结构崩坏（无折叠菜单）</span></div>
+    <div class="issue-body">
+      390px 视口下 logo、发布按钮、两个头像位、创作工坊、登录平铺挤压，红钮文字被裁切。
+      <dl class="kv">
+        <dt>证据</dt><dd>eval-08-mobile-hero.png 顶部区域</dd>
+        <dt>定位</dt><dd><code>index.html #navbar</code> 响应式分支；项目已有 <code>.sc-drawer</code> 抽屉组件可复用</dd>
+        <dt>标准</dt><dd>Material / iOS HIG：≤768px 主导航折叠为汉堡菜单</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="issue-card p0">
+    <div class="issue-top"><span class="issue-id">E-02</span><span class="badge b-p0">P0</span><span class="issue-title">小梦浮标气泡竖排、遮挡正文与 CTA（桌面+移动）</span></div>
+    <div class="issue-body">
+      气泡宽度塌缩导致中文逐字竖排；移动端直接压住「开始探索」按钮。上一轮 §12 头像化 CSS 选择器（<code>#tutor-float/.tutor-float-wrap/.ai-tutor-float</code>）与真实 DOM 不匹配。
+      <dl class="kv">
+        <dt>根因定位</dt><dd>容器 <code>.ai-fab / #ai-fab</code>（js/ai-tutor.js L487-488）；气泡 <code>.ai-proactive-bubble</code>（L1779）/ <code>.ai-reaction-bubble</code>（L1758）；精灵粉紫渐变 <code>#ffd1e8→#c9b6ff</code>（L496-506）</dd>
+        <dt>证据</dt><dd>eval-01 / eval-07 / eval-08 右侧均可见</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="issue-card p0">
+    <div class="issue-top"><span class="issue-id">E-03</span><span class="badge b-p0">P0</span><span class="issue-title">画廊作品图 100% 外链依赖，弱网/离线下整屏白卡</span></div>
+    <div class="issue-body">
+      20 张首屏卡片实测 0 张渲染成功；种子图取自 <code>picsum.photos/seed/</code>（js/gallery.js 多处 URL 处理）。竞赛演示现场若无稳定外网，画廊——平台核心页面——将呈现为白色矩形阵列。
+      <dl class="kv">
+        <dt>证据</dt><dd>eval-02-home-full.png / eval-08-mobile-full.png</dd>
+        <dt>建议方向</dt><dd>① 种子图本地化入仓（建议 ≤30KB/张 WebP，控制包体）；② 或实现 <code>onerror</code> 国风占位兜底（矿物色渐变 + 题名 + 篆印），保证任何网络条件下视觉不塌</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="issue-card p1">
+    <div class="issue-top"><span class="issue-id">E-04</span><span class="badge b-p1">P1</span><span class="issue-title">Hero 主标题孤字成行（「生」）</span></div>
+    <div class="issue-body">意群断行应为「当 AI 遇见文旅／让传统美学数字新生」。建议容器 max-width 收窄至 820px 并在「文旅」后语义断行（<code>&lt;br&gt;</code>），或用 <code>text-wrap: balance</code> 配合手动断点；移动端两行排布。</div>
+  </div>
+
+  <div class="issue-card p1">
+    <div class="issue-top"><span class="issue-id">E-05</span><span class="badge b-p1">P1</span><span class="issue-title">Hero 粉紫/蓝紫光斑与小梦粉紫发光残留</span></div>
+    <div class="issue-body">光斑为 CSS radial-gradient 旧梦核渐变，未走令牌；应替换为已定义的 <code>--bg-glow-1/2/3</code>（朱砂 6% / 黛青 5% / 石绿 5%）；小梦 SVG 渐变同步 token 化。</div>
+  </div>
+
+  <div class="issue-card p1">
+    <div class="issue-top"><span class="issue-id">E-06</span><span class="badge b-p1">P1</span><span class="issue-title">Modal 大圆角与全站 4px 体系冲突</span></div>
+    <div class="issue-body">排行榜/图鉴/欢迎弹窗约 16–20px 圆角。建议新增 <code>--radius-modal: 8px</code> 作为上限并统一三类弹窗；移动端可维持 4px。</div>
+  </div>
+
+  <div class="issue-card p1">
+    <div class="issue-top"><span class="issue-id">E-07</span><span class="badge b-p1">P1</span><span class="issue-title">移动端 37 个触控目标 &lt;44px</span></div>
+    <div class="issue-body">最小按钮高度 18px。建议 ≤768px 全局交互元素 <code>min-height: 44px</code>（图标钮 44×44），行内文字链除外。</div>
+  </div>
+
+  <div class="issue-card p1">
+    <div class="issue-top"><span class="issue-id">E-08</span><span class="badge b-p1">P1</span><span class="issue-title">小梦浮标 z-index 穿透 Modal</span></div>
+    <div class="issue-body">弹窗打开时 <code>.ai-fab</code> 及其拖把手环仍覆盖弹窗内容。建议监听 Modal 打开态，为 body 加 <code>.modal-open</code> 类隐藏浮标，或在层级规范中明确浮标 &lt; 遮罩 &lt; 弹窗。</div>
+  </div>
+
+  <div class="issue-card p2">
+    <div class="issue-top"><span class="issue-id">E-09</span><span class="badge b-p2">P2</span><span class="issue-title">图鉴分类 chip 仍为旧紫调色板</span></div>
+    <div class="issue-body">将 <code>.trace-chip / .ca-card-cat</code> 紫色改为黛青淡底（参考 <code>--indigo-accent</code> 12% 混色）。</div>
+  </div>
+  <div class="issue-card p2">
+    <div class="issue-top"><span class="issue-id">E-10</span><span class="badge b-p2">P2</span><span class="issue-title">emoji 图标跨平台不一致（图鉴/🏆/今日卡）</span></div>
+    <div class="issue-body">沿用既定方案新增 <code>js/icons.js</code>：12 枚文化主题线性 SVG 图标（单色 currentColor，≤4KB），奖杯改 FontAwesome 描金或印章 SVG。</div>
+  </div>
+  <div class="issue-card p2">
+    <div class="issue-top"><span class="issue-id">E-11</span><span class="badge b-p2">P2</span><span class="issue-title">排行榜分数小数位不齐、非等宽数字</span></div>
+    <div class="issue-body">统一 <code>toFixed(1)</code> + <code>font-variant-numeric: tabular-nums</code>。</div>
+  </div>
+  <div class="issue-card p2">
+    <div class="issue-top"><span class="issue-id">E-12</span><span class="badge b-p2">P2</span><span class="issue-title">移动端 CTA 被覆盖为全宽胶囊</span></div>
+    <div class="issue-body">排查移动端按钮样式优先级，统一回 <code>--radius: 4px</code>。</div>
+  </div>
+  <div class="issue-card p2">
+    <div class="issue-top"><span class="issue-id">E-13</span><span class="badge b-p2">P2</span><span class="issue-title">桌面导航信息密度偏高（16 个元素）</span></div>
+    <div class="issue-body">「文化探索 / 创作工坊」下拉与登录、头像、设置可归并为右侧一组图标钮，搜索框保留主导。</div>
+  </div>
+
+  <!-- ============ 优化方向 ============ -->
+  <h2 class="sec">优化方向与落地路线建议</h2>
+  <p class="sec-desc">以下为方案建议（本轮不执行代码修改），按「演示保障优先 → 体系收口 → 精修」三阶段排列</p>
+  <div class="roadmap">
+    <div class="phase">
+      <span class="when">阶段一 · 演示安全线（建议优先，约 1 轮）</span>
+      <h4>消除 3 个 P0</h4>
+      <ul>
+        <li><b>小梦浮标：</b>用真实类名 <code>.ai-fab/.ai-proactive-bubble</code> 重写响应式规则——≤520px 收为 44×44 圆钮、气泡改点击展开的横排 toast；桌面气泡加宽至 ≥220px 修复竖排；精灵渐变换朱砂/黛青 token；Modal 打开时隐藏。</li>
+        <li><b>图片容灾：</b>给画廊图片加 <code>onerror</code> 国风占位（成本最低、当天可完成），有时间再做种子图本地化。</li>
+        <li><b>移动导航：</b>复用 <code>.sc-drawer</code> 抽屉，≤768px 仅保留 logo + 汉堡钮 + 发布主钮。</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <span class="when">阶段二 · 体系收口（约 1 轮）</span>
+      <h4>消灭 P1 与一致性破口</h4>
+      <ul>
+        <li><b>标题断行：</b>容器收窄 + 语义断点，消除孤字；</li>
+        <li><b>光斑 token 化：</b>Hero radial-gradient 全部改用 <code>--bg-glow-*</code>；</li>
+        <li><b>圆角令：</b>新增 <code>--radius-modal: 8px</code>，三类弹窗统一；</li>
+        <li><b>触控规范：</b>移动端 <code>min-height:44px</code> 全局兜底；</li>
+        <li><b>层级规范：</b>浮标 &lt; 遮罩 &lt; 弹窗，body.modal-open 联动。</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <span class="when">阶段三 · 精修加分（冲刺 8.5+）</span>
+      <h4>P2 与体验质感</h4>
+      <ul>
+        <li><code>js/icons.js</code> 12 枚文化 SVG 图标替换 emoji；</li>
+        <li>图鉴 chip 去紫改黛青；分数 tabular-nums；</li>
+        <li>粒子降为「墨点 + 朱砂点」两级色板；</li>
+        <li>印章奖牌「二」加边框做方印造型，消除「等号」误读；</li>
+        <li>导航元素归并降噪。</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <span class="when">验收标准（完成阶段一+二后复测）</span>
+      <h4>量化通过线</h4>
+      <ul>
+        <li>断网刷新：画廊白卡率 = 0%（占位或本地图）；</li>
+        <li>390px：无重叠、无遮挡、&lt;44px 按钮 = 0；</li>
+        <li>五弹窗圆角差 ≤4px；禁用色全站（含 SVG/emoji）0 残留；</li>
+        <li>预期评分：维度四 ≥ 8.0，综合 ≥ <b>8.5</b>，达到商业交付线。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="conclusion">
+    <h3>评估结论</h3>
+    <p>「墨韵丹青 2.0」在 <b>设计方向与令牌层已达到专业水准</b>（对比度 AAA、印章体系、双主题、零禁用色计算残留），问题集中在<b>设计系统向组件/响应式/容灾场景的「最后一公里」穿透</b>：SVG 内联硬编码色、外链资源无兜底、真实 DOM 类名与覆盖层选择器失配、移动端导航未做信息架构降级。这 13 项问题均为已知明确根因、修复路径清晰的工程项，不涉及设计方向返工。<b>建议优先执行阶段一（P0）保障演示与弱网可用性，完成阶段一、二后综合分预期可由 6.5 提升至 8.5+，进入商业可交付区间。</b></p>
+  </div>
+
+  <footer>
+    Dreamcore · UI 效果评估报告 ｜ 评估方法：Playwright 真实渲染截图（Chromium / Edge Blink 内核，1440 与 390 双视口）+ getComputedStyle 量化采样 + WCAG 2.2 / Apple HIG / Material Design 对标<br>
+    证据存档：docs/ui-audit/eval-01 ~ eval-08.png + eval-metrics.json ｜ 本报告为只读评估产出，评估过程未修改任何项目代码
+  </footer>
+
+</div>
+</body>
+</html>

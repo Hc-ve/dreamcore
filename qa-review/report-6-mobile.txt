@@ -1,0 +1,51 @@
+
+========== 1. 移动端 (375x812) ==========
+导航可见项: {"hamburger":{"vis":true,"rect":"38x38"},"navRightVisible":{"left":227,"right":406,"iw":375,"clippedRight":true}}
+小梦挂件: []
+挂件与页面元素重叠: {
+ "widget": "ai-proactive-bubble",
+ "widgetRect": [
+  295,
+  361,
+  60,
+  359
+ ],
+ "overlappedCount": 8,
+ "overlapped": [
+  "P.hero-sub",
+  "BUTTON.btn-primary",
+  "BUTTON.btn-ghost",
+  "A.hero-daily-card",
+  "BUTTON.ai-chip",
+  "BUTTON.ai-send"
+ ]
+}
+移动菜单打开: {"hidden":true,"vis":"flex","items":["搜索作品","发布作品","AI识文化","文化图鉴","探索足迹","景区推荐"]}
+可点击元素尺寸分布(<40px高): [{"t":"打开菜单","h":38,"w":38},{"t":"发布","h":31,"w":41},{"t":"打开设置","h":38,"w":38},{"t":"选择音色","h":27,"w":27},{"t":"语音开关","h":27,"w":27},{"t":"最小化","h":27,"w":27},{"t":"关闭","h":27,"w":27},{"t":"三分法构图是什么？","h":27,"w":118},{"t":"怎样让照片的光影更有层次？","h":27,"w":160},{"t":"如何把非遗元素融入文创设计？","h":27,"w":171},{"t":"帮我想一个拍摄主题","h":27,"w":118},{"t":"本站有哪些 AI 功能？","h":27,"w":124},{"t":"发送","h":36,"w":36}]
+
+========== 2. AI文创作品选择器 ==========
+picker 结构: {
+ "cls": "modal-box glass artwork-picker-box",
+ "tabs": [
+  "",
+  "我的作品",
+  "热门作品"
+ ],
+ "html": " <button class=\"modal-close\" data-close=\"\" aria-label=\"关闭\"><i class=\"fa-solid fa-xmark\"></i></button> <h2 class=\"ap-title\">选择作品 · AI文创</h2> <p class=\"ap-sub\">选择作品后进入 AI 工作台</p> <div class=\"ap-tabs\" role=\"tablist\"> <button class=\"ap-tab active\" data-tab=\"mine\" role=\"tab\">我的作品</button> <button class=\"ap-tab\" data-tab=\"hot\" role=\"tab\">热门作品</button> </div> <div class=\"ap-grid\" id=\"ap-grid\"><div class=\"ap-empty\">登录后即可在这里看到你的作品</div></div> "
+}
+点「热门作品」后: {
+ "items": 24,
+ "txt": "选择作品 · AI文创 选择作品后进入 AI 工作台 我的作品 热门作品 舟山渔港日出 三星堆盲盒 唐·古艺 / Panel in the Shape of a Sarcophagus Door 水墨赛博山水 明·书迹 / Calligraphy 清·古艺 / Demon queller Zhong Kui with demons 凤凰古城沱江晨雾 大唐不夜城 秦淮河夫子庙 元·罗汉 / Luoh",
+ "imgs": [
+  "/images/artworks/gen-052.jpg",
+  "/images/artworks/gen-087.jpg",
+  "/images/artworks/met-49540.jpg",
+  "/images/artworks/gen-054.jpg",
+  "/images/artworks/met-35993.jpg"
+ ]
+}
+
+========== 3. 页脚与死链 ==========
+页脚链接: ["画廊 → #gallery","发布 → #","搜索 → #","登录 / 注册 → #","会员权益 → #/pricing","AI 内容说明 → #/ai-disclosure","隐私政策 → /privacy.html","用户协议 → /terms.html"]
+页面内 href="#" 数量: 4
+路由链接总数: 19

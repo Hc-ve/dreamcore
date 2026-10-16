@@ -4,9 +4,12 @@
   "description": "Dreamcore 梦境数字艺术社交平台",
   "type": "module",
   "scripts": {
+    "start": "node scripts/dev-all.mjs",
     "dev": "vite",
+    "dev:all": "node scripts/dev-all.mjs",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server:uv": "node server/index.mjs"
   },
   "dependencies": {
     "@mediapipe/hands": "^0.4.1675469240",
@@ -14,8 +17,15 @@
     "@sentry/browser": "^10.66.0",
     "@sentry/replay": "^10.66.0",
     "@sentry/tracing": "^7.120.4",
+    "@supabase/supabase-js": "^2.78.0",
     "@tensorflow/tfjs": "4.17.x",
+    "cors": "^2.8.6",
+    "dashscope-sdk-official": "^1.26.0",
+    "express": "^5.3.0",
+    "fflate": "^0.8.3",
     "gsap": "^3.12.5",
+    "node-edge-tts": "^1.2.11",
+    "puppeteer-core": "^24.43.1",
     "qrcode": "^1.5.4",
     "three": "^0.160.0",
     "web-vitals": "^5.3.0"

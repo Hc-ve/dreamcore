@@ -1,0 +1,44 @@
+# ============================================================
+# netlify.toml — Dreamcore Netlify 部署配置
+# 职责：声明构建命令、发布目录、云函数目录，并将 /api/ai/*
+#      代理到 ai-proxy 云函数；前端零密钥，密钥由环境变量注入。
+# 需在 Netlify 站点 Settings → Environment variables 配置：
+#   DASHSCOPE_API_KEY  阿里云百炼密钥（主方案）
+#   DEEPSEEK_API_KEY   DeepSeek 密钥（文本降级）
+#   MIMO_API_KEY       小米 MIMO 密钥（文本二级降级）
+# ============================================================
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# AI 推理云函数代理（放在 SPA 回退之前，确保 /api/ai/* 优先命中）
+[[redirects]]
+  from = "/api/ai/*"
+  to = "/.netlify/functions/ai-proxy"
+  status = 200
+  force = true
+
+# 密保找回密码云函数（生产环境路由，需在 Netlify 后台配置 SUPABASE_SERVICE_ROLE_KEY）
+[[redirects]]
+  from = "/api/auth/*"
+  to = "/.netlify/functions/auth-reset"
+  status = 200
+  force = true
+
+# 方案B：作品发布即上云云函数（生产环境路由）
+[[redirects]]
+  from = "/api/sync-artwork"
+  to = "/.netlify/functions/sync-artwork"
+  status = 200
+  force = true
+
+# SPA 前端路由回退
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

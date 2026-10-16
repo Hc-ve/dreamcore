@@ -11,6 +11,8 @@ const Sound = {
   ctx: null,
   // 是否启用音效
   enabled: true,
+  // 是否已发生首次用户交互（用于 gate AudioContext 创建，避免 autoplay 警告）
+  _userInteracted: false,
 
   // ----------------------------------------------------------
   // 初始化：读取开关状态，并自动绑定全站交互元素
@@ -19,13 +21,30 @@ const Sound = {
     const saved = localStorage.getItem('soundEnabled');
     // 默认开启，仅当显式存为 'false' 时关闭
     this.enabled = saved !== 'false';
+
+    // 在 bindGlobal 之前注册首次交互监听（capture 阶段先于其他监听器触发），
+    // 确保首次 click/touchstart/keydown/pointerdown 时立刻解锁 AudioContext，
+    // 之后 bindGlobal 的 pointerdown → playSound('click') 才能成功发声。
+    const unlock = () => {
+      this._userInteracted = true;
+      this.ensureContext();
+      ['click', 'touchstart', 'keydown', 'pointerdown'].forEach(ev =>
+        window.removeEventListener(ev, unlock, true)
+      );
+    };
+    ['click', 'touchstart', 'keydown', 'pointerdown'].forEach(ev =>
+      window.addEventListener(ev, unlock, { capture: true, once: true })
+    );
+
     this.bindGlobal();
   },
 
   // ----------------------------------------------------------
   // 创建音频上下文（用户交互后才能正常发声）
+  // 在首次用户交互前返回 null，避免触发 "AudioContext was not allowed to start" 警告
   // ----------------------------------------------------------
   ensureContext() {
+    if (!this._userInteracted) return null;
     if (!this.ctx) {
       try {
         const AC = window.AudioContext || window.webkitAudioContext;

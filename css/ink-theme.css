@@ -1,0 +1,1290 @@
+/* ============================================================
+   Dreamcore · 东方文旅主题令牌覆盖层
+   设计语言：墨韵丹青（Ink & Cinnabar）
+   
+   架构：独立 CSS 文件，通过层叠顺序覆盖 style.css 的 :root 变量。
+   不改 style.css（6620 行），降低回归风险。
+   index.html 中必须放在 style.css + settings.css 之后。
+   
+   章节：
+   0. 宣纸肌理（body 叠加 SVG 噪点）
+   1. :root 令牌覆盖（浅色主题）
+   2. [data-theme="dark"] 深色重定义
+   3. 组件级覆盖（导航/Hero/卡片/chip/按钮/页脚）
+   4. 字体栈强制覆盖（标题改中文衬线）
+   ============================================================ */
+
+/* ============ 0. 宣纸肌理 ============ */
+/* 2% 透明度 SVG feTurbulence 纤维噪点，消除"纯数字平面"塑料感 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+/* ============ 1. :root 令牌覆盖（浅色主题） ============ */
+:root {
+  /* --- 宣纸底色阶（替代冷紫 #f5f3fa）--- */
+  --bg-dark: #faf6ee;              /* 宣纸主底 */
+  --bg-card: #fffdf9;              /* 熟宣卡片面 */
+  --bg-surface: #f3ece0;           /* 生宣次级面 */
+  --bg-surface-hover: #ebe2d1;     /* hover 态 */
+  --bg-hover: rgba(26, 22, 20, 0.05);
+
+  /* --- 墨色文字阶（替代紫调灰）--- */
+  --text-primary: #1a1614;         /* 焦墨 · 主文字 15.8:1 */
+  --text-secondary: #3d3630;       /* 浓墨 · 正文 9.6:1 */
+  --text-tertiary: #6b6157;        /* 重墨 · 辅助 5.1:1 */
+
+  /* --- 三国色强调（替代粉紫渐变）--- */
+  --accent: #a8261f;               /* 朱砂 · 主强调 */
+  --accent-soft: #fdf2f0;          /* 朱砂淡底 */
+  --indigo-accent: #2d4a6b;        /* 靛青 · 次强调 */
+  --jade-accent: #4a6b52;          /* 石绿 · 成功态 */
+  --amber-accent: #b8892a;         /* 赭石 · 徽章 */
+
+  /* --- 边框（茶笺色，替代纯黑半透明）--- */
+  --border: #e6dccb;
+  --border-subtle: #f0e8d8;
+
+  /* --- 渐变（从粉紫星空 → 丹青水墨）--- */
+  --grad-dream: linear-gradient(135deg, #a8261f 0%, #2d4a6b 50%, #4a6b52 100%);
+  --grad-dream-soft: linear-gradient(135deg, rgba(168,38,31,0.08), rgba(45,74,107,0.08), rgba(74,107,82,0.08));
+  --shadow-glow: 0 8px 28px rgba(26, 22, 20, 0.06);
+
+  /* --- 圆角收敛（62 处胶囊 → 10 处以内）--- */
+  --radius: 4px;
+  --radius-sm: 3px;
+
+  /* --- 玻璃降级：液态玻璃 → 半透纸 --- */
+  --lg-blur: 10px;
+  --lg-saturate: 100%;
+  --glass-border: rgba(26, 22, 20, 0.08);
+  --glass-bg: rgba(255, 253, 249, 0.7);
+  --lg-border-top: rgba(26, 22, 20, 0.06);
+  --lg-border-left: rgba(26, 22, 20, 0.04);
+  --lg-border-right: rgba(26, 22, 20, 0.04);
+  --lg-border-bottom: rgba(26, 22, 20, 0.03);
+  --lg-inner-glow: inset 0 1px 0 rgba(255, 253, 249, 0.6);
+  --lg-shadow-soft: 0 1px 3px rgba(26, 22, 20, 0.06), 0 0 0 1px rgba(230, 220, 203, 0.8);
+  --lg-shadow-medium: 0 2px 12px rgba(26, 22, 20, 0.08), 0 0 0 1px rgba(230, 220, 203, 0.8);
+  --lg-shadow-strong: 0 4px 24px rgba(26, 22, 20, 0.1), 0 0 0 1px rgba(230, 220, 203, 0.8);
+
+  /* --- 发光 → 朱砂/墨色低饱和 --- */
+  --glow-pink: 0 0 14px rgba(168, 38, 31, 0.18), 0 0 28px rgba(168, 38, 31, 0.1);
+  --glow-purple: 0 0 14px rgba(26, 22, 20, 0.14), 0 0 28px rgba(26, 22, 20, 0.08);
+  --glow-blue: 0 0 14px rgba(45, 74, 107, 0.18), 0 0 28px rgba(45, 74, 107, 0.1);
+  --glow-dream: 0 0 18px rgba(168, 38, 31, 0.22), 0 0 40px rgba(45, 74, 107, 0.14);
+  --glow-soft: 0 1px 6px rgba(26, 22, 20, 0.08);
+  --glow-medium: 0 2px 14px rgba(26, 22, 20, 0.12);
+  --glow-strong: 0 4px 24px rgba(168, 38, 31, 0.18);
+
+  /* --- 骨架屏：冰裂纹色系 --- */
+  --skeleton-base: rgba(230, 220, 203, 0.4);
+  --skeleton-highlight: linear-gradient(90deg, transparent 0%, rgba(168, 38, 31, 0.05) 25%, rgba(45, 74, 107, 0.07) 50%, rgba(168, 38, 31, 0.05) 75%, transparent 100%);
+
+  /* --- 动效曲线：慢出落笔感 --- */
+  --ease-out-expo: cubic-bezier(.22, .61, .36, 1);
+  --ease-out-back: cubic-bezier(.22, .61, .36, 1);
+
+  /* --- 焦点环（朱砂系）--- */
+  --focus-ring-color: rgba(168, 38, 31, 0.5);
+
+  /* --- 背景光晕：淡祥云 --- */
+  --bg-glow-1: rgba(168, 38, 31, 0.06);
+  --bg-glow-2: rgba(45, 74, 107, 0.05);
+  --bg-glow-3: rgba(74, 107, 82, 0.05);
+
+  /* --- 弹窗 --- */
+  --modal-bg: rgba(255, 253, 249, 0.9);
+  --modal-shadow: 0 20px 60px rgba(26, 22, 20, 0.12);
+  --modal-border-grad: linear-gradient(135deg, rgba(255,253,249,0.95), rgba(230,220,203,0.6) 20%, transparent 50%, rgba(230,220,203,0.4) 80%, rgba(255,253,249,0.8));
+}
+
+/* ============ 2. [data-theme="dark"] 深色重定义 ============ */
+[data-theme="dark"] {
+  --bg-dark: #14110e;              /* 墨底 */
+  --bg-card: #1e1a16;              /* 墨卡面 */
+  --bg-surface: #26211c;
+  --bg-surface-hover: #2f2821;
+  --text-primary: #f2ece1;         /* 熟宣字 */
+  --text-secondary: #d4cbb9;
+  --text-tertiary: #9c8f7a;
+  --accent: #d4564c;               /* 朱砂提亮 */
+  --border: #3a3228;
+  --border-subtle: #2a2420;
+  --grad-dream: linear-gradient(135deg, #d4564c 0%, #3d5a80 50%, #5a7a5a 100%);
+  --glass-bg: rgba(26, 22, 20, 0.7);
+  --modal-bg: rgba(26, 22, 20, 0.92);
+  --modal-border-grad: linear-gradient(135deg, rgba(26,22,20,0.95), rgba(58,50,40,0.6) 20%, transparent 50%, rgba(58,50,40,0.4) 80%, rgba(26,22,20,0.8));
+}
+
+/* ============ 3. 组件级覆盖 ============ */
+
+/* 导航栏 */
+#navbar {
+  background: rgba(255, 253, 249, 0.85) !important;
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(8px) saturate(100%);
+}
+[data-theme="dark"] #navbar {
+  background: rgba(26, 22, 20, 0.85) !important;
+  border-bottom-color: var(--border-subtle);
+}
+
+/* Hero 标题：强制中文衬线宋体 */
+.hero-title, .hero-title-en, h1, h2, h3 {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, serif !important;
+  letter-spacing: 0.01em;
+}
+
+/* 正文：字重从 300 提到 400 */
+body, p, .hero-desc, .card-info, .modal-body, .drawer-content {
+  font-weight: 400;
+}
+
+/* Hero 徽章（从玻璃胶囊 → 半透纸）*/
+.hero-tag, .dreamcore-tag {
+  background: rgba(26, 22, 20, 0.04) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-secondary) !important;
+  border-radius: 4px !important;
+  backdrop-filter: none;
+}
+
+/* 主 CTA（朱砂底 + 浸染渐变）*/
+.btn-primary, .cta-btn {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+  box-shadow: 0 1px 3px rgba(168, 38, 31, 0.25) !important;
+  transition: all 0.25s cubic-bezier(.22, .61, .36, 1) !important;
+}
+.btn-primary:hover, .cta-btn:hover {
+  background: #8a1e18 !important;
+  box-shadow: 0 2px 8px rgba(168, 38, 31, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+/* 次要按钮 */
+.btn-secondary {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+}
+.btn-secondary:hover {
+  background: var(--bg-surface-hover) !important;
+}
+
+/* 卡片：从深紫黑混浊 → 描边 + 淡纸感 */
+.artwork-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--lg-shadow-soft) !important;
+}
+.card-overlay, .artwork-card::before {
+  background: linear-gradient(180deg, transparent 50%, var(--bg-card) 100%) !important;
+  box-shadow: none !important;
+}
+
+/* 分类标签（从靛蓝白字 → 朱砂 + 靛青）*/
+.card-cat {
+  background: var(--indigo-accent) !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+}
+
+/* 评分徽章 */
+.card-aesthetic-grade {
+  border-radius: 2px !important;
+  border-color: var(--amber-accent) !important;
+  color: var(--amber-accent) !important;
+  background: color-mix(in srgb, var(--amber-accent) 10%, transparent) !important;
+}
+
+/* chip / tag（胶囊 → 圆角收敛）*/
+.chip, .filter-chip, .tag-chip, .suggest-chip {
+  border-radius: 4px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-surface) !important;
+  color: var(--text-secondary) !important;
+}
+.chip:hover, .filter-chip:hover {
+  background: var(--bg-surface-hover) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 渐变文字（从粉紫 → 朱砂-靛青）*/
+.grad-text, .brand-text {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--indigo-accent) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* 页脚：加回纹分隔带 */
+footer, #footer {
+  border-top: 1px solid var(--border) !important;
+  background: var(--bg-surface) !important;
+}
+
+/* Modal / 弹窗（玻璃 → 半透纸 + 细描边）*/
+.modal-box, .ai-dialog, .profile-card {
+  background: var(--modal-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--lg-shadow-medium) !important;
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) !important;
+}
+[data-theme="dark"] .modal-box,
+[data-theme="dark"] .ai-dialog,
+[data-theme="dark"] .profile-card {
+  background: var(--modal-bg) !important;
+  border-color: var(--border) !important;
+}
+
+/* Drawer 设置面板（纸感覆盖）*/
+.sc-drawer {
+  background: var(--bg-card) !important;
+  border-left: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+}
+[data-theme="dark"] .sc-drawer {
+  background: var(--bg-dark) !important;
+  border-left-color: var(--border) !important;
+}
+
+/* Drawer 分段控件 */
+.sc-seg, .sp-seg {
+  border-radius: 4px !important;
+  border: 1px solid var(--border) !important;
+}
+.sc-seg button, .sp-seg button {
+  border-radius: 2px !important;
+}
+.sc-seg button.active, .sp-seg button.active {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+/* 滚动条（宣纸色系）*/
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ============ 4. 字体栈强制覆盖 ============ */
+/* 大标题 / Hero：中文宋体优先 */
+.hero-title, .hero-title-en, h1 {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, serif !important;
+  font-weight: 600;
+}
+/* 小标题 */
+h2, h3, .card-title, .section-title {
+  font-family: "Noto Serif SC", serif !important;
+  font-weight: 600;
+}
+/* 正文：字重 400 */
+body, p, li {
+  font-weight: 400;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif !important;
+}
+/* 数字 / 西文：保留 Cormorant Garamond（与宋体同衬线族，混排和谐）*/
+.num, .score, .stat, [class*="num"] {
+  font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+}
+
+/* ============ 5. 传统纹样（纯 CSS + data-URI，零网络请求）============ */
+
+/* 5.1 回纹 SVG —— 连续方折纹样，用作分隔带 */
+/* 浅色主题：茶笺色半透明回纹 */
+.ink-hui-pattern {
+  --hui-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='16' viewBox='0 0 120 16'><path d='M0 12 L0 4 L8 4 L8 8 L4 8 L4 12 L12 12 L12 4 L20 4 L20 8 L16 8 L16 12 L24 12 L24 4 L32 4 L32 8 L28 8 L28 12 L36 12 L36 4 L44 4 L44 8 L40 8 L40 12 L48 12 L48 4 L56 4 L56 8 L52 8 L52 12 L60 12 L60 4 L68 4 L68 8 L64 8 L64 12 L72 12 L72 4 L80 4 L80 8 L76 8 L76 12 L84 12 L84 4 L92 4 L92 8 L88 8 L88 12 L96 12 L96 4 L104 4 L104 8 L100 8 L100 12 L108 12 L108 4 L116 4 L116 8 L112 8 L112 12 L120 12' stroke='%23a8261f' stroke-width='1' fill='none' opacity='0.35'/></svg>");
+}
+
+/* 5.2 页脚顶部回纹分隔带 */
+footer::before, #footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 14px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='14' viewBox='0 0 120 14'><path d='M0 10 L0 4 L8 4 L8 7 L4 7 L4 10 L12 10 L12 4 L20 4 L20 7 L16 7 L16 10 L24 10 L24 4 L32 4 L32 7 L28 7 L28 10 L36 10 L36 4 L44 4 L44 7 L40 7 L40 10 L48 10 L48 4 L56 4 L56 7 L52 7 L52 10 L60 10 L60 4 L68 4 L68 7 L64 7 L64 10 L72 10 L72 4 L80 4 L80 7 L76 7 L76 10 L84 10 L84 4 L92 4 L92 7 L88 7 L88 10 L96 10 L96 4 L104 4 L104 7 L100 7 L100 10 L108 10 L108 4 L116 4 L116 7 L112 7 L112 10 L120 10' stroke='%23a8261f' stroke-width='1' fill='none' opacity='0.3'/></svg>");
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+[data-theme="dark"] footer::before,
+[data-theme="dark"] #footer::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='14' viewBox='0 0 120 14'><path d='M0 10 L0 4 L8 4 L8 7 L4 7 L4 10 L12 10 L12 4 L20 4 L20 7 L16 7 L16 10 L24 10 L24 4 L32 4 L32 7 L28 7 L28 10 L36 10 L36 4 L44 4 L44 7 L40 7 L40 10 L48 10 L48 4 L56 4 L56 7 L52 7 L52 10 L60 10 L60 4 L68 4 L68 7 L64 7 L64 10 L72 10 L72 4 L80 4 L80 7 L76 7 L76 10 L84 10 L84 4 L92 4 L92 7 L88 7 L88 10 L96 10 L96 4 L104 4 L104 7 L100 7 L100 10 L108 10 L108 4 L116 4 L116 7 L112 7 L112 10 L120 10' stroke='%23d4564c' stroke-width='1' fill='none' opacity='0.35'/></svg>");
+}
+
+/* 5.3 区块标题下方回纹（替代原渐变横条）*/
+.section-title::after {
+  height: 12px !important;
+  width: 120px !important;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='12' viewBox='0 0 120 12'><path d='M0 9 L0 3 L7 3 L7 6 L3 6 L3 9 L11 9 L11 3 L18 3 L18 6 L14 6 L14 9 L22 9 L22 3 L29 3 L29 6 L25 6 L25 9 L33 9 L33 3 L40 3 L40 6 L36 6 L36 9 L44 9 L44 3 L51 3 L51 6 L47 6 L47 9 L55 9 L55 3 L62 3 L62 6 L58 6 L58 9 L66 9 L66 3 L73 3 L73 6 L69 6 L69 9 L77 9 L77 3 L84 3 L84 6 L80 6 L80 9 L88 9 L88 3 L95 3 L95 6 L91 6 L91 9 L99 9 L99 3 L106 3 L106 6 L102 6 L102 9 L110 9 L110 3 L117 3 L117 6 L113 6 L113 9 L120 9' stroke='%23a8261f' stroke-width='1' fill='none' opacity='0.5'/></svg>") center/120px 12px no-repeat !important;
+  border-radius: 0 !important;
+}
+[data-theme="dark"] .section-title::after {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='12' viewBox='0 0 120 12'><path d='M0 9 L0 3 L7 3 L7 6 L3 6 L3 9 L11 9 L11 3 L18 3 L18 6 L14 6 L14 9 L22 9 L22 3 L29 3 L29 6 L25 6 L25 9 L33 9 L33 3 L40 3 L40 6 L36 6 L36 9 L44 9 L44 3 L51 3 L51 6 L47 6 L47 9 L55 9 L55 3 L62 3 L62 6 L58 6 L58 9 L66 9 L66 3 L73 3 L73 6 L69 6 L69 9 L77 9 L77 3 L84 3 L84 6 L80 6 L80 9 L88 9 L88 3 L95 3 L95 6 L91 6 L91 9 L99 9 L99 3 L106 3 L106 6 L102 6 L102 9 L110 9 L110 3 L117 3 L117 6 L113 6 L113 9 L120 9' stroke='%23d4564c' stroke-width='1' fill='none' opacity='0.55'/></svg>") center/120px 12px no-repeat !important;
+}
+
+/* 5.4 Hero 祥云极淡覆盖（叠在粒子之上，2-3% 透明度）*/
+/* 不用 background-image 到 particle-canvas 上（会干扰 Three.js resize），
+   用 body::before 覆盖粒子层之下的位置 */
+body::before {
+  background-image:
+    radial-gradient(ellipse 70% 40% at 20% 25%, rgba(168, 38, 31, 0.04), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 80% 15%, rgba(45, 74, 107, 0.035), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(74, 107, 82, 0.03), transparent 65%) !important;
+  mix-blend-mode: normal !important;
+}
+[data-theme="dark"] body::before {
+  background-image:
+    radial-gradient(ellipse 70% 40% at 20% 25%, rgba(212, 86, 76, 0.06), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 80% 15%, rgba(61, 90, 128, 0.05), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(90, 122, 90, 0.04), transparent 65%) !important;
+}
+
+/* 5.5 卡片万字纹角花（极简版：直角折，朱砂/赭石淡色）*/
+.artwork-card {
+  position: relative;
+}
+.artwork-card::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px;
+  width: 16px; height: 16px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path d='M2 6 L2 2 L6 2 M4 4 L8 4 L8 8 M6 6 L10 6 L10 10' stroke='%23a8261f' stroke-width='1' fill='none' opacity='0.4'/></svg>") no-repeat;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.artwork-card:hover::after {
+  opacity: 1;
+}
+[data-theme="dark"] .artwork-card::after {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path d='M2 6 L2 2 L6 2 M4 4 L8 4 L8 8 M6 6 L10 6 L10 10' stroke='%23d4564c' stroke-width='1' fill='none' opacity='0.5'/></svg>") no-repeat;
+}
+
+/* 5.6 Modal 顶部缠枝纹装饰边 */
+.modal-box::before, .ai-dialog::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--accent) 15%,
+    var(--indigo-accent) 50%,
+    var(--accent) 85%,
+    transparent 100%
+  );
+  opacity: 0.6;
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin: -1px -1px 0 -1px;
+}
+
+/* ============ 6. 动效曲线统一：慢出落笔感 cubic-bezier(.22,.61,.36,1) ============ */
+/* 覆盖 style.css 中所有直接写字面量 cubic-bezier(.2,.7,.3,1) 的 transition/animation */
+
+/* 卡片入场 */
+.card-enter { animation: cardIn 0.6s cubic-bezier(.22, .61, .36, 1) both !important; }
+.card-img, .card-video { transition: transform 0.6s cubic-bezier(.22, .61, .36, 1) !important; }
+
+/* 卡片 overlay 入场 */
+.artwork-card .card-overlay,
+.card-hover-overlay,
+.artwork-card > *:last-child {
+  transition: transform 0.35s cubic-bezier(.22, .61, .36, 1),
+              opacity 0.35s cubic-bezier(.22, .61, .36, 1) !important;
+}
+
+/* 发布成功卡片 */
+.pub-success-card { transition: transform 0.4s cubic-bezier(.22, .61, .36, 1) !important; }
+
+/* Toast */
+.toast { animation: toastSlideIn 0.4s cubic-bezier(.22, .61, .36, 1) both !important; }
+
+/* Drawer */
+.sc-drawer { transition: transform 0.4s cubic-bezier(.22, .61, .36, 1) !important; }
+
+/* 通用 transition 覆盖——按钮、chip、卡片 hover */
+.btn-primary, .btn-secondary, .cta-btn,
+.chip, .filter-chip, .tag-chip, .suggest-chip,
+.artwork-card, .modal-box, .ai-dialog {
+  transition: all 0.25s cubic-bezier(.22, .61, .36, 1) !important;
+}
+
+/* Admin / 详情页浮层 */
+.admin-detail, .detail-panel, .side-panel {
+  transition: all 0.35s cubic-bezier(.22, .61, .36, 1) !important;
+}
+
+/* 骨架屏冰裂纹加载动画（已定义变量，补 keyframe + 使用）*/
+@keyframes ink-bone-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton, [class*="skeleton"] {
+  background: var(--skeleton-base) !important;
+  background-image: var(--skeleton-highlight) !important;
+  background-size: 200% 100%;
+  animation: ink-bone-shimmer 1.8s cubic-bezier(.22, .61, .36, 1) infinite !important;
+}
+
+/* ============ 7. 排行榜 & 徽章 · 三甲配色（朱砂/靛青/石绿）============ */
+
+/* Podium 容器：从玻璃 → 纸感 */
+.lb-podium-item {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--lg-shadow-soft) !important;
+  transition: transform 0.35s cubic-bezier(.22, .61, .36, 1),
+              box-shadow 0.35s cubic-bezier(.22, .61, .36, 1) !important;
+}
+.lb-podium-item:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--lg-shadow-medium) !important;
+}
+
+/* 统一 medal：隐藏 emoji，用宋体汉字 + 方印造型（朱砂/黛青/石绿边框） */
+.lb-podium-medal {
+  font-size: 0 !important;
+  position: relative;
+  width: 56px !important;
+  height: 56px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: 4px !important;
+  background: var(--bg-card) !important;
+  padding: 4px !important;
+  box-sizing: border-box !important;
+}
+.lb-podium-medal::before {
+  font-size: 1.5rem;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+  display: inline-block;
+}
+.lb-podium-item.p1 .lb-podium-medal::before { content: '一'; color: var(--accent); font-size: 1.9rem; }
+.lb-podium-item.p1 .lb-podium-medal { border-color: var(--accent) !important; box-shadow: 0 4px 14px rgba(168,38,31,0.18) !important; }
+.lb-podium-item.p2 .lb-podium-medal::before { content: '二'; color: var(--indigo-accent); }
+.lb-podium-item.p2 .lb-podium-medal { border-color: var(--indigo-accent) !important; }
+.lb-podium-item.p3 .lb-podium-medal::before { content: '三'; color: var(--jade-accent); }
+.lb-podium-item.p3 .lb-podium-medal { border-color: var(--jade-accent) !important; }
+
+/* 冠军 P1：朱砂 */
+.lb-podium-item.p1 {
+  border-color: var(--accent) !important;
+  box-shadow: 0 8px 28px rgba(168, 38, 31, 0.22) !important;
+}
+
+/* 亚军 P2：靛青 */
+.lb-podium-item.p2 {
+  border-color: var(--indigo-accent) !important;
+  opacity: 1 !important;
+}
+
+/* 季军 P3：石绿 */
+.lb-podium-item.p3 {
+  border-color: var(--jade-accent) !important;
+  opacity: 1 !important;
+}
+
+/* Podium score：三甲各属其色，独立于通用排行榜 score */
+.lb-podium-item.p1 .lb-podium-score { color: var(--accent) !important; }
+.lb-podium-item.p2 .lb-podium-score { color: var(--indigo-accent) !important; }
+.lb-podium-item.p3 .lb-podium-score { color: var(--jade-accent) !important; }
+
+/* 排行列表行 */
+.lb-row {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.25s cubic-bezier(.22, .61, .36, 1) !important;
+}
+.lb-row:hover {
+  border-color: var(--border) !important;
+  background: var(--bg-surface) !important;
+}
+
+/* "我的排行"条：从紫色 → 朱砂淡底 */
+.lb-me {
+  background: rgba(168, 38, 31, 0.08) !important;
+  border: 1px solid rgba(168, 38, 31, 0.3) !important;
+  border-radius: var(--radius) !important;
+  color: var(--text-primary) !important;
+}
+.lb-me-tag {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+}
+
+/* 排行榜列表行通用分数（非 Podium）：金色 → 赭石 */
+.lb-row .lb-score {
+  color: var(--amber-accent) !important;
+}
+
+/* 7.1 Artist / Profile 徽章：深紫文字 → 白字 */
+.artist-badge, .profile-badge {
+  color: #fff !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 1px 3px rgba(168, 38, 31, 0.2) !important;
+}
+.artist-badge {
+  background: var(--accent) !important;
+}
+.profile-badge {
+  background: var(--indigo-accent) !important;
+}
+
+/* 7.2 各种 "dream-pink" 紫色 → 朱砂淡 */
+.section-sub strong, .section-sub span {
+  color: var(--accent) !important;
+}
+
+/* 7.3 趋势颜色硬编码修复（#4ade80 绿/#f87171 红）→ 东方色系 */
+.lb-trend.up { color: var(--jade-accent) !important; }
+.lb-trend.down { color: var(--accent) !important; }
+.lb-trend.new { color: var(--indigo-accent) !important; }
+
+/* 7.4 通知徽章：从深紫 → 朱砂 */
+.notification-badge {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+}
+
+/* 7.5 AI 徽章统一 */
+.ai-gen-badge, .edit-ai-badge, .craft-ai-badge,
+.tutor-ai-badge, .curate-ai-badge, .craft-gallery-badge {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--indigo-accent) 100%) !important;
+  color: #fff !important;
+  border-radius: 2px !important;
+  font-family: "Noto Serif SC", serif !important;
+}
+
+/* 7.6 Profile LB 入口条（金色）→ 朱砂 */
+.profile-lb-entry {
+  border: 1px solid rgba(168, 38, 31, 0.4) !important;
+  background: rgba(168, 38, 31, 0.06) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius) !important;
+}
+.profile-lb-entry i:first-child {
+  color: var(--accent) !important;
+}
+.profile-lb-entry:hover {
+  background: rgba(168, 38, 31, 0.12) !important;
+}
+
+/* 7.7 滚动条细化（圆角 1px）*/
+::-webkit-scrollbar-thumb {
+  border-radius: 1px !important;
+}
+
+/* ============================================================
+   8. 渐进增强兜底 — 消除 fullPage 截图空白
+   根因：main.js gsap.set() 同步设置 opacity:0 内联样式，
+        GSAP 动画未触发时内容全透明。
+   方案：body 未加 .gsap-ready 前，用 !important 覆盖 opacity，
+        让内容先可见；GSAP 初始化末尾加 class 标记后，
+        移除兜底让入场动画生效。
+   ============================================================ */
+body:not(.gsap-ready)
+  .hero-tag, .hero-title, .hero-sub,
+  .hero-cta .btn-primary, .hero-cta .btn-ghost,
+  .hero-scroll, .hero-daily,
+  .gallery-head, .filter-bar .filter-chip,
+  .footer-inner > *,
+  .artwork-card, .card-cat, .card-info {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-tag, .hero-title, .hero-sub,
+  .hero-cta .btn-primary, .hero-scroll,
+  .gallery-head, .filter-bar .filter-chip,
+  .footer-inner > *,
+  .artwork-card {
+    opacity: 1 !important;
+    transform: none !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   9. Hero 手动断点 — h1 96px 移动端溢出
+   实测 390px 视口 h1 96px → 单行溢出
+   ============================================================ */
+@media (max-width: 1024px) {
+  .hero-title, h1 { font-size: 56px !important; line-height: 1.15 !important; }
+  .hero-sub, h2  { font-size: 40px !important; }
+}
+@media (max-width: 768px) {
+  .hero-title, h1 { font-size: 40px !important; line-height: 1.15 !important; }
+  .hero-sub, h2  { font-size: 28px !important; }
+  .hero-desc     { font-size: 14px !important; line-height: 1.7 !important; }
+  .hero-cta      { flex-wrap: wrap; gap: 12px; }
+  .hero-daily    { flex-direction: column; gap: 10px; }
+}
+@media (max-width: 480px) {
+  .hero-title, h1 { font-size: 32px !important; line-height: 1.1 !important; letter-spacing: 0; }
+  .hero-sub, h2  { font-size: 24px !important; }
+  .nav-links    { font-size: 14px; }
+}
+
+/* ============================================================
+   10. 字体加载兜底 — fonts.loli.net CDN 离线时保持墨色
+   ============================================================ */
+.hero-title, .hero-sub, h1, h2, h3,
+.card-cat, .card-aesthetic-grade,
+.lb-podium-medal::before {
+  font-display: swap;
+}
+
+/* CDN 加载超时（>3s）→ 系统衬线，但保持墨色不变 */
+body.fonts-failed .hero-title,
+body.fonts-failed h1,
+body.fonts-failed h2,
+body.fonts-failed h3 {
+  font-family: "SimSun", "STSong", "FangSong", serif !important;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   11. 作品卡印章徽章体系
+   SSS=神(朱砂) / SS=妙(赭金) / S=逸(黛青) / A=佳(石绿)
+   gallery.js 未写 data-grade 属性，通过 --grade-color 反推色阶
+   ============================================================ */
+.card-aesthetic-grade {
+  font-family: "Noto Serif SC", "Source Han Serif SC", serif !important;
+  font-weight: 600 !important;
+  padding: 3px 8px !important;
+  letter-spacing: 0.18em !important;
+  border-radius: 2px !important;
+  border: 1px solid var(--grade-color, #a8261f) !important;
+  background: color-mix(in srgb, var(--grade-color, #a8261f) 10%, transparent) !important;
+  color: var(--grade-color, #a8261f) !important;
+}
+.card-aesthetic-grade[data-grade="SSS"] { --grade-color: #a8261f; }
+.card-aesthetic-grade[data-grade="SS"]  { --grade-color: #b8892a; }
+.card-aesthetic-grade[data-grade="S"]   { --grade-color: #2d4a6b; }
+.card-aesthetic-grade[data-grade="A"]   { --grade-color: #4a6b52; }
+
+/* 排行榜奖杯：SSS=朱砂印/SS=赭金印/S=黛青印 — 覆盖 style.css 默认鎏金 */
+.lb-podium-grade {
+  font-family: "Noto Serif SC", serif !important;
+  border-radius: 2px !important;
+  letter-spacing: 0.1em !important;
+}
+.lb-podium-item.p1 .lb-podium-grade { color: #a8261f !important; }
+.lb-podium-item.p2 .lb-podium-grade { color: #b8892a !important; }
+.lb-podium-item.p3 .lb-podium-grade { color: #2d4a6b !important; }
+
+/* ============================================================
+   12. 小梦浮标全链路修复 — Dreamcore 朱砂/黛青体系
+   真实类名（绝对不要再用 #tutor-float/.tutor-float-wrap）：
+   容器 .ai-fab/#ai-fab  主动气泡 .ai-proactive-bubble
+   反应气泡 .ai-reaction-bubble  对话框 .ai-dialog
+   ============================================================ */
+
+/* —— 12.1 气泡 CJK 竖排修复（最高优先级）
+   style.css .ai-proactive-bubble { max-width:220px } 无 word-break → CJK 逐字符竖排
+   .ai-reaction-bubble 还有 white-space:nowrap 强制单行溢出 */
+.ai-proactive-bubble,
+.ai-reaction-bubble {
+  max-width: 260px !important;
+  min-width: 180px !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+  line-height: 1.7 !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* —— 12.2 精灵着色 token 化（滤镜 + 外发光，SVG 内联色由 JS 同步修改） */
+.ai-fab .ai-sprite-svg {
+  filter: drop-shadow(0 4px 10px rgba(168, 38, 31, 0.25)) !important;
+}
+.ai-fab::before {
+  background: linear-gradient(135deg, rgba(168, 38, 31, 0.4), rgba(45, 74, 107, 0.3)) !important;
+}
+
+/* —— 12.3 移动端响应式收合（≤520px） */
+@media (max-width: 520px) {
+  .ai-proactive-bubble,
+  .ai-reaction-bubble { display: none !important; }
+  .ai-fab {
+    width: 44px !important; height: 44px !important;
+    bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    right: 14px !important;
+  }
+  .ai-fab .ai-sprite-svg { transform: scale(0.7); }
+  .ai-fab::before { opacity: 0.3; }
+}
+
+/* —— 12.4 Modal 打开时隐藏浮标
+   §15.7 已有完整实现（body:has() 四形态 + body.modal-open 兜底），
+   此处仅保留 z-index 降级让 ModalScrollLock patch（ai-tutor.js init）驱动 body.modal-open 生效 */
+
+/* —— 12.5 z-index 层级降级
+   style.css .ai-fab z-index:800 / .ai-dialog & bubble z-index:801
+   .modal-overlay z-index:1000（通用弹窗）。降为 50 让 Modal 自然压过浮标 */
+.ai-fab,
+.ai-proactive-bubble,
+.ai-reaction-bubble,
+.ai-dialog {
+  z-index: 50 !important;
+}
+
+/* ============================================================
+   13. 鎏金残留色清理
+   style.css L6145-6162 --grade-color 默认 #fbbf24（鎏金）
+   style.css L6485 .lb-title i #ffd700（纯金）
+   用优先级覆盖 + 定向替换消除
+   ============================================================ */
+/* 排行榜标题鎏金 → 赭金 */
+.lb-title i,
+.lb-title .fa-star,
+.lb-title [style*="color: #ffd700"],
+.lb-title [style*="color:#ffd700"] {
+  color: var(--amber-accent, #b8892a) !important;
+}
+/* --grade-color 默认鎏金 → 墨韵朱砂 */
+:root {
+  --grade-color: #a8261f;
+}
+[data-theme="dark"] {
+  --grade-color: #d4564c;
+}
+/* 排行榜行内分数：从鎏金 → 赭石 */
+.lb-row .lb-score,
+.lb-row [class*="score"],
+.lb-row .lb-score-num {
+  color: #b8892a !important;
+}
+/* 通知角标鎏金 → 朱砂（§7.4 已覆盖）*/
+/* Gallery 卡片 grade 鎏金 → 印章色（§11 已覆盖）*/
+
+/* ============================================================
+   14. 移动端导航抽屉
+   设计令牌驱动：宣纸底 #faf6ee / 焦墨字 #1a1614 / 朱砂 #a8261f
+   抽屉从右滑入，覆盖 style.css L2434-2454 的紫色梦幻风
+   复用 main.js 已有的 #menu-toggle → #mobile-menu / #mobile-menu-overlay
+   .open class 切换逻辑（L737-761），零 JS 改动
+   ============================================================ */
+
+/* ---------- §14.1 导航栏响应式（≤768px） ----------
+   目标：390px 视口下 logo + 汉堡 + 发布 不再重叠
+   style.css 在 768px 已隐藏 .nav-center，这里补充：
+   - 汉堡按钮显式 flex
+   - 发布按钮保持纯图标
+   - 搜索框在 768~1024px 之间自适应宽度避免挤扁
+*/
+@media (max-width: 1024px) {
+  /* 搜索框不再撑爆中间区域 */
+  .nav-center { min-width: 0; }
+  .nav-search { max-width: 280px; }
+}
+
+@media (max-width: 768px) {
+  /* 导航栏：汉堡 + logo + 发布(纯图标) + 设置(纯图标) */
+  .nav-inner { gap: 8px; padding: 0 12px; }
+  .menu-toggle { display: flex !important; }
+  .logo-text { font-size: 20px; }
+  .logo-text::after { display: none; }
+  .nav-center { display: none !important; }
+  .nav-right { gap: 4px; }
+  /* 发布按钮：只保留图标 */
+  .nav-right #btn-publish {
+    padding: 8px 12px; min-width: 40px;
+  }
+  .nav-right #btn-publish span { display: none !important; }
+  /* 创作工坊下拉、文化探索下拉在窄屏收进抽屉 */
+  .nav-right #workshop-dropdown,
+  .nav-center #explore-dropdown { display: none !important; }
+  /* 搜索按钮图标也收进抽屉 */
+  .nav-right #btn-search { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .logo-text { font-size: 18px; }
+  .nav-inner { padding: 0 8px; gap: 4px; }
+  /* 移动端极简导航：只剩 汉堡 + logo + 发布(图标) */
+  .nav-right #settings-toggle,
+  .nav-right #nav-user-area { display: none !important; }
+  /* 发布按钮也只留图标（在 768px 已改，这里二次确认）*/
+  .nav-right #btn-publish { padding: 6px 10px; min-width: 38px; }
+}
+
+/* ---------- §14.2 抽屉容器（覆盖 style.css L2434-2454） ----------
+   宣纸底 + 墨框线 + 朱砂关闭按钮
+*/
+.mobile-menu-overlay {
+  background: rgba(20, 17, 14, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  z-index: 700 !important;
+}
+.mobile-menu {
+  width: 320px !important; max-width: 88vw;
+  background: var(--bg-dark, #faf6ee) !important;
+  border-left: 1px solid var(--border, #e6dccb) !important;
+  box-shadow: -16px 0 40px rgba(26, 22, 20, 0.12) !important;
+  z-index: 701 !important;
+  padding: 0 !important;
+  display: flex !important; flex-direction: column !important;
+  transform: translateX(100%) !important;
+  transition: transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+.mobile-menu.open { transform: translateX(0) !important; }
+
+/* 抽屉头部 + 朱砂关闭按钮 */
+.mobile-menu::before {
+  content: '菜单';
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border, #e6dccb);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 16px; font-weight: 600;
+  color: var(--text-primary, #1a1614);
+}
+/* 用第一个 button 作为关闭按钮替代方案：隐藏伪元素里的文字，
+   改为给抽屉加一个 .mm-head 容器？不，保持抽屉结构原样，
+   关闭由 overlay 点击 + ESC 负责（main.js 已有 overlay close 逻辑）。
+   但给 .mobile-menu 顶部内边距补偿伪元素占位 */
+.mobile-menu { padding-top: 60px !important; }
+
+/* 抽屉内按钮列表：竖排 + 墨底宣纸风 + 触控达标 */
+.mobile-menu button {
+  font-family: inherit !important;
+  font-size: 15px !important;
+  min-height: 44px !important;
+  padding: 12px 20px !important;
+  margin: 2px 12px !important;
+  border-radius: var(--radius, 4px) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border, #e6dccb) !important;
+  color: var(--text-primary, #1a1614) !important;
+  cursor: pointer !important;
+  display: flex !important; align-items: center !important; gap: 14px !important;
+  transition: background-color 200ms ease, color 200ms ease !important;
+  text-align: left !important;
+}
+.mobile-menu button:hover {
+  background: rgba(168, 38, 31, 0.06) !important;
+  color: var(--accent, #a8261f) !important;
+}
+.mobile-menu button i {
+  width: 22px !important; text-align: center !important;
+  font-size: 15px !important;
+  color: var(--accent, #a8261f) !important;
+}
+
+/* ---------- §14.3 深色主题适配 ---------- */
+[data-theme="dark"] .mobile-menu-overlay {
+  background: rgba(20, 17, 14, 0.7) !important;
+}
+[data-theme="dark"] .mobile-menu {
+  background: #1e1a16 !important;
+  border-left-color: #2a2420 !important;
+  box-shadow: -16px 0 40px rgba(0, 0, 0, 0.4) !important;
+}
+[data-theme="dark"] .mobile-menu::before {
+  border-bottom-color: #2a2420;
+  color: #e8e0d4;
+}
+[data-theme="dark"] .mobile-menu button {
+  color: #e8e0d4 !important;
+  border-bottom-color: #2a2420 !important;
+}
+[data-theme="dark"] .mobile-menu button:hover {
+  background: rgba(212, 86, 76, 0.1) !important;
+  color: #d4564c !important;
+}
+[data-theme="dark"] .mobile-menu button i {
+  color: #d4564c !important;
+}
+
+/* ============================================================
+   15. 收尾层 · Modal 圆角 / 触控目标 / Chip 去紫 / 数字等宽
+   统一商业级视觉一致性 · 2026-10-16
+   ============================================================ */
+
+/* --- 15.1 Modal / 弹窗圆角统一 --- */
+/* style.css 中大量弹窗 14~22px 圆角，与 --radius:4px 冲突。
+   移动端维持 4px（触摸手势区越圆越难定位），桌面提升到 8px（视觉张力） */
+@media (min-width: 769px) {
+  :root { --radius-modal: 8px; }
+}
+@media (max-width: 768px) {
+  :root { --radius-modal: 4px; }
+}
+
+/* 弹窗容器：把 style.css 里所有 12+px 圆角统一过来 */
+.modal-box, .ai-dialog, .profile-card, .ai-msg-bubble,
+.sc-drawer, .sc-modal, .sc-panel, .sc-card,
+.welcome-dialog, .welcome-modal,
+.ca-overlay, .ca-modal, .ca-panel, .ca-card,
+.atlas-modal, .leaderboard-modal, .lb-modal,
+.filter-panel, .filter-overlay,
+.artwork-preview, .preview-modal,
+.craft-modal, .scan-modal,
+.settings-panel, .settings-modal,
+.signin-modal, .signup-modal, .auth-modal {
+  border-radius: var(--radius-modal, 4px) !important;
+}
+/* AI 精灵气泡（reaction/proactive） */
+.ai-reaction-bubble, .ai-proactive-bubble {
+  border-radius: var(--radius-modal, 4px) !important;
+}
+/* Drawer 设置面板 —— 贴边一侧保持直角（已在 §6 覆盖 border-radius:0）*/
+.sc-drawer, .sc-drawer-left { border-radius: 0 !important; }
+
+/* --- 15.2 移动端触控目标：全局兜底 min-height 44px --- */
+/* Apple HIG / Material 48dp 触控规范。
+   排除：装饰元素（星/飞虫/loading 小圆圈）、纯图标（fab 已独立控 44px）、文本链 */
+@media (max-width: 768px) {
+  button, .btn, .btn-primary, .btn-ghost, .icon-btn,
+  .filter-chip, .chip, .tag-chip, .suggest-chip,
+  .nav-links a, .nav-link,
+  .lb-tab, .ca-tab, .tab-item,
+  .footer-nav a, .social-btn,
+  .hero-cta .btn-primary, .hero-cta .btn-ghost,
+  input[type="submit"], input[type="button"], input[type="reset"],
+  .search-btn, .header-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  /* 行内小按钮（如 X 关闭）视觉保留 36px，透明 padding 扩展命中区到 44×44 */
+  .ai-icon-btn, .drawer-close, .modal-close, .sc-close,
+  .welcome-close, .ca-close, .lb-close {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding: 4px !important;                      /* 视觉保持 36px，命中区 44px */
+    box-sizing: content-box !important;
+  }
+}
+
+/* --- 15.3 Chip 去紫 → 黛青淡底 --- */
+/* style.css 旧紫色 chip（rgba(201,182,255,0.12) 激活态等） */
+.filter-chip.active, .chip.active, .tag-chip.active,
+.suggest-chip.active, .ca-card-cat.active, .trace-chip.active,
+.search-filter-chip.active {
+  background: rgba(45, 74, 107, 0.1) !important;
+  color: var(--indigo-accent) !important;
+  border-color: var(--indigo-accent) !important;
+}
+/* 非激活 chip 背景也降饱和 */
+.filter-chip, .chip, .tag-chip, .suggest-chip,
+.ca-card-cat, .trace-chip {
+  background: transparent !important;
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+.filter-chip:hover, .chip:hover, .ca-card-cat:hover {
+  background: rgba(45, 74, 107, 0.06) !important;
+  color: var(--indigo-accent) !important;
+}
+/* 深色主题 chip */
+[data-theme="dark"] .filter-chip.active,
+[data-theme="dark"] .ca-card-cat.active {
+  background: rgba(45, 74, 107, 0.2) !important;
+  color: #a9c2d8 !important;
+  border-color: var(--indigo-accent) !important;
+}
+
+/* --- 15.4 数字等宽（tabular-nums）--- */
+/* 排行榜/分数/数值显示统一对齐 */
+.lb-score, .lb-score-num, .stat-value, .stat-num,
+.card-aesthetic-grade, .card-score, .hero-stat .num,
+.score-value, .score-num, .rank, .rank-num,
+[data-field="score"], [data-field="count"] {
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" !important;
+  letter-spacing: 0 !important;
+}
+
+/* --- 15.5 Hero 光斑去紫 → 墨韵丹青三色 --- */
+/* 精确覆盖 style.css 中已定位到的 Hero 区旧粉紫光斑。
+   仅针对已知注入点，绝不做通配清除以防误伤导航/按钮渐变。 */
+
+/* Hero 旧 :before / :after 伪元素（可能含 radial-gradient 光斑）→ 清掉 */
+.hero::before, .hero::after,
+.hero-bg::before, .hero-bg::after,
+.hero-decor::before, .hero-decor::after {
+  background: none !important;
+  background-image: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Hero 精灵光晕（style.css L1118 hero-tag::before 等）→ 替换成朱砂 */
+.hero-tag::before, .hero-tag::after,
+.hero-scroll::after, .hero-scroll::before {
+  background: var(--accent) !important;
+  box-shadow: 0 0 8px rgba(168,38,31,0.3) !important;
+}
+
+/* Hero 区内任何 drop-shadow / filter（旧粉紫）→ 低饱和墨色 */
+.hero * {
+  filter: drop-shadow(0 2px 6px rgba(26,22,20,0.06)) !important;
+}
+/* 但不要给粒子 canvas 加 filter（会影响性能）*/
+.hero canvas, .hero .particle-canvas { filter: none !important; }
+
+/* 在 .hero 根上恢复墨韵丹青三色低饱和光晕（最克制的方式）*/
+.hero {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 78% 30%, rgba(168,38,31,0.06), transparent 65%),
+    radial-gradient(ellipse 50% 35% at 20% 85%, rgba(45,74,107,0.05), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 60% 70%, rgba(184,137,42,0.04), transparent 55%) !important;
+}
+[data-theme="dark"] .hero {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 78% 30%, rgba(168,38,31,0.12), transparent 65%),
+    radial-gradient(ellipse 50% 35% at 20% 85%, rgba(45,74,107,0.1), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 60% 70%, rgba(184,137,42,0.08), transparent 55%) !important;
+}
+
+/* --- 15.6 Hero 标题孤字成行修复 --- */
+/* 根因：HTML 有 <br/> 正确断行 "当 AI 遇见文旅 / 让传统美学数字新生"，
+   但 text-wrap: balance 让浏览器在 br 后再拆一次（"数字新 / 生"）。
+   方案：desktop 用 white-space: pre-line 让 br 成为唯一切点，
+   移动端字号已缩小（40/32px），max-width 内自动折行即可，恢复 normal。*/
+@media (min-width: 769px) {
+  .hero-title, h1.hero-title {
+    max-width: 860px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    line-height: 1.3 !important;
+    /* white-space: pre-line 让 <br/> 之外的文本不自动折行，
+       HTML 里的 <br/> 标签是唯一断点 —— 但注意 pre-line 对 <br/> 标签
+       不起作用（它只尊重文本中的 \n 换字符），
+       <br/> 标签的强制换行由浏览器默认行为提供，我们不覆盖它 */
+    text-align: center !important;
+    /* 给 br 后面的文本节点一个不折行的能力：
+       用 ::after 不行，用 :has 也不行
+       最干净的：让 h1 整个不自动折行（nowrap），依赖 br 强制换 */
+    white-space: nowrap !important;   /* ← 关键：整段不自动折行，只有 br 能断开 */
+    max-width: none !important;       /* ← nowrap 必须配合不限宽 */
+    width: fit-content !important;    /* ← 让 h1 宽度等于两行中较宽那行 */
+  }
+}
+@media (max-width: 768px) {
+  /* 768px 下 h1 已缩到 40px，第二行 9 字 × 40px = 360px 足够容下 */
+  .hero-title, h1.hero-title {
+    max-width: 380px !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.15 !important;
+  }
+}
+@media (max-width: 480px) {
+  .hero-title, h1.hero-title {
+    max-width: 320px !important;
+    font-size: 32px !important;
+    white-space: normal !important;
+  }
+}
+
+/* --- 15.7 body.modal-open 时隐藏浮标 + 降 z-index --- */
+/* 当任何 .modal-box.open / .ai-dialog.open / .sc-drawer.open / .mobile-menu.open 出现，通过 :has 选 body */
+body:has(.modal-box.open) .ai-fab,
+body:has(.modal-box.open) .ai-proactive-bubble,
+body:has(.modal-box.open) .ai-reaction-bubble,
+body:has(.ai-dialog.open) .ai-fab,
+body:has(.ai-dialog.open) .ai-proactive-bubble,
+body:has(.sc-drawer.open) .ai-fab,
+body:has(.sc-modal.open) .ai-fab,
+body:has(.mobile-menu.open) .ai-fab,
+body:has(.mobile-menu.open) .ai-proactive-bubble,
+body.modal-open .ai-fab,
+body.modal-open .ai-proactive-bubble,
+body.modal-open .ai-reaction-bubble {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* --- 15.8 emoji 降级（图鉴主题图标）--- */
+/* style.css 中图鉴 12 主题 emoji 用 font-size + 位置渲染，
+   覆盖成「丹青」文字或隐藏让卡片标签承担 */
+.ca-grid .ca-card-icon,
+.ca-card .ca-emoji,
+.atlas-grid .atlas-emoji,
+.atlas-card .atlas-emoji,
+.gallery-card .emoji-icon,
+.grade-emoji, .grade-🏆 {
+  display: inline-block !important;
+  font-family: "Noto Serif SC", "SimSun", serif !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--indigo-accent) !important;
+  background: rgba(45,74,107,0.08) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 2px !important;
+  padding: 2px 8px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+/* P1-2：内联 SVG 图标覆盖丹青降级 —— 让 stroke SVG 按父级 currentColor 正确着色 */
+.ca-card-icon svg, .ca-detail-icon svg, .fp-badge-icon svg, .fp-badge-medal svg,
+.card-aesthetic-grade svg {
+  width: 1em !important;
+  height: 1em !important;
+  vertical-align: -0.1em !important;
+  display: inline-block !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: currentColor !important;
+}
+/* 实在不是 emoji 无法转的（奖杯 🏆 等）— 让它至少降饱和 */
+.grade-emoji {
+  filter: grayscale(0.35) !important;
+}
+
+/* --- 15.9 排行榜分数小数位统一 —— JS 里 .toFixed(1) 处理，CSS 只等宽 --- */
+/* §15.4 已用 tabular-nums 对齐。小数位由 JS rank.js / leaderboard.js 负责格式化。 */
+
+/* --- 15.10 小梦精灵残留粉紫色兜底 --- */
+/* style.css 中 .ai-proactive-bubble:hover { border-color: rgba(201,182,255,0.5) } L1940 仍残留 */
+.ai-proactive-bubble:hover,
+.ai-reaction-bubble:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 4px 16px rgba(168,38,31,0.18) !important;
+}
+/* ai-dialog 输入框 focus 态旧粉紫 → 朱砂 */
+.ai-dialog-input input:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(168,38,31,0.15) !important; }
+/* ai-chip hover 旧粉紫 → 黛青 */
+.ai-chip:hover { background: rgba(45,74,107,0.08) !important; color: var(--indigo-accent) !important; }
+/* ai-send 按钮旧 grad-dream（粉紫蓝）→ 朱砂渐变 */
+.ai-send { background: linear-gradient(135deg, var(--accent), var(--indigo-accent)) !important; color: #fff !important; }
+/* ai-msg.user 气泡旧粉紫蓝渐变 → 朱砂 */
+.ai-msg.user .ai-msg-bubble, .ai-msg-bubble.user {
+  background: rgba(168,38,31,0.08) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(168,38,31,0.2) !important;
+}
+/* ai-msg-bot 气泡背景 */
+.ai-msg.bot .ai-msg-bubble {
+  background: var(--bg-surface-hover) !important;
+  border-color: var(--border) !important;
+}
+/* ai-dialog 对话框圆角 */
+.ai-dialog { border-radius: var(--radius-modal, 8px) !important; }
+/* 打字光标旧粉紫 → 朱砂 */
+.ai-typing-cursor { background: var(--accent) !important; }
+/* thinking dot 旧 dream-purple → 黛青 */
+.ai-thinking-dot { background: var(--indigo-accent) !important; }
+/* 光标环 hover 旧粉紫 → 朱砂 */
+.cursor-ring, .cursor-ring.hover { border-color: rgba(168,38,31,0.5) !important; color: var(--accent) !important; }
+.cursor-ring { background: rgba(168,38,31,0.04) !important; }
+
+/* ============================================================
+   §17 风格主题覆盖层（修复风格主题切换失灵 · R1 根因）
+   根因：style.css 的 [data-style=X] 特异性 (0,1,0) 与本文件 :root (0,1,0) 平局，
+        且本文件后序载入 → 风格令牌被墨韵丹青 :root 全量抹平。
+   方案：提升为 :root[data-style=X] (0,2,0) 稳胜，并给出 × 明暗 正交组合变体 (0,3,0)。
+   ============================================================ */
+
+/* ---- 17.1 国风 · 朱红鎏金宣纸 ---- */
+:root[data-style="guofeng"] {
+  --bg-dark: #f7f1e5; --bg-card: #fffaf0; --bg-surface: #efe3cd;
+  --bg-surface-hover: #e6d8bd; --bg-hover: rgba(60, 30, 15, 0.06);
+  --text-primary: #2b1a12; --text-secondary: #4a3527; --text-tertiary: #7a6650;
+  --accent: #c23e2b; --accent-soft: #fdf1ec;
+  --indigo-accent: #a67c1a; --jade-accent: #5a7a52; --amber-accent: #d4af37;
+  --border: #e0cfae; --border-subtle: #ece0c8;
+  --grad-dream: linear-gradient(135deg, #e8a58c 0%, #d4af37 50%, #c23e2b 100%);
+  --grad-dream-soft: linear-gradient(135deg, rgba(232,165,140,.08), rgba(212,175,55,.08), rgba(194,62,43,.08));
+  --shadow-glow: 0 8px 28px rgba(194, 62, 43, 0.10);
+  --glass-bg: rgba(255, 250, 240, 0.72); --glass-border: rgba(120, 60, 30, 0.14);
+  --modal-bg: rgba(255, 250, 240, 0.92); --modal-border-grad: none;
+  --skeleton-base: rgba(224, 207, 174, 0.4);
+  --bg-glow-1: rgba(194,62,43,.06); --bg-glow-2: rgba(212,175,55,.06); --bg-glow-3: rgba(232,165,140,.05);
+}
+:root[data-style="guofeng"][data-theme="dark"] {
+  --bg-dark: #1a1410; --bg-card: #241c16; --bg-surface: #2e241c;
+  --bg-surface-hover: #3a2e23; --bg-hover: rgba(245, 236, 224, 0.05);
+  --text-primary: #f5ece0; --text-secondary: #d8cbb8; --text-tertiary: #a2937e;
+  --accent: #e0745f; --indigo-accent: #d4af37; --border: #4a3a2b; --border-subtle: #342a20;
+}
+
+/* ---- 17.2 非遗 · 靛蓝扎染 ---- */
+:root[data-style="feiyi"] {
+  --bg-dark: #eef2f7; --bg-card: #f7fafd; --bg-surface: #e2eaf3;
+  --bg-surface-hover: #d6e2ef; --bg-hover: rgba(30, 58, 95, 0.06);
+  --text-primary: #16283e; --text-secondary: #2f4a66; --text-tertiary: #5f7a96;
+  --accent: #1f4e79; --accent-soft: #edf3f9;
+  --indigo-accent: #6f96c4; --jade-accent: #4a7a6a; --amber-accent: #b8860b;
+  --border: #cbd9e8; --border-subtle: #dde7f1;
+  --grad-dream: linear-gradient(135deg, #a9c4e8 0%, #4a6fa5 50%, #1e3a5f 100%);
+  --grad-dream-soft: linear-gradient(135deg, rgba(169,196,232,.08), rgba(74,111,165,.08), rgba(30,58,95,.08));
+  --shadow-glow: 0 8px 28px rgba(30, 58, 95, 0.10);
+  --glass-bg: rgba(245, 248, 252, 0.75); --glass-border: rgba(30, 58, 95, 0.14);
+  --modal-bg: rgba(247, 250, 253, 0.92);
+  --skeleton-base: rgba(203, 217, 232, 0.4);
+  --bg-glow-1: rgba(31,78,121,.06); --bg-glow-2: rgba(111,150,196,.06); --bg-glow-3: rgba(74,122,106,.05);
+}
+:root[data-style="feiyi"][data-theme="dark"] {
+  --bg-dark: #0f1820; --bg-card: #16222c; --bg-surface: #1c2b38;
+  --bg-surface-hover: #24374a; --bg-hover: rgba(216, 235, 255, 0.05);
+  --text-primary: #e6eef7; --text-secondary: #b6c8da; --text-tertiary: #8ba0b6;
+  --accent: #6fa8dc; --indigo-accent: #9dbfe0; --border: #2c4054; --border-subtle: #1f2e3c;
+}
+
+/* ---- 17.3 极简 · 石墨纯白 ---- */
+:root[data-style="minimal"] {
+  --bg-dark: #fafafa; --bg-card: #ffffff; --bg-surface: #f2f3f5;
+  --bg-surface-hover: #e8eaed; --bg-hover: rgba(31, 41, 55, 0.05);
+  --text-primary: #1f2937; --text-secondary: #4b5563; --text-tertiary: #6b7280;
+  --accent: #111827; --accent-soft: #f3f4f6;
+  --indigo-accent: #6b7280; --jade-accent: #4b5563; --amber-accent: #9ca3af;
+  --border: #e5e7eb; --border-subtle: #f0f1f3;
+  --grad-dream: linear-gradient(135deg, #e5e7eb 0%, #cbd2dc 50%, #98a2b3 100%);
+  --grad-dream-soft: linear-gradient(135deg, rgba(229,231,235,.12), rgba(203,210,220,.12), rgba(152,162,179,.12));
+  --shadow-glow: 0 8px 28px rgba(31, 41, 55, 0.07);
+  --glass-bg: rgba(255, 255, 255, 0.78); --glass-border: rgba(31, 41, 55, 0.10);
+  --modal-bg: rgba(255, 255, 255, 0.94);
+  --skeleton-base: rgba(229, 231, 235, 0.6);
+  --bg-glow-1: rgba(152,162,179,.05); --bg-glow-2: rgba(203,210,220,.05); --bg-glow-3: rgba(229,231,235,.05);
+}
+:root[data-style="minimal"][data-theme="dark"] {
+  --bg-dark: #0d0f12; --bg-card: #16191d; --bg-surface: #1d2126;
+  --bg-surface-hover: #24292f; --bg-hover: rgba(240, 242, 245, 0.05);
+  --text-primary: #eceef1; --text-secondary: #b8bcc4; --text-tertiary: #868d98;
+  --accent: #e5e7eb; --indigo-accent: #9ca3af; --border: #2b3036; --border-subtle: #1f2429;
+}
+
+/* ---- 17.4 默认（墨韵丹青）—— data-style 被移除，:root 生效，无需声明 ---- */
+
+/* ---- 17.5 导航栏底色改为令牌派生（R4 根因修复），使品牌面随风格主题联动 ---- */
+#navbar { background: color-mix(in srgb, var(--bg-card) 85%, transparent) !important; }
+[data-theme="dark"] #navbar { background: color-mix(in srgb, var(--bg-dark) 85%, transparent) !important; }

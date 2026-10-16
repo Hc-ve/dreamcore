@@ -1,0 +1,22 @@
+
+校验失败 [做一个冰箱贴，把秦俑元素融进去]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [做一个灯影的礼物，能体现文化底蕴]: 标题汉字数 5 不在 6-16
+
+校验失败 [做一个脸谱的小玩意，能体现文化底蕴]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [想要蓝印花布主题的徽章，送朋友]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [想要扎染主题的徽章，送朋友]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [把角楼做成文创纪念品]: 标题汉字数 5 不在 6-16
+
+校验失败 [鼓浪屿风景的冰箱贴]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [飞天元素笔记本，要有辨识度]: palette 含非法色名: 土红,石青,米白
+
+校验失败 [兵马俑元素茶具，要有辨识度]: 贴题校验失败: 「俑阵陶韵茶器」未扣主题《秦陵兵马俑》
+
+校验失败 [戏曲元素钥匙扣，要有辨识度]: layout postcard-duo 与 craftType card 不匹配
+
+校验失败 [骆驼俑元素钥匙扣，要有辨识度]: layout postcard-torn 与 craftType card 不匹配

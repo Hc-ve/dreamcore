@@ -1,0 +1,14 @@
+
+校验失败 [做一个冰箱贴，把青花瓷元素融进去]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [做一个故宫的周边，能体现文化底蕴]: layout postcard-duo 与 craftType card 不匹配
+
+校验失败 [想要绣娘主题的徽章，送朋友]: layout postcard-circle 与 craftType card 不匹配
+
+校验失败 [想去敦煌莫高窟玩，先做个纪念品]: palette 含非法色名: 土红,石青,米白
+
+校验失败 [以大雁塔·大唐不夜城为灵感的衍生品]: 标题汉字数 5 不在 6-16
+
+校验失败 [帮我把飞天做成帆布包，适合收藏]: palette 含非法色名: 土红,石青,米白
+
+校验失败 [帮我把莫高窟做成盲盒，适合收藏]: palette 含非法色名: 土红,石青,赭石

@@ -1,0 +1,18 @@
+{
+  "generated_tests": [
+    "tests/theme-regression.spec.js (for js/settings.js theme logic + particles.js ResizeObserver isolation)"
+  ],
+  "pending_files": [],
+  "session_meta": {
+    "date": "2026-10-13",
+    "command": "trae-remote-official:tailtest",
+    "framework": "@playwright/test",
+    "results": "42 passed (Desktop Chrome + Tablet + Mobile, 14 tests × 3 projects)",
+    "target_files": ["js/settings.js", "js/particles.js", "index.html Watchdog HEAD script"],
+    "test_coverage": {
+      "settings.js": "applyTheme / getSetting / setSetting / DEFAULTS.theme consistency / quote pollution defense",
+      "index.html": "_resolveTheme / Watchdog MO / Watchdog interval self-termination / matchMedia listener",
+      "particles.js": "ResizeObserver isolation from Watchdog setAttribute loop"
+    }
+  }
+}

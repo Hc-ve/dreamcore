@@ -10,18 +10,40 @@ const Artist = {
 
   // ----------------------------------------------------------
   // 通过作者名打开艺术家主页（种子数据用）
+  // 惰性为种子艺术家建立本地用户记录，使关注/粉丝数据真实落库
   // ----------------------------------------------------------
   async openByAuthorName(authorName) {
     const artworks = await getArtworksByAuthorName(authorName);
     const totalLikes = artworks.reduce((sum, a) => sum + (a.likes || 0), 0);
 
+    // 惰性建立虚拟艺术家用户记录（幂等），关注/粉丝数据从此真实可查
+    let artistUser = null;
+    const ensureFn = (typeof ensureVirtualArtist === 'function')
+      ? ensureVirtualArtist
+      : (typeof window.ensureVirtualArtist === 'function' ? window.ensureVirtualArtist : null);
+    if (ensureFn) {
+      try { artistUser = await ensureFn(authorName); } catch (e) { /* 失败按无记录处理 */ }
+    }
+
+    // 真实粉丝/关注计数（来自 follows 表实际记录）
+    let followersCount = 0, followingCount = 0;
+    if (artistUser && artistUser.id != null) {
+      try {
+        [followersCount, followingCount] = await Promise.all([
+          getFollowersCount(artistUser.id),
+          getFollowingCount(artistUser.id)
+        ]);
+      } catch (e) { /* 忽略计数失败 */ }
+    }
+
     this.currentArtist = {
+      id: artistUser ? artistUser.id : null,
       name: authorName,
       bio: `梦境艺术家，专注于创造独特的视觉体验。`,
       worksCount: artworks.length,
       totalLikes: totalLikes,
-      followersCount: Math.floor(Math.random() * 5000) + 100,
-      followingCount: Math.floor(Math.random() * 200) + 10,
+      followersCount: followersCount,
+      followingCount: followingCount,
       isVirtual: true
     };
     this.currentArtworks = artworks;
@@ -39,15 +61,24 @@ const Artist = {
     const artworks = await getUserArtworks(userId);
     const totalLikes = await getUserTotalLikes(userId);
 
+    // 实时从 follows 表统计粉丝/关注数（不依赖可能过期的用户字段）
+    let followersCount = 0, followingCount = 0;
+    try {
+      [followersCount, followingCount] = await Promise.all([
+        getFollowersCount(user.id),
+        getFollowingCount(user.id)
+      ]);
+    } catch (e) { /* 忽略计数失败 */ }
+
     this.currentArtist = {
       id: user.id,
       name: user.username,
       email: user.email,
       bio: user.bio || '这个人很懒，什么都没留下…',
-      worksCount: user.worksCount || artworks.length,
+      worksCount: artworks.length,
       totalLikes: totalLikes,
-      followersCount: user.followersCount || 0,
-      followingCount: user.followingCount || 0,
+      followersCount: followersCount,
+      followingCount: followingCount,
       isVirtual: false,
       user: user
     };
@@ -105,10 +136,12 @@ const Artist = {
 
         <div class="artist-tabs">
           <button class="artist-tab active" data-tab="works"><i class="fa-regular fa-images"></i> 作品</button>
+          <button class="artist-tab" data-tab="crafts"><i class="fa-solid fa-gift"></i> 数字文创馆</button>
         </div>
 
         <div class="artist-content" id="artist-content">
-          <div class="artist-grid"></div>
+          <div class="artist-grid" data-panel="works"></div>
+          <div class="artist-crafts" data-panel="crafts" style="display:none"></div>
         </div>
       </div>
     `;
@@ -123,9 +156,84 @@ const Artist = {
     // 渲染作品
     this._renderWorks();
 
+    // 绑定 Tab 切换
+    this._bindTabs();
+
     // 绑定关注按钮
     if (!isSelf) {
       this._bindFollowButton();
+    }
+  },
+
+  // ----------------------------------------------------------
+  // 绑定 Tab 切换（作品 / 数字文创馆）
+  // ----------------------------------------------------------
+  _bindTabs() {
+    const tabs = this.modalEl.querySelectorAll('.artist-tab');
+    const panels = this.modalEl.querySelectorAll('[data-panel]');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        if (typeof Sound !== 'undefined') Sound.playSound('click');
+        const target = tab.dataset.tab;
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === target));
+        panels.forEach(p => {
+          p.style.display = (p.dataset.panel === target) ? '' : 'none';
+        });
+        // 切换到文创馆时懒加载
+        if (target === 'crafts') this._renderCrafts();
+      });
+    });
+  },
+
+  // ----------------------------------------------------------
+  // 渲染数字文创馆（调用 getAiCraftsByUser）
+  // ----------------------------------------------------------
+  async _renderCrafts() {
+    const container = this.modalEl.querySelector('[data-panel="crafts"]');
+    if (!container) return;
+    const artist = this.currentArtist;
+    // 虚拟艺术家现在也有本地用户记录，统一按 userId 查询（无记录时如实显示空态）
+    const userId = artist.id || (artist.user && artist.user.id);
+    if (!userId) {
+      container.innerHTML = '<p class="artist-empty">该艺术家暂无数字文创衍生品</p>';
+      return;
+    }
+    container.innerHTML = '<p class="artist-empty"><i class="fa-solid fa-spinner fa-spin"></i> 加载中…</p>';
+    try {
+      const list = (typeof getAiCraftsByUser === 'function')
+        ? await getAiCraftsByUser(userId)
+        : (window.getAiCraftsByUser ? await window.getAiCraftsByUser(userId) : []);
+      if (!list.length) {
+        container.innerHTML = '<p class="artist-empty">暂无数字文创衍生品，可在作品灯箱中点击「AI文创」生成</p>';
+        return;
+      }
+      container.innerHTML = '<div class="craft-gallery-grid"></div>';
+      const grid = container.querySelector('.craft-gallery-grid');
+      list.forEach(c => {
+        const typeDef = (window.AICraft && window.AICraft.CRAFT_TYPES || []).find(t => t.key === c.craftType);
+        const card = document.createElement('div');
+        card.className = 'craft-gallery-card';
+        card.innerHTML = `
+          <div class="craft-gallery-thumb">
+            ${c.imageData ? `<img src="${c.imageData}" alt="文创 ${c.id}" loading="lazy" />` : '<div class="craft-gallery-thumb-empty"><i class="fa-solid fa-gift"></i></div>'}
+            <span class="craft-gallery-badge">✨ AI</span>
+          </div>
+          <div class="craft-gallery-info">
+            <span class="craft-gallery-type">${typeDef ? typeDef.label : (c.craftType || '文创')}</span>
+            <span class="craft-gallery-style">${c.styleTheme || ''}</span>
+          </div>
+        `;
+        // 点击文创可重新打开工作台
+        card.addEventListener('click', () => {
+          if (typeof Sound !== 'undefined') Sound.playSound('click');
+          this._close();
+          window.location.hash = `#/craft?artworkId=${c.artworkId}`;
+        });
+        grid.appendChild(card);
+      });
+    } catch (err) {
+      console.error('[Artist] 加载数字文创馆失败:', err);
+      container.innerHTML = '<p class="artist-empty">加载失败，请重试</p>';
     }
   },
 
@@ -139,12 +247,14 @@ const Artist = {
     const user = window.currentUser;
     const artist = this.currentArtist;
 
-    // 虚拟艺术家无法关注（因为没有userId）
-    if (artist.isVirtual) {
+    // 无本地用户记录的艺术家（记录创建失败）无法关注，如实提示
+    if (artist.id == null) {
       btn.addEventListener('click', () => {
-        if (window.showToast) {
-          showToast('登录后可以关注注册艺术家哦', 'info');
+        if (!window.currentUser) {
+          if (window.Auth) Auth.requireLogin();
+          return;
         }
+        if (window.showToast) showToast('该艺术家暂不支持关注', 'info');
       });
       return;
     }

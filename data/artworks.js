@@ -1,2874 +1,3429 @@
-// data/artworks.js
-// 220 个无版权艺术作品种子数据
-// 图片来源：Lorem Picsum (https://picsum.photos) - 无版权
-// 分类：digital-art / photography / illustration / abstract / 3d-art
+// ============================================================
+// data/artworks.js — 244 件文旅文创主题作品种子数据（M7 主题化重构）
+// 组成：文旅摄影52 / 非遗文创38 / 国风绘画44 / AI数字艺术34 / 博物文创40 / 创意设计36
+// 图片：本地 public/images/artworks/（Met 公有领域真迹 120 件 + AI 生成 124 张，零外链依赖）
+// 评级：grade/totalScore 按热度分位确定性分配（对齐 ai-aesthetic 六等级体系）
+// 作者：12 个初始账户（见 Supabase profiles，密码统一 123456）
+// ============================================================
 
 const ARTWORKS_SEED_DATA = [
-  // 1. digital-art
   {
     id: 1,
-    title: "梦境之翼 / Dream Wings",
-    description: "这幅作品探索了时间与空间的褶皱，通过绛红霞光的渐变与流动的光影，展露出细腻的情感肌理。以独特的视角诠释了梦境美学的精髓。",
-    author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art001/800/600",
-    likes: 39,
-    views: 35300,
-    createdAt: "2023-11-26"
+    title: "湘西风雨桥·烟雨",
+    description: "湘西风雨桥的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-001.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 624,
+    views: 48830,
+    createdAt: "2024-10-29"
   },
-
-  // 2. photography
   {
     id: 2,
-    title: "紫色迷雾 / Purple Mist",
-    description: "这幅作品探索了宇宙与微观的呼应，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art002/800/600",
-    likes: 156,
-    views: 18426,
-    createdAt: "2024-01-09"
+    title: "清·山水·手记 / Brush holder decorated with immortals in landscape",
+    description: "这件山水记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["匠心","山水"],
+    imageUrl: "/images/artworks/met-76453.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 624,
+    views: 48830,
+    createdAt: "2024-10-29"
   },
-
-  // 3. illustration
   {
     id: 3,
-    title: "星河倒影 / Galaxy Reflection",
-    description: "这幅作品探索了潜意识与现实的边界，通过暖橘金辉的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art003/800/600",
-    likes: 23,
-    views: 37294,
-    createdAt: "2023-05-03"
+    title: "山水·手记 / Landscape in the manner of Dong Yuan",
+    description: "此作来自大都会博物馆公开馆藏，Folding fan mounted as a。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","山水"],
+    imageUrl: "/images/artworks/met-35977.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 624,
+    views: 48830,
+    createdAt: "2024-10-29"
   },
-
-  // 4. abstract
   {
     id: 4,
-    title: "花语低吟 / Whispering Blooms",
-    description: "这幅作品探索了光影与色彩的对话，通过薄荷淡彩的渐变与流动的光影，创造出富有韵律的构图。让人在凝视中感受时间凝固的瞬间。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art004/800/600",
-    likes: 891,
-    views: 58295,
-    createdAt: "2023-10-04"
+    title: "青花瓷纹数字星云",
+    description: "青花瓷纹数字星云：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-053.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 624,
+    views: 48830,
+    createdAt: "2024-10-29"
   },
-
-  // 5. 3d-art
   {
     id: 5,
-    title: "光影交响 / Light Symphony",
-    description: "这幅作品探索了梦境与清醒的交织，通过琥珀温润的渐变与流动的光影，打造出沉浸式的感官世界。在静谧中传递出强烈的情感张力。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art005/800/600",
-    likes: 878,
-    views: 55220,
-    createdAt: "2023-02-20"
+    title: "唐·瓷韵·手记 / Pillow",
+    description: "唐代瓷韵给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["考古美学","瓷韵"],
+    imageUrl: "/images/artworks/met-53958.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 624,
+    views: 48830,
+    createdAt: "2024-10-29"
   },
-
-  // 6. digital-art
   {
     id: 6,
-    title: "深海呢喃 / Deep Sea Whisper",
-    description: "这幅作品探索了时间与空间的褶皱，通过钴蓝渐变的渐变与流动的光影，勾勒出诗意般的画面。引领观者进入一场关于美的深层探索。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art006/800/600",
-    likes: 495,
-    views: 31460,
-    createdAt: "2023-01-09"
+    title: "青花瓷纹丝巾",
+    description: "把文创设计装进青花瓷纹丝巾：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-088.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 624,
+    views: 48830,
+    createdAt: "2024-10-29"
   },
-
-  // 7. photography
   {
     id: 7,
-    title: "霓虹心脏 / Neon Heart",
-    description: "这幅作品探索了流动与静止的张力，通过粉紫色调的渐变与流动的光影，编织出如梦似幻的氛围。将瞬间的感动凝固为永恒的画面。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art007/800/600",
-    likes: 884,
-    views: 8909,
-    createdAt: "2023-10-11"
+    title: "黄山云海奇松",
+    description: "黄山云海奇松的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-004.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 718,
+    views: 55830,
+    createdAt: "2025-02-05"
   },
-
-  // 8. illustration
   {
     id: 8,
-    title: "破碎星辰 / Shattered Stars",
-    description: "这幅作品探索了自然与科技的融合，通过暖橘金辉的渐变与流动的光影，构建出一个令人沉醉的梦境空间。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art008/800/600",
-    likes: 713,
-    views: 83457,
-    createdAt: "2023-01-10"
+    title: "清·古松·样本 / Dish with pine trees",
+    description: "这件古松记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["匠心","东方美学","古松"],
+    imageUrl: "/images/artworks/met-39868.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 718,
+    views: 55830,
+    createdAt: "2025-02-05"
   },
-
-  // 9. abstract
   {
     id: 9,
-    title: "液态银河 / Liquid Galaxy",
-    description: "这幅作品探索了光影与色彩的对话，通过靛青深邃的渐变与流动的光影，打造出沉浸式的感官世界。让人在凝视中感受时间凝固的瞬间。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art009/800/600",
-    likes: 717,
-    views: 47595,
-    createdAt: "2023-06-06"
+    title: "清·渔隐·样本 / Qu Yuan and the Fisherman",
+    description: "此作来自大都会博物馆公开馆藏，Folding fan mounted as a。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","青绿山水","渔隐"],
+    imageUrl: "/images/artworks/met-35981.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 718,
+    views: 55830,
+    createdAt: "2025-02-05"
   },
-
-  // 10. 3d-art
   {
     id: 10,
-    title: "蝴蝶效应 / Butterfly Effect",
-    description: "这幅作品探索了具象与抽象的转换，通过薄荷淡彩的渐变与流动的光影，构筑出宁静而深邃的意境。引领观者进入一场关于美的深层探索。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art010/800/600",
-    likes: 929,
-    views: 78617,
-    createdAt: "2023-10-16"
+    title: "敦煌飞天粒子重构",
+    description: "敦煌飞天粒子重构：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-055.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 718,
+    views: 55830,
+    createdAt: "2025-02-05"
   },
-
-  // 11. digital-art
   {
     id: 11,
-    title: "晨曦微光 / Dawn Glimmer",
-    description: "这幅作品探索了梦境与清醒的交织，通过粉紫色调的渐变与流动的光影，营造出超现实的视觉体验。以独特的视角诠释了梦境美学的精髓。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art011/800/600",
-    likes: 573,
-    views: 94812,
-    createdAt: "2023-07-09"
+    title: "唐·盏·样本 / Octagonal cup with ring handle",
+    description: "唐代盏给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["考古美学","公有领域","盏"],
+    imageUrl: "/images/artworks/met-42182.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 718,
+    views: 55830,
+    createdAt: "2025-02-05"
   },
-
-  // 12. photography
   {
     id: 12,
-    title: "镜中幻境 / Mirror Mirage",
-    description: "这幅作品探索了自然与科技的融合，通过翠绿流光的渐变与流动的光影，营造出超现实的视觉体验。在虚与实之间留下无尽的想象空间。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art012/800/600",
-    likes: 604,
-    views: 77374,
-    createdAt: "2024-05-19"
+    title: "敦煌藻井台灯",
+    description: "把文创设计装进敦煌藻井台灯：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-089.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 718,
+    views: 55830,
+    createdAt: "2025-02-05"
   },
-
-  // 13. illustration
   {
     id: 13,
-    title: "燃烧的云 / Burning Clouds",
-    description: "这幅作品探索了情感与记忆的沉淀，通过暖橘金辉的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art013/800/600",
+    title: "凤凰古城沱江晨雾",
+    description: "记录凤凰古城沱江晨雾的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-002.jpg",
+    grade: "sss",
+    totalScore: 9.9,
     likes: 945,
-    views: 59293,
-    createdAt: "2023-08-20"
+    views: 72563,
+    createdAt: "2025-09-10"
   },
-
-  // 14. abstract
   {
     id: 14,
-    title: "雨后初晴 / After the Rain",
-    description: "这幅作品探索了情感与记忆的沉淀，通过翠绿流光的渐变与流动的光影，塑造出独特的视觉语言。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art014/800/600",
-    likes: 376,
-    views: 80962,
-    createdAt: "2024-06-14"
+    title: "清·古艺 / Demon queller Zhong Kui with demons",
+    description: "从染缸到绣绷，古艺的美学从未断代。我们尝试用镜头为技艺存档，也为文创转化留下第一手灵感。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["东方美学","非遗","古艺"],
+    imageUrl: "/images/artworks/met-75262.jpg",
+    grade: "sss",
+    totalScore: 9.9,
+    likes: 945,
+    views: 72563,
+    createdAt: "2025-09-10"
   },
-
-  // 15. 3d-art
   {
     id: 15,
-    title: "时间褶皱 / Folds of Time",
-    description: "这幅作品探索了情感与记忆的沉淀，通过靛青深邃的渐变与流动的光影，塑造出独特的视觉语言。引领观者进入一场关于美的深层探索。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art015/800/600",
-    likes: 75,
-    views: 12571,
-    createdAt: "2023-09-21"
+    title: "明·书迹 / Calligraphy",
+    description: "书迹的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["青绿山水","国风","书迹"],
+    imageUrl: "/images/artworks/met-35993.jpg",
+    grade: "sss",
+    totalScore: 9.9,
+    likes: 945,
+    views: 72563,
+    createdAt: "2025-09-10"
   },
-
-  // 16. digital-art
   {
     id: 16,
-    title: "午夜花园 / Midnight Garden",
-    description: "这幅作品探索了流动与静止的张力，通过薰衣草紫的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art016/800/600",
-    likes: 848,
-    views: 42513,
-    createdAt: "2023-02-21"
+    title: "水墨赛博山水",
+    description: "算法不懂留白，却生成了留白。水墨赛博山水的生成过程本身就是一场行为艺术——提示、迭代、筛选、再提示。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-054.jpg",
+    grade: "sss",
+    totalScore: 9.9,
+    likes: 945,
+    views: 72563,
+    createdAt: "2025-09-10"
   },
-
-  // 17. photography
   {
     id: 17,
-    title: "光的轨迹 / Trail of Light",
-    description: "这幅作品探索了自然与科技的融合，通过琥珀温润的渐变与流动的光影，勾勒出诗意般的画面。让人在凝视中感受时间凝固的瞬间。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art017/800/600",
-    likes: 39,
-    views: 33580,
-    createdAt: "2023-08-30"
+    title: "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+    description: "文物不言，纹样自证。这件唐代古艺的高清影像已进入公有领域，等待被下一代创作者重新唤醒。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["公有领域","馆藏","古艺"],
+    imageUrl: "/images/artworks/met-49540.jpg",
+    grade: "sss",
+    totalScore: 9.9,
+    likes: 945,
+    views: 72563,
+    createdAt: "2025-09-10"
   },
-
-  // 18. illustration
   {
     id: 18,
-    title: "蓝色梦境 / Blue Reverie",
-    description: "这幅作品探索了流动与静止的张力，通过薰衣草紫的渐变与流动的光影，塑造出独特的视觉语言。将瞬间的感动凝固为永恒的画面。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art018/800/600",
-    likes: 40,
-    views: 44662,
-    createdAt: "2023-04-13"
+    title: "三星堆盲盒",
+    description: "三星堆盲盒打样记录。从展柜里的文物到手心里的物件，文创的意义就是完成\"拥有文化\"这个古老愿望。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","IP形象"],
+    imageUrl: "/images/artworks/gen-087.jpg",
+    grade: "sss",
+    totalScore: 9.9,
+    likes: 945,
+    views: 72563,
+    createdAt: "2025-09-10"
   },
-
-  // 19. abstract
   {
     id: 19,
-    title: "樱花絮语 / Sakura Whispers",
-    description: "这幅作品探索了光影与色彩的对话，通过绛红霞光的渐变与流动的光影，勾勒出诗意般的画面。将瞬间的感动凝固为永恒的画面。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art019/800/600",
-    likes: 554,
-    views: 19952,
-    createdAt: "2024-02-21"
+    title: "桂林漓江竹筏",
+    description: "行至桂林漓江竹筏，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-003.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 99,
+    views: 9563,
+    createdAt: "2023-04-03"
   },
-
-  // 20. 3d-art
   {
     id: 20,
-    title: "迷雾森林 / Misty Forest",
-    description: "这幅作品探索了时间与空间的褶皱，通过薄荷淡彩的渐变与流动的光影，构建出一个令人沉醉的梦境空间。在虚与实之间留下无尽的想象空间。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art020/800/600",
-    likes: 473,
-    views: 44242,
-    createdAt: "2024-12-21"
+    title: "明·亭榭·记 / Brush holder with scene of “Ode to the Pavilion of the Inebr",
+    description: "亭榭的经纬交织处，藏着中国人独有的耐心与浪漫。非遗技艺不该只在展柜里，让它走进日常，成为看得见、用得上的东方之美。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["非遗","匠心","亭榭"],
+    imageUrl: "/images/artworks/met-39625.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 99,
+    views: 9563,
+    createdAt: "2023-04-03"
   },
-
-  // 21. digital-art
   {
     id: 21,
-    title: "极光之舞 / Aurora Dance",
-    description: "这幅作品探索了潜意识与现实的边界，通过薄荷淡彩的渐变与流动的光影，构建出一个令人沉醉的梦境空间。让人在凝视中感受时间凝固的瞬间。",
+    title: "南宋·窟龛·记 / Conversation in a cave",
+    description: "南宋代笔墨，千年气韵。窟龛的构图与留白，至今仍是东方设计的底层语法——古画不语，自成丘壑。",
     author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art021/800/600",
-    likes: 418,
-    views: 65422,
-    createdAt: "2024-11-20"
+    category: "guofeng-art",
+    tags: ["国风","馆藏真迹","窟龛"],
+    imageUrl: "/images/artworks/met-36052.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 99,
+    views: 9563,
+    createdAt: "2023-04-03"
   },
-
-  // 22. photography
   {
     id: 22,
-    title: "水晶之心 / Crystal Heart",
-    description: "这幅作品探索了梦境与清醒的交织，通过琥珀温润的渐变与流动的光影，构筑出宁静而深邃的意境。让光影成为情感最忠实的表达载体。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art022/800/600",
-    likes: 978,
-    views: 83185,
-    createdAt: "2024-06-20"
+    title: "千里江山图数字长卷",
+    description: "千里江山图数字长卷——一场人机共创的实验。让算法研习传统纹样，再放任它在数字画布上自由生长，生成结果超出了所有预期。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-056.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 99,
+    views: 9563,
+    createdAt: "2023-04-03"
   },
-
-  // 23. illustration
   {
     id: 23,
-    title: "悬浮岛屿 / Floating Islands",
-    description: "这幅作品探索了具象与抽象的转换，通过靛青深邃的渐变与流动的光影，构建出一个令人沉醉的梦境空间。让人在凝视中感受时间凝固的瞬间。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art023/800/600",
-    likes: 600,
-    views: 4722,
-    createdAt: "2024-03-24"
+    title: "唐·盘·记 / Dish in the shape of a leaf",
+    description: "唐代盘，馆藏级审美的日常转译。从博物馆展柜到桌面与书包，让国宝完成最后一步的跨界。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["馆藏","考古美学","盘"],
+    imageUrl: "/images/artworks/met-42183.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 99,
+    views: 9563,
+    createdAt: "2023-04-03"
   },
-
-  // 24. abstract
   {
     id: 24,
-    title: "记忆碎片 / Memory Fragments",
-    description: "这幅作品探索了光影与色彩的对话，通过翠绿流光的渐变与流动的光影，构筑出宁静而深邃的意境。将瞬间的感动凝固为永恒的画面。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art024/800/600",
-    likes: 131,
-    views: 66526,
-    createdAt: "2024-05-19"
+    title: "屋脊兽冰箱贴",
+    description: "屋脊兽冰箱贴——从图纸到打样的第 N 版。文创设计的全部秘密：把文化符号翻译成\"想要拥有\"的冲动。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","IP形象"],
+    imageUrl: "/images/artworks/gen-090.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 99,
+    views: 9563,
+    createdAt: "2023-04-03"
   },
-
-  // 25. 3d-art
   {
     id: 25,
-    title: "霓虹丛林 / Neon Jungle",
-    description: "这幅作品探索了光影与色彩的对话，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。引领观者进入一场关于美的深层探索。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art025/800/600",
-    likes: 44,
-    views: 24087,
-    createdAt: "2023-12-17"
-  },
-
-  // 26. digital-art
-  {
-    id: 26,
-    title: "月下独舞 / Moonlit Solo",
-    description: "这幅作品探索了情感与记忆的沉淀，通过靛青深邃的渐变与流动的光影，构筑出宁静而深邃的意境。观者可以在色彩的流动中找到内心的宁静与共鸣。",
+    title: "故宫雪景",
+    description: "行至故宫雪景，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
     author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art026/800/600",
-    likes: 339,
-    views: 6597,
-    createdAt: "2023-04-04"
-  },
-
-  // 27. photography
-  {
-    id: 27,
-    title: "色彩漩涡 / Color Vortex",
-    description: "这幅作品探索了自然与科技的融合，通过钴蓝渐变的渐变与流动的光影，构建出一个令人沉醉的梦境空间。引领观者进入一场关于美的深层探索。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art027/800/600",
-    likes: 89,
-    views: 39648,
-    createdAt: "2023-08-05"
-  },
-
-  // 28. illustration
-  {
-    id: 28,
-    title: "风的形状 / Shape of Wind",
-    description: "这幅作品探索了时间与空间的褶皱，通过琥珀温润的渐变与流动的光影，编织出如梦似幻的氛围。让光影成为情感最忠实的表达载体。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art028/800/600",
-    likes: 657,
-    views: 34132,
-    createdAt: "2024-06-12"
-  },
-
-  // 29. abstract
-  {
-    id: 29,
-    title: "光与影的对话 / Dialogue of Light and Shadow",
-    description: "这幅作品探索了光影与色彩的对话，通过绛红霞光的渐变与流动的光影，创造出富有韵律的构图。让人在凝视中感受时间凝固的瞬间。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art029/800/600",
-    likes: 600,
-    views: 41540,
-    createdAt: "2023-11-21"
-  },
-
-  // 30. 3d-art
-  {
-    id: 30,
-    title: "宇宙尘埃 / Cosmic Dust",
-    description: "这幅作品探索了潜意识与现实的边界，通过琥珀温润的渐变与流动的光影，编织出如梦似幻的氛围。在静谧中传递出强烈的情感张力。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art030/800/600",
-    likes: 212,
-    views: 76364,
-    createdAt: "2024-05-09"
-  },
-
-  // 31. digital-art
-  {
-    id: 31,
-    title: "玫瑰星云 / Rose Nebula",
-    description: "这幅作品探索了流动与静止的张力，通过钴蓝渐变的渐变与流动的光影，构建出一个令人沉醉的梦境空间。在静谧中传递出强烈的情感张力。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art031/800/600",
-    likes: 741,
-    views: 5096,
-    createdAt: "2023-10-06"
-  },
-
-  // 32. photography
-  {
-    id: 32,
-    title: "海底秘境 / Underwater Secret",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过暖橘金辉的渐变与流动的光影，编织出如梦似幻的氛围。以独特的视角诠释了梦境美学的精髓。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art032/800/600",
-    likes: 306,
-    views: 1327,
-    createdAt: "2023-12-17"
-  },
-
-  // 33. illustration
-  {
-    id: 33,
-    title: "日落余晖 / Sunset Afterglow",
-    description: "这幅作品探索了情感与记忆的沉淀，通过绛红霞光的渐变与流动的光影，构建出一个令人沉醉的梦境空间。以独特的视角诠释了梦境美学的精髓。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art033/800/600",
-    likes: 415,
-    views: 68449,
-    createdAt: "2024-07-01"
-  },
-
-  // 34. abstract
-  {
-    id: 34,
-    title: "晨雾轻纱 / Morning Veil",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过粉紫色调的渐变与流动的光影，创造出富有韵律的构图。在虚与实之间留下无尽的想象空间。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art034/800/600",
-    likes: 216,
-    views: 28554,
-    createdAt: "2023-09-28"
-  },
-
-  // 35. 3d-art
-  {
-    id: 35,
-    title: "星光漫步 / Starlight Stroll",
-    description: "这幅作品探索了宇宙与微观的呼应，通过琥珀温润的渐变与流动的光影，展露出细腻的情感肌理。引领观者进入一场关于美的深层探索。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art035/800/600",
-    likes: 369,
-    views: 77432,
-    createdAt: "2023-04-23"
-  },
-
-  // 36. digital-art
-  {
-    id: 36,
-    title: "幻影之城 / Phantom City",
-    description: "这幅作品探索了情感与记忆的沉淀，通过玫瑰金辉的渐变与流动的光影，塑造出独特的视觉语言。引领观者进入一场关于美的深层探索。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art036/800/600",
-    likes: 615,
-    views: 7577,
-    createdAt: "2023-11-11"
-  },
-
-  // 37. photography
-  {
-    id: 37,
-    title: "繁花似锦 / Blossom Tapestry",
-    description: "这幅作品探索了潜意识与现实的边界，通过翠绿流光的渐变与流动的光影，塑造出独特的视觉语言。让人在凝视中感受时间凝固的瞬间。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art037/800/600",
-    likes: 987,
-    views: 96180,
-    createdAt: "2024-03-18"
-  },
-
-  // 38. illustration
-  {
-    id: 38,
-    title: "冰封时刻 / Frozen Moment",
-    description: "这幅作品探索了光影与色彩的对话，通过暖橘金辉的渐变与流动的光影，构筑出宁静而深邃的意境。让人在凝视中感受时间凝固的瞬间。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art038/800/600",
-    likes: 707,
-    views: 61732,
-    createdAt: "2023-10-05"
-  },
-
-  // 39. abstract
-  {
-    id: 39,
-    title: "梦境碎片 / Dream Fragments",
-    description: "这幅作品探索了潜意识与现实的边界，通过琥珀温润的渐变与流动的光影，营造出超现实的视觉体验。在虚与实之间留下无尽的想象空间。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art039/800/600",
-    likes: 731,
-    views: 85225,
-    createdAt: "2024-04-10"
-  },
-
-  // 40. 3d-art
-  {
-    id: 40,
-    title: "光之回廊 / Corridor of Light",
-    description: "这幅作品探索了潜意识与现实的边界，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。让人在凝视中感受时间凝固的瞬间。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art040/800/600",
-    likes: 982,
-    views: 99750,
-    createdAt: "2023-01-06"
-  },
-
-  // 41. digital-art
-  {
-    id: 41,
-    title: "墨色山水 / Ink Landscape",
-    description: "这幅作品探索了情感与记忆的沉淀，通过暖橘金辉的渐变与流动的光影，塑造出独特的视觉语言。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art041/800/600",
-    likes: 240,
-    views: 45800,
-    createdAt: "2023-02-25"
-  },
-
-  // 42. photography
-  {
-    id: 42,
-    title: "流光溢彩 / Flowing Radiance",
-    description: "这幅作品探索了潜意识与现实的边界，通过绛红霞光的渐变与流动的光影，塑造出独特的视觉语言。唤起观者内心深处最柔软的共鸣。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art042/800/600",
-    likes: 678,
-    views: 93266,
-    createdAt: "2023-07-29"
-  },
-
-  // 43. illustration
-  {
-    id: 43,
-    title: "夜空烟火 / Night Sky Fireworks",
-    description: "这幅作品探索了宇宙与微观的呼应，通过琥珀温润的渐变与流动的光影，呈现出迷人的光影层次。在虚与实之间留下无尽的想象空间。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art043/800/600",
-    likes: 117,
-    views: 30939,
-    createdAt: "2023-12-23"
-  },
-
-  // 44. abstract
-  {
-    id: 44,
-    title: "晨露未晞 / Morning Dew",
-    description: "这幅作品探索了情感与记忆的沉淀，通过玫瑰金辉的渐变与流动的光影，创造出富有韵律的构图。在虚与实之间留下无尽的想象空间。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art044/800/600",
-    likes: 877,
-    views: 21312,
-    createdAt: "2023-04-27"
-  },
-
-  // 45. 3d-art
-  {
-    id: 45,
-    title: "云海翻涌 / Rolling Cloud Sea",
-    description: "这幅作品探索了光影与色彩的对话，通过薄荷淡彩的渐变与流动的光影，创造出富有韵律的构图。引领观者进入一场关于美的深层探索。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art045/800/600",
-    likes: 374,
-    views: 23376,
-    createdAt: "2023-08-04"
-  },
-
-  // 46. digital-art
-  {
-    id: 46,
-    title: "玻璃花园 / Glass Garden",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过薰衣草紫的渐变与流动的光影，构筑出宁静而深邃的意境。让人在凝视中感受时间凝固的瞬间。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art046/800/600",
-    likes: 301,
-    views: 81222,
-    createdAt: "2024-12-07"
-  },
-
-  // 47. photography
-  {
-    id: 47,
-    title: "彩虹尽头 / End of Rainbow",
-    description: "这幅作品探索了梦境与清醒的交织，通过玫瑰金辉的渐变与流动的光影，打造出沉浸式的感官世界。唤起观者内心深处最柔软的共鸣。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art047/800/600",
-    likes: 544,
-    views: 79843,
-    createdAt: "2024-02-03"
-  },
-
-  // 48. illustration
-  {
-    id: 48,
-    title: "银河铁道 / Galaxy Railway",
-    description: "这幅作品探索了流动与静止的张力，通过暖橘金辉的渐变与流动的光影，创造出富有韵律的构图。让光影成为情感最忠实的表达载体。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art048/800/600",
-    likes: 731,
-    views: 67029,
-    createdAt: "2024-02-27"
-  },
-
-  // 49. abstract
-  {
-    id: 49,
-    title: "光影迷宫 / Light Maze",
-    description: "这幅作品探索了流动与静止的张力，通过粉紫色调的渐变与流动的光影，构筑出宁静而深邃的意境。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art049/800/600",
-    likes: 455,
-    views: 42473,
-    createdAt: "2023-09-22"
-  },
-
-  // 50. 3d-art
-  {
-    id: 50,
-    title: "永恒瞬间 / Eternal Moment",
-    description: "这幅作品探索了自然与科技的融合，通过钴蓝渐变的渐变与流动的光影，勾勒出诗意般的画面。让人在凝视中感受时间凝固的瞬间。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art050/800/600",
-    likes: 153,
-    views: 13267,
-    createdAt: "2023-04-21"
-  },
-
-  // 51. digital-art
-  {
-    id: 51,
-    title: "静谧港湾 / Tranquil Harbor",
-    description: "这幅作品探索了时间与空间的褶皱，通过暖橘金辉的渐变与流动的光影，打造出沉浸式的感官世界。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art051/800/600",
-    likes: 672,
-    views: 16102,
-    createdAt: "2023-02-09"
-  },
-
-  // 52. photography
-  {
-    id: 52,
-    title: "星尘记忆 / Stardust Memory",
-    description: "这幅作品探索了潜意识与现实的边界，通过钴蓝渐变的渐变与流动的光影，塑造出独特的视觉语言。引领观者进入一场关于美的深层探索。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art052/800/600",
-    likes: 496,
-    views: 6269,
-    createdAt: "2024-03-04"
-  },
-
-  // 53. illustration
-  {
-    id: 53,
-    title: "雾中风景 / Landscape in Mist",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过琥珀温润的渐变与流动的光影，打造出沉浸式的感官世界。在静谧中传递出强烈的情感张力。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art053/800/600",
-    likes: 617,
-    views: 13060,
-    createdAt: "2024-10-14"
-  },
-
-  // 54. abstract
-  {
-    id: 54,
-    title: "光之诗篇 / Poem of Light",
-    description: "这幅作品探索了光影与色彩的对话，通过靛青深邃的渐变与流动的光影，编织出如梦似幻的氛围。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art054/800/600",
-    likes: 112,
-    views: 62068,
-    createdAt: "2024-04-11"
-  },
-
-  // 55. 3d-art
-  {
-    id: 55,
-    title: "梦境之翼 / Dream Wings No.2",
-    description: "这幅作品探索了流动与静止的张力，通过钴蓝渐变的渐变与流动的光影，呈现出迷人的光影层次。让光影成为情感最忠实的表达载体。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art055/800/600",
-    likes: 341,
-    views: 64183,
-    createdAt: "2024-02-13"
-  },
-
-  // 56. digital-art
-  {
-    id: 56,
-    title: "紫色迷雾 / Purple Mist No.2",
-    description: "这幅作品探索了具象与抽象的转换，通过玫瑰金辉的渐变与流动的光影，创造出富有韵律的构图。引领观者进入一场关于美的深层探索。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art056/800/600",
-    likes: 858,
-    views: 70897,
-    createdAt: "2024-05-18"
-  },
-
-  // 57. photography
-  {
-    id: 57,
-    title: "星河倒影 / Galaxy Reflection No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过薰衣草紫的渐变与流动的光影，构建出一个令人沉醉的梦境空间。唤起观者内心深处最柔软的共鸣。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art057/800/600",
-    likes: 960,
-    views: 96702,
-    createdAt: "2023-07-01"
-  },
-
-  // 58. illustration
-  {
-    id: 58,
-    title: "花语低吟 / Whispering Blooms No.2",
-    description: "这幅作品探索了流动与静止的张力，通过粉紫色调的渐变与流动的光影，勾勒出诗意般的画面。唤起观者内心深处最柔软的共鸣。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art058/800/600",
-    likes: 902,
-    views: 8090,
-    createdAt: "2023-05-24"
-  },
-
-  // 59. abstract
-  {
-    id: 59,
-    title: "光影交响 / Light Symphony No.2",
-    description: "这幅作品探索了梦境与清醒的交织，通过玫瑰金辉的渐变与流动的光影，营造出超现实的视觉体验。让光影成为情感最忠实的表达载体。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art059/800/600",
-    likes: 792,
-    views: 78553,
-    createdAt: "2023-11-29"
-  },
-
-  // 60. 3d-art
-  {
-    id: 60,
-    title: "深海呢喃 / Deep Sea Whisper No.2",
-    description: "这幅作品探索了宇宙与微观的呼应，通过靛青深邃的渐变与流动的光影，构建出一个令人沉醉的梦境空间。以独特的视角诠释了梦境美学的精髓。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art060/800/600",
-    likes: 147,
-    views: 11781,
-    createdAt: "2024-08-07"
-  },
-
-  // 61. digital-art
-  {
-    id: 61,
-    title: "霓虹心脏 / Neon Heart No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过薄荷淡彩的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art061/800/600",
-    likes: 107,
-    views: 29467,
-    createdAt: "2023-10-30"
-  },
-
-  // 62. photography
-  {
-    id: 62,
-    title: "破碎星辰 / Shattered Stars No.2",
-    description: "这幅作品探索了情感与记忆的沉淀，通过琥珀温润的渐变与流动的光影，编织出如梦似幻的氛围。以独特的视角诠释了梦境美学的精髓。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art062/800/600",
-    likes: 337,
-    views: 27702,
-    createdAt: "2023-03-20"
-  },
-
-  // 63. illustration
-  {
-    id: 63,
-    title: "液态银河 / Liquid Galaxy No.2",
-    description: "这幅作品探索了梦境与清醒的交织，通过钴蓝渐变的渐变与流动的光影，打造出沉浸式的感官世界。让人在凝视中感受时间凝固的瞬间。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art063/800/600",
-    likes: 576,
-    views: 98678,
-    createdAt: "2023-06-04"
-  },
-
-  // 64. abstract
-  {
-    id: 64,
-    title: "蝴蝶效应 / Butterfly Effect No.2",
-    description: "这幅作品探索了自然与科技的融合，通过薰衣草紫的渐变与流动的光影，打造出沉浸式的感官世界。唤起观者内心深处最柔软的共鸣。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art064/800/600",
-    likes: 858,
-    views: 20087,
-    createdAt: "2023-04-05"
-  },
-
-  // 65. 3d-art
-  {
-    id: 65,
-    title: "晨曦微光 / Dawn Glimmer No.2",
-    description: "这幅作品探索了潜意识与现实的边界，通过薰衣草紫的渐变与流动的光影，展露出细腻的情感肌理。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art065/800/600",
-    likes: 405,
-    views: 9920,
-    createdAt: "2024-02-15"
-  },
-
-  // 66. digital-art
-  {
-    id: 66,
-    title: "镜中幻境 / Mirror Mirage No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过薄荷淡彩的渐变与流动的光影，构筑出宁静而深邃的意境。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art066/800/600",
-    likes: 173,
-    views: 49369,
-    createdAt: "2023-10-18"
-  },
-
-  // 67. photography
-  {
-    id: 67,
-    title: "燃烧的云 / Burning Clouds No.2",
-    description: "这幅作品探索了流动与静止的张力，通过玫瑰金辉的渐变与流动的光影，创造出富有韵律的构图。唤起观者内心深处最柔软的共鸣。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art067/800/600",
-    likes: 85,
-    views: 71526,
-    createdAt: "2023-07-09"
-  },
-
-  // 68. illustration
-  {
-    id: 68,
-    title: "雨后初晴 / After the Rain No.2",
-    description: "这幅作品探索了宇宙与微观的呼应，通过薰衣草紫的渐变与流动的光影，构筑出宁静而深邃的意境。唤起观者内心深处最柔软的共鸣。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art068/800/600",
-    likes: 913,
-    views: 16882,
-    createdAt: "2024-06-22"
-  },
-
-  // 69. abstract
-  {
-    id: 69,
-    title: "时间褶皱 / Folds of Time No.2",
-    description: "这幅作品探索了自然与科技的融合，通过粉紫色调的渐变与流动的光影，塑造出独特的视觉语言。引领观者进入一场关于美的深层探索。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art069/800/600",
-    likes: 846,
-    views: 55329,
-    createdAt: "2023-07-21"
-  },
-
-  // 70. 3d-art
-  {
-    id: 70,
-    title: "午夜花园 / Midnight Garden No.2",
-    description: "这幅作品探索了梦境与清醒的交织，通过钴蓝渐变的渐变与流动的光影，勾勒出诗意般的画面。唤起观者内心深处最柔软的共鸣。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art070/800/600",
-    likes: 693,
-    views: 75559,
-    createdAt: "2024-06-09"
-  },
-
-  // 71. digital-art
-  {
-    id: 71,
-    title: "光的轨迹 / Trail of Light No.2",
-    description: "这幅作品探索了梦境与清醒的交织，通过薄荷淡彩的渐变与流动的光影，展露出细腻的情感肌理。在静谧中传递出强烈的情感张力。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art071/800/600",
-    likes: 782,
-    views: 40263,
-    createdAt: "2024-02-06"
-  },
-
-  // 72. photography
-  {
-    id: 72,
-    title: "蓝色梦境 / Blue Reverie No.2",
-    description: "这幅作品探索了具象与抽象的转换，通过钴蓝渐变的渐变与流动的光影，勾勒出诗意般的画面。唤起观者内心深处最柔软的共鸣。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art072/800/600",
-    likes: 521,
-    views: 8333,
-    createdAt: "2024-07-10"
-  },
-
-  // 73. illustration
-  {
-    id: 73,
-    title: "樱花絮语 / Sakura Whispers No.2",
-    description: "这幅作品探索了自然与科技的融合，通过薰衣草紫的渐变与流动的光影，展露出细腻的情感肌理。在静谧中传递出强烈的情感张力。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art073/800/600",
-    likes: 607,
-    views: 23860,
-    createdAt: "2023-11-10"
-  },
-
-  // 74. abstract
-  {
-    id: 74,
-    title: "迷雾森林 / Misty Forest No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过钴蓝渐变的渐变与流动的光影，打造出沉浸式的感官世界。在静谧中传递出强烈的情感张力。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art074/800/600",
-    likes: 926,
-    views: 71737,
-    createdAt: "2024-10-30"
-  },
-
-  // 75. 3d-art
-  {
-    id: 75,
-    title: "极光之舞 / Aurora Dance No.2",
-    description: "这幅作品探索了具象与抽象的转换，通过粉紫色调的渐变与流动的光影，构筑出宁静而深邃的意境。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art075/800/600",
-    likes: 112,
-    views: 99855,
-    createdAt: "2024-07-20"
-  },
-
-  // 76. digital-art
-  {
-    id: 76,
-    title: "水晶之心 / Crystal Heart No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过粉紫色调的渐变与流动的光影，勾勒出诗意般的画面。在虚与实之间留下无尽的想象空间。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art076/800/600",
-    likes: 740,
-    views: 8006,
-    createdAt: "2023-08-09"
-  },
-
-  // 77. photography
-  {
-    id: 77,
-    title: "悬浮岛屿 / Floating Islands No.2",
-    description: "这幅作品探索了宇宙与微观的呼应，通过暖橘金辉的渐变与流动的光影，塑造出独特的视觉语言。在静谧中传递出强烈的情感张力。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art077/800/600",
-    likes: 266,
-    views: 3080,
-    createdAt: "2024-07-01"
-  },
-
-  // 78. illustration
-  {
-    id: 78,
-    title: "记忆碎片 / Memory Fragments No.2",
-    description: "这幅作品探索了光影与色彩的对话，通过绛红霞光的渐变与流动的光影，塑造出独特的视觉语言。唤起观者内心深处最柔软的共鸣。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art078/800/600",
-    likes: 529,
-    views: 21871,
-    createdAt: "2023-06-17"
-  },
-
-  // 79. abstract
-  {
-    id: 79,
-    title: "霓虹丛林 / Neon Jungle No.2",
-    description: "这幅作品探索了光影与色彩的对话，通过翠绿流光的渐变与流动的光影，呈现出迷人的光影层次。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art079/800/600",
-    likes: 14,
-    views: 19670,
-    createdAt: "2023-07-06"
-  },
-
-  // 80. 3d-art
-  {
-    id: 80,
-    title: "月下独舞 / Moonlit Solo No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。在静谧中传递出强烈的情感张力。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art080/800/600",
-    likes: 709,
-    views: 25767,
-    createdAt: "2024-12-10"
-  },
-
-  // 81. digital-art
-  {
-    id: 81,
-    title: "色彩漩涡 / Color Vortex No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过绛红霞光的渐变与流动的光影，展露出细腻的情感肌理。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art081/800/600",
-    likes: 695,
-    views: 65756,
-    createdAt: "2023-02-01"
-  },
-
-  // 82. photography
-  {
-    id: 82,
-    title: "风的形状 / Shape of Wind No.2",
-    description: "这幅作品探索了宇宙与微观的呼应，通过琥珀温润的渐变与流动的光影，创造出富有韵律的构图。让光影成为情感最忠实的表达载体。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art082/800/600",
-    likes: 336,
-    views: 50527,
-    createdAt: "2023-06-01"
-  },
-
-  // 83. illustration
-  {
-    id: 83,
-    title: "光与影的对话 / Dialogue of Light and Shadow No.2",
-    description: "这幅作品探索了具象与抽象的转换，通过粉紫色调的渐变与流动的光影，勾勒出诗意般的画面。引领观者进入一场关于美的深层探索。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art083/800/600",
-    likes: 183,
-    views: 31573,
-    createdAt: "2023-12-29"
-  },
-
-  // 84. abstract
-  {
-    id: 84,
-    title: "宇宙尘埃 / Cosmic Dust No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过琥珀温润的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art084/800/600",
-    likes: 527,
-    views: 23385,
-    createdAt: "2023-04-07"
-  },
-
-  // 85. 3d-art
-  {
-    id: 85,
-    title: "玫瑰星云 / Rose Nebula No.2",
-    description: "这幅作品探索了宇宙与微观的呼应，通过绛红霞光的渐变与流动的光影，塑造出独特的视觉语言。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art085/800/600",
-    likes: 628,
-    views: 92254,
-    createdAt: "2023-02-23"
-  },
-
-  // 86. digital-art
-  {
-    id: 86,
-    title: "海底秘境 / Underwater Secret No.2",
-    description: "这幅作品探索了具象与抽象的转换，通过薄荷淡彩的渐变与流动的光影，塑造出独特的视觉语言。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art086/800/600",
-    likes: 594,
-    views: 12172,
-    createdAt: "2023-06-26"
-  },
-
-  // 87. photography
-  {
-    id: 87,
-    title: "日落余晖 / Sunset Afterglow No.2",
-    description: "这幅作品探索了潜意识与现实的边界，通过薄荷淡彩的渐变与流动的光影，创造出富有韵律的构图。在静谧中传递出强烈的情感张力。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art087/800/600",
-    likes: 937,
-    views: 86232,
-    createdAt: "2023-10-30"
-  },
-
-  // 88. illustration
-  {
-    id: 88,
-    title: "晨雾轻纱 / Morning Veil No.2",
-    description: "这幅作品探索了潜意识与现实的边界，通过粉紫色调的渐变与流动的光影，构筑出宁静而深邃的意境。让光影成为情感最忠实的表达载体。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art088/800/600",
-    likes: 807,
-    views: 36624,
-    createdAt: "2024-07-16"
-  },
-
-  // 89. abstract
-  {
-    id: 89,
-    title: "星光漫步 / Starlight Stroll No.2",
-    description: "这幅作品探索了光影与色彩的对话，通过绛红霞光的渐变与流动的光影，勾勒出诗意般的画面。在静谧中传递出强烈的情感张力。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art089/800/600",
-    likes: 864,
-    views: 59141,
-    createdAt: "2023-04-01"
-  },
-
-  // 90. 3d-art
-  {
-    id: 90,
-    title: "幻影之城 / Phantom City No.2",
-    description: "这幅作品探索了自然与科技的融合，通过玫瑰金辉的渐变与流动的光影，构建出一个令人沉醉的梦境空间。让人在凝视中感受时间凝固的瞬间。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art090/800/600",
-    likes: 848,
-    views: 46173,
-    createdAt: "2024-08-09"
-  },
-
-  // 91. digital-art
-  {
-    id: 91,
-    title: "繁花似锦 / Blossom Tapestry No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过靛青深邃的渐变与流动的光影，展露出细腻的情感肌理。让光影成为情感最忠实的表达载体。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art091/800/600",
-    likes: 791,
-    views: 75113,
-    createdAt: "2023-06-06"
-  },
-
-  // 92. photography
-  {
-    id: 92,
-    title: "冰封时刻 / Frozen Moment No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过绛红霞光的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art092/800/600",
-    likes: 912,
-    views: 64253,
-    createdAt: "2023-02-12"
-  },
-
-  // 93. illustration
-  {
-    id: 93,
-    title: "梦境碎片 / Dream Fragments No.2",
-    description: "这幅作品探索了情感与记忆的沉淀，通过薰衣草紫的渐变与流动的光影，创造出富有韵律的构图。唤起观者内心深处最柔软的共鸣。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art093/800/600",
-    likes: 175,
-    views: 94683,
-    createdAt: "2023-06-09"
-  },
-
-  // 94. abstract
-  {
-    id: 94,
-    title: "光之回廊 / Corridor of Light No.2",
-    description: "这幅作品探索了潜意识与现实的边界，通过琥珀温润的渐变与流动的光影，勾勒出诗意般的画面。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art094/800/600",
-    likes: 495,
-    views: 99496,
-    createdAt: "2023-08-25"
-  },
-
-  // 95. 3d-art
-  {
-    id: 95,
-    title: "墨色山水 / Ink Landscape No.2",
-    description: "这幅作品探索了潜意识与现实的边界，通过薄荷淡彩的渐变与流动的光影，展露出细腻的情感肌理。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art095/800/600",
-    likes: 652,
-    views: 19183,
-    createdAt: "2024-12-03"
-  },
-
-  // 96. digital-art
-  {
-    id: 96,
-    title: "流光溢彩 / Flowing Radiance No.2",
-    description: "这幅作品探索了流动与静止的张力，通过翠绿流光的渐变与流动的光影，展露出细腻的情感肌理。将瞬间的感动凝固为永恒的画面。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art096/800/600",
-    likes: 827,
-    views: 23636,
-    createdAt: "2024-02-25"
-  },
-
-  // 97. photography
-  {
-    id: 97,
-    title: "夜空烟火 / Night Sky Fireworks No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过薰衣草紫的渐变与流动的光影，构筑出宁静而深邃的意境。将瞬间的感动凝固为永恒的画面。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art097/800/600",
-    likes: 833,
-    views: 1547,
-    createdAt: "2023-01-11"
-  },
-
-  // 98. illustration
-  {
-    id: 98,
-    title: "晨露未晞 / Morning Dew No.2",
-    description: "这幅作品探索了光影与色彩的对话，通过薰衣草紫的渐变与流动的光影，创造出富有韵律的构图。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art098/800/600",
-    likes: 999,
-    views: 15508,
-    createdAt: "2024-07-04"
-  },
-
-  // 99. abstract
-  {
-    id: 99,
-    title: "云海翻涌 / Rolling Cloud Sea No.2",
-    description: "这幅作品探索了宇宙与微观的呼应，通过玫瑰金辉的渐变与流动的光影，打造出沉浸式的感官世界。让光影成为情感最忠实的表达载体。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art099/800/600",
-    likes: 731,
-    views: 24509,
-    createdAt: "2024-08-01"
-  },
-
-  // 100. 3d-art
-  {
-    id: 100,
-    title: "玻璃花园 / Glass Garden No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过玫瑰金辉的渐变与流动的光影，构筑出宁静而深邃的意境。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art100/800/600",
-    likes: 727,
-    views: 72643,
-    createdAt: "2023-05-28"
-  },
-
-  // 101. digital-art
-  {
-    id: 101,
-    title: "彩虹尽头 / End of Rainbow No.2",
-    description: "这幅作品探索了情感与记忆的沉淀，通过钴蓝渐变的渐变与流动的光影，塑造出独特的视觉语言。将瞬间的感动凝固为永恒的画面。",
-    author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art101/800/600",
-    likes: 873,
-    views: 44901,
-    createdAt: "2023-09-12"
-  },
-
-  // 102. photography
-  {
-    id: 102,
-    title: "银河铁道 / Galaxy Railway No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过粉紫色调的渐变与流动的光影，构筑出宁静而深邃的意境。将瞬间的感动凝固为永恒的画面。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art102/800/600",
-    likes: 798,
-    views: 88975,
-    createdAt: "2024-07-26"
-  },
-
-  // 103. illustration
-  {
-    id: 103,
-    title: "光影迷宫 / Light Maze No.2",
-    description: "这幅作品探索了时间与空间的褶皱，通过粉紫色调的渐变与流动的光影，营造出超现实的视觉体验。将瞬间的感动凝固为永恒的画面。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art103/800/600",
-    likes: 93,
-    views: 4757,
-    createdAt: "2024-08-09"
-  },
-
-  // 104. abstract
-  {
-    id: 104,
-    title: "永恒瞬间 / Eternal Moment No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过暖橘金辉的渐变与流动的光影，营造出超现实的视觉体验。让人在凝视中感受时间凝固的瞬间。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art104/800/600",
-    likes: 192,
-    views: 99038,
-    createdAt: "2024-04-28"
-  },
-
-  // 105. 3d-art
-  {
-    id: 105,
-    title: "静谧港湾 / Tranquil Harbor No.2",
-    description: "这幅作品探索了流动与静止的张力，通过暖橘金辉的渐变与流动的光影，创造出富有韵律的构图。将瞬间的感动凝固为永恒的画面。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art105/800/600",
-    likes: 946,
-    views: 8910,
-    createdAt: "2023-12-08"
-  },
-
-  // 106. digital-art
-  {
-    id: 106,
-    title: "星尘记忆 / Stardust Memory No.2",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过琥珀温润的渐变与流动的光影，编织出如梦似幻的氛围。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art106/800/600",
-    likes: 839,
-    views: 89264,
-    createdAt: "2024-06-22"
-  },
-
-  // 107. photography
-  {
-    id: 107,
-    title: "雾中风景 / Landscape in Mist No.2",
-    description: "这幅作品探索了光影与色彩的对话，通过钴蓝渐变的渐变与流动的光影，编织出如梦似幻的氛围。让人在凝视中感受时间凝固的瞬间。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art107/800/600",
-    likes: 864,
-    views: 69693,
-    createdAt: "2024-03-23"
-  },
-
-  // 108. illustration
-  {
-    id: 108,
-    title: "光之诗篇 / Poem of Light No.2",
-    description: "这幅作品探索了流动与静止的张力，通过暖橘金辉的渐变与流动的光影，呈现出迷人的光影层次。以独特的视角诠释了梦境美学的精髓。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art108/800/600",
-    likes: 96,
-    views: 75688,
-    createdAt: "2024-07-09"
-  },
-
-  // 109. abstract
-  {
-    id: 109,
-    title: "梦境之翼 / Dream Wings No.3",
-    description: "这幅作品探索了自然与科技的融合，通过钴蓝渐变的渐变与流动的光影，创造出富有韵律的构图。让人在凝视中感受时间凝固的瞬间。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art109/800/600",
-    likes: 891,
-    views: 18141,
-    createdAt: "2024-11-01"
-  },
-
-  // 110. 3d-art
-  {
-    id: 110,
-    title: "紫色迷雾 / Purple Mist No.3",
-    description: "这幅作品探索了自然与科技的融合，通过玫瑰金辉的渐变与流动的光影，塑造出独特的视觉语言。引领观者进入一场关于美的深层探索。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art110/800/600",
-    likes: 814,
-    views: 48443,
-    createdAt: "2023-03-27"
-  },
-
-  // 111. digital-art
-  {
-    id: 111,
-    title: "星河倒影 / Galaxy Reflection No.3",
-    description: "这幅作品探索了光影与色彩的对话，通过琥珀温润的渐变与流动的光影，编织出如梦似幻的氛围。在虚与实之间留下无尽的想象空间。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art111/800/600",
-    likes: 156,
-    views: 81186,
-    createdAt: "2024-02-27"
-  },
-
-  // 112. photography
-  {
-    id: 112,
-    title: "花语低吟 / Whispering Blooms No.3",
-    description: "这幅作品探索了情感与记忆的沉淀，通过薄荷淡彩的渐变与流动的光影，构建出一个令人沉醉的梦境空间。让人在凝视中感受时间凝固的瞬间。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art112/800/600",
-    likes: 167,
-    views: 82761,
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-005.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 193,
+    views: 16563,
     createdAt: "2023-07-11"
   },
-
-  // 113. illustration
   {
-    id: 113,
-    title: "光影交响 / Light Symphony No.3",
-    description: "这幅作品探索了自然与科技的融合，通过粉紫色调的渐变与流动的光影，营造出超现实的视觉体验。将瞬间的感动凝固为永恒的画面。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art113/800/600",
-    likes: 955,
-    views: 26961,
-    createdAt: "2023-03-08"
+    id: 26,
+    title: "清·高士·志 / Brush holder with scholars in a garden",
+    description: "高士的经纬交织处，藏着中国人独有的耐心与浪漫。非遗技艺不该只在展柜里，让它走进日常，成为看得见、用得上的东方之美。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["非遗","东方美学","高士"],
+    imageUrl: "/images/artworks/met-76444.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 193,
+    views: 16563,
+    createdAt: "2023-07-11"
   },
-
-  // 114. abstract
   {
-    id: 114,
-    title: "深海呢喃 / Deep Sea Whisper No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过钴蓝渐变的渐变与流动的光影，营造出超现实的视觉体验。让人在凝视中感受时间凝固的瞬间。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art114/800/600",
-    likes: 48,
-    views: 17077,
-    createdAt: "2024-09-04"
+    id: 27,
+    title: "清·山水·志 / Landscapes with poems",
+    description: "清代笔墨，千年气韵。山水的构图与留白，至今仍是东方设计的底层语法——古画不语，自成丘壑。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["国风","青绿山水","山水"],
+    imageUrl: "/images/artworks/met-36131.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 193,
+    views: 16563,
+    createdAt: "2023-07-11"
   },
-
-  // 115. 3d-art
   {
-    id: 115,
-    title: "霓虹心脏 / Neon Heart No.3",
-    description: "这幅作品探索了时间与空间的褶皱，通过靛青深邃的渐变与流动的光影，营造出超现实的视觉体验。在虚与实之间留下无尽的想象空间。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art115/800/600",
-    likes: 575,
-    views: 75000,
-    createdAt: "2024-05-18"
+    id: 28,
+    title: "京剧脸谱流体",
+    description: "京剧脸谱流体——一场人机共创的实验。让算法研习传统纹样，再放任它在数字画布上自由生长，生成结果超出了所有预期。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-057.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 193,
+    views: 16563,
+    createdAt: "2023-07-11"
   },
-
-  // 116. digital-art
   {
-    id: 116,
-    title: "破碎星辰 / Shattered Stars No.3",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过琥珀温润的渐变与流动的光影，勾勒出诗意般的画面。唤起观者内心深处最柔软的共鸣。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art116/800/600",
+    id: 29,
+    title: "唐·鼎·志 / Standing Female Attendant",
+    description: "唐代鼎，馆藏级审美的日常转译。从博物馆展柜到桌面与书包，让国宝完成最后一步的跨界。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["馆藏","公有领域","鼎"],
+    imageUrl: "/images/artworks/met-39770.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 193,
+    views: 16563,
+    createdAt: "2023-07-11"
+  },
+  {
+    id: 30,
+    title: "榫卯积木礼盒",
+    description: "榫卯积木礼盒——从图纸到打样的第 N 版。文创设计的全部秘密：把文化符号翻译成\"想要拥有\"的冲动。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-092.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 193,
+    views: 16563,
+    createdAt: "2023-07-11"
+  },
+  {
+    id: 31,
+    title: "布达拉宫",
+    description: "布达拉宫的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-007.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 21601,
+    createdAt: "2023-10-18"
+  },
+  {
+    id: 32,
+    title: "明·山水·图录 / Incense holder with scholars in a landscape",
+    description: "指尖上的山水：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["手作","非遗","山水"],
+    imageUrl: "/images/artworks/met-39626.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 21601,
+    createdAt: "2023-10-18"
+  },
+  {
+    id: 33,
+    title: "清·山水·图录 / Landscape",
+    description: "展开这卷山水，如同推开一扇通往清代画室的门。绢素会老，山水的呼吸不会。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["水墨","国风","山水"],
+    imageUrl: "/images/artworks/met-36163.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 21601,
+    createdAt: "2023-10-18"
+  },
+  {
+    id: 34,
+    title: "青铜纹样电路",
+    description: "用 AI 重构青铜纹样电路：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-060.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 21601,
+    createdAt: "2023-10-18"
+  },
+  {
+    id: 35,
+    title: "唐·菩萨·图录 / Head of a Bodhisattva",
+    description: "凝视这件唐代菩萨：Sandstone with pigment。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["国宝","馆藏","菩萨"],
+    imageUrl: "/images/artworks/met-39640.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 21601,
+    createdAt: "2023-10-18"
+  },
+  {
+    id: 36,
+    title: "千里江山折扇",
+    description: "围绕千里江山折扇的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-091.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 21601,
+    createdAt: "2023-10-18"
+  },
+  {
+    id: 37,
+    title: "长城金秋",
+    description: "行至长城金秋，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-006.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 155,
+    views: 13900,
+    createdAt: "2023-05-31"
+  },
+  {
+    id: 38,
+    title: "清·亭榭·志 / Brush holder with scene of “Ode to the Pavilion of the Inebr",
+    description: "亭榭的经纬交织处，藏着中国人独有的耐心与浪漫。非遗技艺不该只在展柜里，让它走进日常，成为看得见、用得上的东方之美。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["非遗","东方美学","亭榭"],
+    imageUrl: "/images/artworks/met-42158.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 155,
+    views: 13900,
+    createdAt: "2023-05-31"
+  },
+  {
+    id: 39,
+    title: "唐·江流·志 / Riverbank",
+    description: "唐代笔墨，千年气韵。江流的构图与留白，至今仍是东方设计的底层语法——古画不语，自成丘壑。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["国风","青绿山水","江流"],
+    imageUrl: "/images/artworks/met-39542.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 155,
+    views: 13900,
+    createdAt: "2023-05-31"
+  },
+  {
+    id: 40,
+    title: "皮影数字光影",
+    description: "皮影数字光影——一场人机共创的实验。让算法研习传统纹样，再放任它在数字画布上自由生长，生成结果超出了所有预期。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-058.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 155,
+    views: 13900,
+    createdAt: "2023-05-31"
+  },
+  {
+    id: 41,
+    title: "商·酒器·志 / Wine beaker (Gu)",
+    description: "商代酒器，馆藏级审美的日常转译。从博物馆展柜到桌面与书包，让国宝完成最后一步的跨界。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["馆藏","公有领域","酒器"],
+    imageUrl: "/images/artworks/met-662310.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 155,
+    views: 13900,
+    createdAt: "2023-05-31"
+  },
+  {
+    id: 42,
+    title: "青铜纹茶具",
+    description: "青铜纹茶具——从图纸到打样的第 N 版。文创设计的全部秘密：把文化符号翻译成\"想要拥有\"的冲动。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-093.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 155,
+    views: 13900,
+    createdAt: "2023-05-31"
+  },
+  {
+    id: 43,
+    title: "福建土楼",
+    description: "福建土楼的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-009.jpg",
+    grade: "b",
+    totalScore: 6.7,
+    likes: 249,
+    views: 20900,
+    createdAt: "2023-09-07"
+  },
+  {
+    id: 44,
+    title: "清·修竹·图录 / Wine cup with bamboo",
+    description: "指尖上的修竹：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["非遗","东方美学","修竹"],
+    imageUrl: "/images/artworks/met-50732.jpg",
+    grade: "b",
+    totalScore: 6.7,
+    likes: 249,
+    views: 20900,
+    createdAt: "2023-09-07"
+  },
+  {
+    id: 45,
+    title: "明·仕女·图录 / Eighteen Songs of a Nomad Flute: The Story of Lady Wenji",
+    description: "展开这卷仕女，如同推开一扇通往明代画室的门。绢素会老，山水的呼吸不会。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["国风","青绿山水","仕女"],
+    imageUrl: "/images/artworks/met-39569.jpg",
+    grade: "b",
+    totalScore: 6.7,
+    likes: 249,
+    views: 20900,
+    createdAt: "2023-09-07"
+  },
+  {
+    id: 46,
+    title: "唐三彩釉色流体",
+    description: "用 AI 重构唐三彩釉色流体：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-059.jpg",
+    grade: "b",
+    totalScore: 6.7,
+    likes: 249,
+    views: 20900,
+    createdAt: "2023-09-07"
+  },
+  {
+    id: 47,
+    title: "唐·香事·图录 / Incense burner",
+    description: "凝视这件唐代香事：Gilt bronze。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["馆藏","公有领域","香事"],
+    imageUrl: "/images/artworks/met-49576.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 249,
+    views: 20900,
+    createdAt: "2023-09-07"
+  },
+  {
+    id: 48,
+    title: "苏绣团扇",
+    description: "围绕苏绣团扇的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","东方美学"],
+    imageUrl: "/images/artworks/gen-094.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 249,
+    views: 20900,
+    createdAt: "2023-09-07"
+  },
+  {
+    id: 49,
+    title: "龙脊梯田",
+    description: "龙脊梯田的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","风物纪实"],
+    imageUrl: "/images/artworks/gen-010.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 50,
+    title: "清·修竹·档案 / Wine cup with bamboo",
+    description: "指尖上的修竹：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["手作","非遗","修竹"],
+    imageUrl: "/images/artworks/met-50733.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 51,
+    title: "北宋·画迹·档案 / Old Trees, Level Distance",
+    description: "展开这卷画迹，如同推开一扇通往北宋代画室的门。绢素会老，山水的呼吸不会。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["水墨","国风","画迹"],
+    imageUrl: "/images/artworks/met-39668.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 52,
+    title: "云纹数据流",
+    description: "用 AI 重构云纹数据流：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-061.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 53,
+    title: "唐·罐·档案 / Covered jar",
+    description: "凝视这件唐代罐：Earthenware with dappled。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["国宝","馆藏","罐"],
+    imageUrl: "/images/artworks/met-49559.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 54,
+    title: "唐三彩马摆件",
+    description: "围绕唐三彩马摆件的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-096.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 55,
+    title: "苏州园林",
+    description: "苏州园林的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-008.jpg",
+    grade: "c",
+    totalScore: 5.9,
     likes: 210,
-    views: 96823,
+    views: 18030,
+    createdAt: "2023-08-20"
+  },
+  {
+    id: 56,
+    title: "明·修竹·图录 / Covered box with the Seven Sages of the Bamboo Grove",
+    description: "指尖上的修竹：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["非遗","东方美学","修竹"],
+    imageUrl: "/images/artworks/met-712495.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 210,
+    views: 18030,
+    createdAt: "2023-08-20"
+  },
+  {
+    id: 57,
+    title: "北宋·画迹·图录 / The Classic of Filial Piety",
+    description: "展开这卷画迹，如同推开一扇通往北宋代画室的门。绢素会老，山水的呼吸不会。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["国风","青绿山水","画迹"],
+    imageUrl: "/images/artworks/met-39895.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 210,
+    views: 18030,
+    createdAt: "2023-08-20"
+  },
+  {
+    id: 58,
+    title: "凤凰粒子羽翼",
+    description: "用 AI 重构凤凰粒子羽翼：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-063.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 210,
+    views: 18030,
+    createdAt: "2023-08-20"
+  },
+  {
+    id: 59,
+    title: "瓷韵·图录 / \"Inkstone\" and cover in the shape of a turtle",
+    description: "凝视这件古代瓷韵：Earthenware。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["馆藏","公有领域","瓷韵"],
+    imageUrl: "/images/artworks/met-65348.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 210,
+    views: 18030,
+    createdAt: "2023-08-20"
+  },
+  {
+    id: 60,
+    title: "蓝染帆布包",
+    description: "围绕蓝染帆布包的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-095.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 210,
+    views: 18030,
+    createdAt: "2023-08-20"
+  },
+  {
+    id: 61,
+    title: "泰山日出",
+    description: "泰山日出的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-011.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 304,
+    views: 25030,
     createdAt: "2023-11-27"
   },
-
-  // 117. photography
   {
-    id: 117,
-    title: "液态银河 / Liquid Galaxy No.3",
-    description: "这幅作品探索了自然与科技的融合，通过薰衣草紫的渐变与流动的光影，呈现出迷人的光影层次。将瞬间的感动凝固为永恒的画面。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art117/800/600",
-    likes: 684,
-    views: 74837,
-    createdAt: "2023-12-01"
+    id: 62,
+    title: "明·山水·档案 / Gourd-Shaped Bottle with Deer and Crane in Landscape",
+    description: "指尖上的山水：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["手作","非遗","山水"],
+    imageUrl: "/images/artworks/met-42531.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 304,
+    views: 25030,
+    createdAt: "2023-11-27"
   },
-
-  // 118. illustration
   {
-    id: 118,
-    title: "蝴蝶效应 / Butterfly Effect No.3",
-    description: "这幅作品探索了潜意识与现实的边界，通过绛红霞光的渐变与流动的光影，构建出一个令人沉醉的梦境空间。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art118/800/600",
-    likes: 40,
-    views: 86433,
-    createdAt: "2023-03-24"
-  },
-
-  // 119. abstract
-  {
-    id: 119,
-    title: "晨曦微光 / Dawn Glimmer No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过粉紫色调的渐变与流动的光影，创造出富有韵律的构图。唤起观者内心深处最柔软的共鸣。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art119/800/600",
-    likes: 485,
-    views: 49903,
-    createdAt: "2023-03-26"
-  },
-
-  // 120. 3d-art
-  {
-    id: 120,
-    title: "镜中幻境 / Mirror Mirage No.3",
-    description: "这幅作品探索了流动与静止的张力，通过钴蓝渐变的渐变与流动的光影，构筑出宁静而深邃的意境。唤起观者内心深处最柔软的共鸣。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art120/800/600",
-    likes: 986,
-    views: 46340,
-    createdAt: "2023-09-15"
-  },
-
-  // 121. digital-art
-  {
-    id: 121,
-    title: "燃烧的云 / Burning Clouds No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过靛青深邃的渐变与流动的光影，呈现出迷人的光影层次。在虚与实之间留下无尽的想象空间。",
-    author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art121/800/600",
-    likes: 470,
-    views: 8834,
-    createdAt: "2023-11-26"
-  },
-
-  // 122. photography
-  {
-    id: 122,
-    title: "雨后初晴 / After the Rain No.3",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过玫瑰金辉的渐变与流动的光影，呈现出迷人的光影层次。在静谧中传递出强烈的情感张力。",
+    id: 63,
+    title: "唐·画迹·档案 / Night-Shining White",
+    description: "展开这卷画迹，如同推开一扇通往唐代画室的门。绢素会老，山水的呼吸不会。",
     author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art122/800/600",
-    likes: 703,
-    views: 77678,
-    createdAt: "2024-12-30"
+    category: "guofeng-art",
+    tags: ["水墨","国风","画迹"],
+    imageUrl: "/images/artworks/met-39901.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 304,
+    views: 25030,
+    createdAt: "2023-11-27"
   },
-
-  // 123. illustration
   {
-    id: 123,
-    title: "时间褶皱 / Folds of Time No.3",
-    description: "这幅作品探索了自然与科技的融合，通过玫瑰金辉的渐变与流动的光影，创造出富有韵律的构图。将瞬间的感动凝固为永恒的画面。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art123/800/600",
-    likes: 871,
-    views: 23162,
-    createdAt: "2023-11-18"
-  },
-
-  // 124. abstract
-  {
-    id: 124,
-    title: "午夜花园 / Midnight Garden No.3",
-    description: "这幅作品探索了流动与静止的张力，通过薄荷淡彩的渐变与流动的光影，构筑出宁静而深邃的意境。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art124/800/600",
-    likes: 787,
-    views: 33680,
-    createdAt: "2024-03-28"
-  },
-
-  // 125. 3d-art
-  {
-    id: 125,
-    title: "光的轨迹 / Trail of Light No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过玫瑰金辉的渐变与流动的光影，呈现出迷人的光影层次。在虚与实之间留下无尽的想象空间。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art125/800/600",
-    likes: 780,
-    views: 71921,
-    createdAt: "2023-01-15"
-  },
-
-  // 126. digital-art
-  {
-    id: 126,
-    title: "蓝色梦境 / Blue Reverie No.3",
-    description: "这幅作品探索了潜意识与现实的边界，通过薄荷淡彩的渐变与流动的光影，勾勒出诗意般的画面。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art126/800/600",
-    likes: 256,
-    views: 96878,
-    createdAt: "2024-04-08"
-  },
-
-  // 127. photography
-  {
-    id: 127,
-    title: "樱花絮语 / Sakura Whispers No.3",
-    description: "这幅作品探索了流动与静止的张力，通过靛青深邃的渐变与流动的光影，呈现出迷人的光影层次。将瞬间的感动凝固为永恒的画面。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art127/800/600",
-    likes: 909,
-    views: 52744,
-    createdAt: "2024-01-28"
-  },
-
-  // 128. illustration
-  {
-    id: 128,
-    title: "迷雾森林 / Misty Forest No.3",
-    description: "这幅作品探索了流动与静止的张力，通过薰衣草紫的渐变与流动的光影，构筑出宁静而深邃的意境。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art128/800/600",
-    likes: 633,
-    views: 24308,
-    createdAt: "2023-03-10"
-  },
-
-  // 129. abstract
-  {
-    id: 129,
-    title: "极光之舞 / Aurora Dance No.3",
-    description: "这幅作品探索了流动与静止的张力，通过薄荷淡彩的渐变与流动的光影，构建出一个令人沉醉的梦境空间。让人在凝视中感受时间凝固的瞬间。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art129/800/600",
-    likes: 54,
-    views: 59363,
-    createdAt: "2024-09-17"
-  },
-
-  // 130. 3d-art
-  {
-    id: 130,
-    title: "水晶之心 / Crystal Heart No.3",
-    description: "这幅作品探索了潜意识与现实的边界，通过绛红霞光的渐变与流动的光影，展露出细腻的情感肌理。让人在凝视中感受时间凝固的瞬间。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art130/800/600",
-    likes: 752,
-    views: 57701,
-    createdAt: "2023-03-28"
-  },
-
-  // 131. digital-art
-  {
-    id: 131,
-    title: "悬浮岛屿 / Floating Islands No.3",
-    description: "这幅作品探索了情感与记忆的沉淀，通过暖橘金辉的渐变与流动的光影，打造出沉浸式的感官世界。让光影成为情感最忠实的表达载体。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art131/800/600",
-    likes: 181,
-    views: 26414,
-    createdAt: "2023-04-10"
-  },
-
-  // 132. photography
-  {
-    id: 132,
-    title: "记忆碎片 / Memory Fragments No.3",
-    description: "这幅作品探索了时间与空间的褶皱，通过琥珀温润的渐变与流动的光影，打造出沉浸式的感官世界。在虚与实之间留下无尽的想象空间。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art132/800/600",
-    likes: 181,
-    views: 2192,
-    createdAt: "2023-01-15"
-  },
-
-  // 133. illustration
-  {
-    id: 133,
-    title: "霓虹丛林 / Neon Jungle No.3",
-    description: "这幅作品探索了情感与记忆的沉淀，通过薰衣草紫的渐变与流动的光影，打造出沉浸式的感官世界。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art133/800/600",
-    likes: 233,
-    views: 40228,
-    createdAt: "2023-07-25"
-  },
-
-  // 134. abstract
-  {
-    id: 134,
-    title: "月下独舞 / Moonlit Solo No.3",
-    description: "这幅作品探索了情感与记忆的沉淀，通过薄荷淡彩的渐变与流动的光影，呈现出迷人的光影层次。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art134/800/600",
-    likes: 334,
-    views: 69913,
-    createdAt: "2023-02-18"
-  },
-
-  // 135. 3d-art
-  {
-    id: 135,
-    title: "色彩漩涡 / Color Vortex No.3",
-    description: "这幅作品探索了具象与抽象的转换，通过粉紫色调的渐变与流动的光影，构筑出宁静而深邃的意境。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art135/800/600",
-    likes: 554,
-    views: 16939,
-    createdAt: "2023-01-30"
-  },
-
-  // 136. digital-art
-  {
-    id: 136,
-    title: "风的形状 / Shape of Wind No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过钴蓝渐变的渐变与流动的光影，营造出超现实的视觉体验。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art136/800/600",
-    likes: 265,
-    views: 91898,
-    createdAt: "2024-11-17"
-  },
-
-  // 137. photography
-  {
-    id: 137,
-    title: "光与影的对话 / Dialogue of Light and Shadow No.3",
-    description: "这幅作品探索了流动与静止的张力，通过薰衣草紫的渐变与流动的光影，展露出细腻的情感肌理。唤起观者内心深处最柔软的共鸣。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art137/800/600",
-    likes: 15,
-    views: 46581,
-    createdAt: "2024-08-07"
-  },
-
-  // 138. illustration
-  {
-    id: 138,
-    title: "宇宙尘埃 / Cosmic Dust No.3",
-    description: "这幅作品探索了潜意识与现实的边界，通过钴蓝渐变的渐变与流动的光影，创造出富有韵律的构图。唤起观者内心深处最柔软的共鸣。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art138/800/600",
-    likes: 96,
-    views: 95280,
-    createdAt: "2024-09-04"
-  },
-
-  // 139. abstract
-  {
-    id: 139,
-    title: "玫瑰星云 / Rose Nebula No.3",
-    description: "这幅作品探索了具象与抽象的转换，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art139/800/600",
-    likes: 764,
-    views: 4587,
-    createdAt: "2023-01-12"
-  },
-
-  // 140. 3d-art
-  {
-    id: 140,
-    title: "海底秘境 / Underwater Secret No.3",
-    description: "这幅作品探索了具象与抽象的转换，通过暖橘金辉的渐变与流动的光影，构筑出宁静而深邃的意境。将瞬间的感动凝固为永恒的画面。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art140/800/600",
-    likes: 135,
-    views: 47993,
-    createdAt: "2023-07-05"
-  },
-
-  // 141. digital-art
-  {
-    id: 141,
-    title: "日落余晖 / Sunset Afterglow No.3",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过钴蓝渐变的渐变与流动的光影，呈现出迷人的光影层次。在静谧中传递出强烈的情感张力。",
+    id: 64,
+    title: "山水像素解构",
+    description: "用 AI 重构山水像素解构：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
     author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art141/800/600",
-    likes: 714,
-    views: 29090,
-    createdAt: "2023-08-28"
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-064.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 304,
+    views: 25030,
+    createdAt: "2023-11-27"
   },
-
-  // 142. photography
   {
-    id: 142,
-    title: "晨雾轻纱 / Morning Veil No.3",
-    description: "这幅作品探索了时间与空间的褶皱，通过暖橘金辉的渐变与流动的光影，勾勒出诗意般的画面。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art142/800/600",
-    likes: 653,
-    views: 69670,
-    createdAt: "2023-11-03"
-  },
-
-  // 143. illustration
-  {
-    id: 143,
-    title: "星光漫步 / Starlight Stroll No.3",
-    description: "这幅作品探索了潜意识与现实的边界，通过暖橘金辉的渐变与流动的光影，展露出细腻的情感肌理。唤起观者内心深处最柔软的共鸣。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art143/800/600",
-    likes: 613,
-    views: 65824,
-    createdAt: "2023-09-08"
-  },
-
-  // 144. abstract
-  {
-    id: 144,
-    title: "幻影之城 / Phantom City No.3",
-    description: "这幅作品探索了自然与科技的融合，通过薰衣草紫的渐变与流动的光影，呈现出迷人的光影层次。在静谧中传递出强烈的情感张力。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art144/800/600",
-    likes: 334,
-    views: 9844,
-    createdAt: "2023-11-08"
-  },
-
-  // 145. 3d-art
-  {
-    id: 145,
-    title: "繁花似锦 / Blossom Tapestry No.3",
-    description: "这幅作品探索了潜意识与现实的边界，通过薰衣草紫的渐变与流动的光影，编织出如梦似幻的氛围。以独特的视角诠释了梦境美学的精髓。",
+    id: 65,
+    title: "唐·玉质·档案 / Set of decorative belt plaques",
+    description: "凝视这件唐代玉质：Jade (nephrite)。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
     author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art145/800/600",
-    likes: 843,
-    views: 79021,
-    createdAt: "2023-02-23"
+    category: "museum-culture",
+    tags: ["国宝","馆藏","玉质"],
+    imageUrl: "/images/artworks/met-42180.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 304,
+    views: 25030,
+    createdAt: "2023-11-27"
   },
-
-  // 146. digital-art
   {
-    id: 146,
-    title: "冰封时刻 / Frozen Moment No.3",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过粉紫色调的渐变与流动的光影，打造出沉浸式的感官世界。在虚与实之间留下无尽的想象空间。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art146/800/600",
-    likes: 370,
-    views: 91748,
-    createdAt: "2024-12-20"
+    id: 66,
+    title: "皮影台灯",
+    description: "围绕皮影台灯的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-097.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 304,
+    views: 25030,
+    createdAt: "2023-11-27"
   },
-
-  // 147. photography
   {
-    id: 147,
-    title: "梦境碎片 / Dream Fragments No.3",
-    description: "这幅作品探索了光影与色彩的对话，通过绛红霞光的渐变与流动的光影，呈现出迷人的光影层次。在静谧中传递出强烈的情感张力。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art147/800/600",
-    likes: 864,
-    views: 29216,
-    createdAt: "2023-02-06"
+    id: 67,
+    title: "周庄水乡",
+    description: "在周庄水乡，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-012.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 398,
+    views: 32030,
+    createdAt: "2024-03-05"
   },
-
-  // 148. illustration
   {
-    id: 148,
-    title: "光之回廊 / Corridor of Light No.3",
-    description: "这幅作品探索了自然与科技的融合，通过粉紫色调的渐变与流动的光影，编织出如梦似幻的氛围。让人在凝视中感受时间凝固的瞬间。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art148/800/600",
-    likes: 258,
-    views: 24317,
-    createdAt: "2024-10-12"
+    id: 68,
+    title: "禽鸟·拾遗 / Service vessel with bamboo, plum blossoms, butterflies, and ",
+    description: "禽鸟不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["手作","非遗","禽鸟"],
+    imageUrl: "/images/artworks/met-44299.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 398,
+    views: 32030,
+    createdAt: "2024-03-05"
   },
-
-  // 149. abstract
   {
-    id: 149,
-    title: "墨色山水 / Ink Landscape No.3",
-    description: "这幅作品探索了流动与静止的张力，通过翠绿流光的渐变与流动的光影，打造出沉浸式的感官世界。让人在凝视中感受时间凝固的瞬间。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art149/800/600",
-    likes: 318,
-    views: 17541,
-    createdAt: "2023-03-14"
+    id: 69,
+    title: "清·碗·拾遗 / Raising the Alms-Bowl",
+    description: "清代画家的碗，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["水墨","国风","碗"],
+    imageUrl: "/images/artworks/met-39913.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 398,
+    views: 32030,
+    createdAt: "2024-03-05"
   },
-
-  // 150. 3d-art
   {
-    id: 150,
-    title: "流光溢彩 / Flowing Radiance No.3",
-    description: "这幅作品探索了宇宙与微观的呼应，通过绛红霞光的渐变与流动的光影，编织出如梦似幻的氛围。唤起观者内心深处最柔软的共鸣。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art150/800/600",
-    likes: 231,
-    views: 78882,
-    createdAt: "2023-03-26"
+    id: 70,
+    title: "龙纹流体金属",
+    description: "这件龙纹流体金属由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-062.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 398,
+    views: 32030,
+    createdAt: "2024-03-05"
   },
-
-  // 151. digital-art
   {
-    id: 151,
-    title: "夜空烟火 / Night Sky Fireworks No.3",
-    description: "这幅作品探索了时间与空间的褶皱，通过翠绿流光的渐变与流动的光影，编织出如梦似幻的氛围。引领观者进入一场关于美的深层探索。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art151/800/600",
-    likes: 803,
-    views: 97031,
-    createdAt: "2024-07-30"
+    id: 71,
+    title: "禽鸟·拾遗 / Service with Decoration of Flowers and Birds",
+    description: "大都会博物馆公开馆藏数字化影像。禽鸟的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["国宝","馆藏","禽鸟"],
+    imageUrl: "/images/artworks/met-51249.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 398,
+    views: 32030,
+    createdAt: "2024-03-05"
   },
-
-  // 152. photography
   {
-    id: 152,
-    title: "晨露未晞 / Morning Dew No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过翠绿流光的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art152/800/600",
-    likes: 374,
-    views: 34678,
-    createdAt: "2024-03-12"
+    id: 72,
+    title: "云纹徽章套装",
+    description: "云纹徽章套装的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","IP形象"],
+    imageUrl: "/images/artworks/gen-099.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 398,
+    views: 32030,
+    createdAt: "2024-03-05"
   },
-
-  // 153. illustration
   {
-    id: 153,
-    title: "云海翻涌 / Rolling Cloud Sea No.3",
-    description: "这幅作品探索了自然与科技的融合，通过粉紫色调的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art153/800/600",
-    likes: 341,
-    views: 50617,
-    createdAt: "2024-01-30"
+    id: 73,
+    title: "张家界峰林",
+    description: "张家界峰林的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-013.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 23563,
+    createdAt: "2023-10-18"
   },
-
-  // 154. abstract
   {
-    id: 154,
-    title: "玻璃花园 / Glass Garden No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过玫瑰金辉的渐变与流动的光影，营造出超现实的视觉体验。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art154/800/600",
-    likes: 406,
-    views: 89038,
-    createdAt: "2024-05-15"
+    id: 74,
+    title: "禽鸟·图录 / Service vessel with bamboo, plum blossoms, butterflies, and ",
+    description: "指尖上的禽鸟：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["手作","非遗","禽鸟"],
+    imageUrl: "/images/artworks/met-44301.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 23563,
+    createdAt: "2023-10-18"
   },
-
-  // 155. 3d-art
   {
-    id: 155,
-    title: "彩虹尽头 / End of Rainbow No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过玫瑰金辉的渐变与流动的光影，构筑出宁静而深邃的意境。唤起观者内心深处最柔软的共鸣。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art155/800/600",
-    likes: 456,
-    views: 34934,
-    createdAt: "2023-10-20"
-  },
-
-  // 156. digital-art
-  {
-    id: 156,
-    title: "银河铁道 / Galaxy Railway No.3",
-    description: "这幅作品探索了光影与色彩的对话，通过钴蓝渐变的渐变与流动的光影，塑造出独特的视觉语言。将瞬间的感动凝固为永恒的画面。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art156/800/600",
-    likes: 118,
-    views: 35995,
-    createdAt: "2023-06-25"
-  },
-
-  // 157. photography
-  {
-    id: 157,
-    title: "光影迷宫 / Light Maze No.3",
-    description: "这幅作品探索了自然与科技的融合，通过翠绿流光的渐变与流动的光影，塑造出独特的视觉语言。引领观者进入一场关于美的深层探索。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art157/800/600",
-    likes: 975,
-    views: 91915,
-    createdAt: "2023-12-28"
-  },
-
-  // 158. illustration
-  {
-    id: 158,
-    title: "永恒瞬间 / Eternal Moment No.3",
-    description: "这幅作品探索了流动与静止的张力，通过靛青深邃的渐变与流动的光影，勾勒出诗意般的画面。将瞬间的感动凝固为永恒的画面。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art158/800/600",
-    likes: 480,
-    views: 9983,
-    createdAt: "2023-11-06"
-  },
-
-  // 159. abstract
-  {
-    id: 159,
-    title: "静谧港湾 / Tranquil Harbor No.3",
-    description: "这幅作品探索了自然与科技的融合，通过靛青深邃的渐变与流动的光影，塑造出独特的视觉语言。让人在凝视中感受时间凝固的瞬间。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art159/800/600",
-    likes: 473,
-    views: 26693,
-    createdAt: "2023-04-07"
-  },
-
-  // 160. 3d-art
-  {
-    id: 160,
-    title: "星尘记忆 / Stardust Memory No.3",
-    description: "这幅作品探索了梦境与清醒的交织，通过琥珀温润的渐变与流动的光影，塑造出独特的视觉语言。在虚与实之间留下无尽的想象空间。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art160/800/600",
-    likes: 435,
-    views: 97335,
-    createdAt: "2023-04-11"
-  },
-
-  // 161. digital-art
-  {
-    id: 161,
-    title: "雾中风景 / Landscape in Mist No.3",
-    description: "这幅作品探索了流动与静止的张力，通过薄荷淡彩的渐变与流动的光影，展露出细腻的情感肌理。让人在凝视中感受时间凝固的瞬间。",
+    id: 75,
+    title: "册页·图录 / Frontispiece and Colophons to the Album \"Five Old Men of Sui",
+    description: "展开这卷册页，如同推开一扇通往古代画室的门。绢素会老，山水的呼吸不会。",
     author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art161/800/600",
-    likes: 364,
-    views: 51401,
-    createdAt: "2024-03-01"
+    category: "guofeng-art",
+    tags: ["水墨","国风","册页"],
+    imageUrl: "/images/artworks/met-39916.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 23563,
+    createdAt: "2023-10-18"
   },
-
-  // 162. photography
   {
-    id: 162,
-    title: "光之诗篇 / Poem of Light No.3",
-    description: "这幅作品探索了情感与记忆的沉淀，通过钴蓝渐变的渐变与流动的光影，构建出一个令人沉醉的梦境空间。唤起观者内心深处最柔软的共鸣。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art162/800/600",
-    likes: 328,
-    views: 14384,
-    createdAt: "2023-04-08"
-  },
-
-  // 163. illustration
-  {
-    id: 163,
-    title: "梦境之翼 / Dream Wings No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过翠绿流光的渐变与流动的光影，营造出超现实的视觉体验。在虚与实之间留下无尽的想象空间。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art163/800/600",
-    likes: 695,
-    views: 96974,
-    createdAt: "2024-01-20"
-  },
-
-  // 164. abstract
-  {
-    id: 164,
-    title: "紫色迷雾 / Purple Mist No.4",
-    description: "这幅作品探索了梦境与清醒的交织，通过粉紫色调的渐变与流动的光影，塑造出独特的视觉语言。将瞬间的感动凝固为永恒的画面。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art164/800/600",
-    likes: 24,
-    views: 50963,
-    createdAt: "2024-08-03"
-  },
-
-  // 165. 3d-art
-  {
-    id: 165,
-    title: "星河倒影 / Galaxy Reflection No.4",
-    description: "这幅作品探索了流动与静止的张力，通过粉紫色调的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art165/800/600",
-    likes: 596,
-    views: 90644,
-    createdAt: "2023-04-27"
-  },
-
-  // 166. digital-art
-  {
-    id: 166,
-    title: "花语低吟 / Whispering Blooms No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过靛青深邃的渐变与流动的光影，构建出一个令人沉醉的梦境空间。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art166/800/600",
-    likes: 676,
-    views: 82507,
-    createdAt: "2024-02-28"
-  },
-
-  // 167. photography
-  {
-    id: 167,
-    title: "光影交响 / Light Symphony No.4",
-    description: "这幅作品探索了流动与静止的张力，通过绛红霞光的渐变与流动的光影，编织出如梦似幻的氛围。在静谧中传递出强烈的情感张力。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art167/800/600",
-    likes: 372,
-    views: 344,
-    createdAt: "2024-12-14"
-  },
-
-  // 168. illustration
-  {
-    id: 168,
-    title: "深海呢喃 / Deep Sea Whisper No.4",
-    description: "这幅作品探索了流动与静止的张力，通过粉紫色调的渐变与流动的光影，塑造出独特的视觉语言。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art168/800/600",
-    likes: 198,
-    views: 47347,
-    createdAt: "2023-04-04"
-  },
-
-  // 169. abstract
-  {
-    id: 169,
-    title: "霓虹心脏 / Neon Heart No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过薄荷淡彩的渐变与流动的光影，编织出如梦似幻的氛围。在静谧中传递出强烈的情感张力。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art169/800/600",
-    likes: 296,
-    views: 45608,
-    createdAt: "2023-06-06"
-  },
-
-  // 170. 3d-art
-  {
-    id: 170,
-    title: "破碎星辰 / Shattered Stars No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过薰衣草紫的渐变与流动的光影，勾勒出诗意般的画面。以独特的视角诠释了梦境美学的精髓。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art170/800/600",
-    likes: 332,
-    views: 91018,
-    createdAt: "2023-02-04"
-  },
-
-  // 171. digital-art
-  {
-    id: 171,
-    title: "液态银河 / Liquid Galaxy No.4",
-    description: "这幅作品探索了流动与静止的张力，通过粉紫色调的渐变与流动的光影，勾勒出诗意般的画面。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art171/800/600",
-    likes: 46,
-    views: 75970,
-    createdAt: "2024-11-28"
-  },
-
-  // 172. photography
-  {
-    id: 172,
-    title: "蝴蝶效应 / Butterfly Effect No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过翠绿流光的渐变与流动的光影，构建出一个令人沉醉的梦境空间。在虚与实之间留下无尽的想象空间。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art172/800/600",
-    likes: 466,
-    views: 77853,
-    createdAt: "2023-09-11"
-  },
-
-  // 173. illustration
-  {
-    id: 173,
-    title: "晨曦微光 / Dawn Glimmer No.4",
-    description: "这幅作品探索了情感与记忆的沉淀，通过绛红霞光的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art173/800/600",
-    likes: 814,
-    views: 14962,
-    createdAt: "2024-11-01"
-  },
-
-  // 174. abstract
-  {
-    id: 174,
-    title: "镜中幻境 / Mirror Mirage No.4",
-    description: "这幅作品探索了自然与科技的融合，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。引领观者进入一场关于美的深层探索。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art174/800/600",
-    likes: 58,
-    views: 68286,
-    createdAt: "2024-02-13"
-  },
-
-  // 175. 3d-art
-  {
-    id: 175,
-    title: "燃烧的云 / Burning Clouds No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过靛青深邃的渐变与流动的光影，展露出细腻的情感肌理。引领观者进入一场关于美的深层探索。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art175/800/600",
-    likes: 108,
-    views: 71017,
-    createdAt: "2024-10-13"
-  },
-
-  // 176. digital-art
-  {
-    id: 176,
-    title: "雨后初晴 / After the Rain No.4",
-    description: "这幅作品探索了情感与记忆的沉淀，通过琥珀温润的渐变与流动的光影，塑造出独特的视觉语言。将瞬间的感动凝固为永恒的画面。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art176/800/600",
-    likes: 742,
-    views: 63549,
-    createdAt: "2024-01-09"
-  },
-
-  // 177. photography
-  {
-    id: 177,
-    title: "时间褶皱 / Folds of Time No.4",
-    description: "这幅作品探索了流动与静止的张力，通过玫瑰金辉的渐变与流动的光影，勾勒出诗意般的画面。在虚与实之间留下无尽的想象空间。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art177/800/600",
-    likes: 150,
-    views: 15971,
-    createdAt: "2024-09-15"
-  },
-
-  // 178. illustration
-  {
-    id: 178,
-    title: "午夜花园 / Midnight Garden No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过翠绿流光的渐变与流动的光影，创造出富有韵律的构图。以独特的视角诠释了梦境美学的精髓。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art178/800/600",
-    likes: 135,
-    views: 16775,
-    createdAt: "2024-07-16"
-  },
-
-  // 179. abstract
-  {
-    id: 179,
-    title: "光的轨迹 / Trail of Light No.4",
-    description: "这幅作品探索了时间与空间的褶皱，通过粉紫色调的渐变与流动的光影，展露出细腻的情感肌理。以独特的视角诠释了梦境美学的精髓。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art179/800/600",
-    likes: 31,
-    views: 28654,
-    createdAt: "2024-06-23"
-  },
-
-  // 180. 3d-art
-  {
-    id: 180,
-    title: "蓝色梦境 / Blue Reverie No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过翠绿流光的渐变与流动的光影，打造出沉浸式的感官世界。以独特的视角诠释了梦境美学的精髓。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art180/800/600",
-    likes: 240,
-    views: 10599,
-    createdAt: "2024-07-07"
-  },
-
-  // 181. digital-art
-  {
-    id: 181,
-    title: "樱花絮语 / Sakura Whispers No.4",
-    description: "这幅作品探索了自然与科技的融合，通过靛青深邃的渐变与流动的光影，创造出富有韵律的构图。在虚与实之间留下无尽的想象空间。",
+    id: 76,
+    title: "荷花纹样分形",
+    description: "用 AI 重构荷花纹样分形：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
     author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art181/800/600",
-    likes: 464,
-    views: 6702,
-    createdAt: "2024-10-16"
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-065.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 23563,
+    createdAt: "2023-10-18"
   },
-
-  // 182. photography
   {
-    id: 182,
-    title: "迷雾森林 / Misty Forest No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过薰衣草紫的渐变与流动的光影，创造出富有韵律的构图。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art182/800/600",
-    likes: 589,
-    views: 1854,
-    createdAt: "2024-01-16"
+    id: 77,
+    title: "唐·玉质·图录 / Assemblage of pendants",
+    description: "凝视这件唐代玉质：Jade (nephrite) with bro。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["国宝","馆藏","玉质"],
+    imageUrl: "/images/artworks/met-39805.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 23563,
+    createdAt: "2023-10-18"
   },
-
-  // 183. illustration
   {
-    id: 183,
-    title: "极光之舞 / Aurora Dance No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过靛青深邃的渐变与流动的光影，编织出如梦似幻的氛围。唤起观者内心深处最柔软的共鸣。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art183/800/600",
-    likes: 245,
-    views: 43846,
-    createdAt: "2023-05-17"
+    id: 78,
+    title: "书法灯罩",
+    description: "围绕书法灯罩的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-098.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 287,
+    views: 23563,
+    createdAt: "2023-10-18"
   },
-
-  // 184. abstract
   {
-    id: 184,
-    title: "水晶之心 / Crystal Heart No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过粉紫色调的渐变与流动的光影，呈现出迷人的光影层次。在虚与实之间留下无尽的想象空间。",
-    author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art184/800/600",
-    likes: 17,
-    views: 32472,
-    createdAt: "2023-05-16"
-  },
-
-  // 185. 3d-art
-  {
-    id: 185,
-    title: "悬浮岛屿 / Floating Islands No.4",
-    description: "这幅作品探索了流动与静止的张力，通过绛红霞光的渐变与流动的光影，打造出沉浸式的感官世界。将瞬间的感动凝固为永恒的画面。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art185/800/600",
-    likes: 344,
-    views: 74722,
-    createdAt: "2024-07-18"
-  },
-
-  // 186. digital-art
-  {
-    id: 186,
-    title: "记忆碎片 / Memory Fragments No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过绛红霞光的渐变与流动的光影，编织出如梦似幻的氛围。将瞬间的感动凝固为永恒的画面。",
+    id: 79,
+    title: "平遥古城",
+    description: "平遥古城的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
     author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art186/800/600",
-    likes: 82,
-    views: 7488,
-    createdAt: "2023-02-12"
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-014.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 381,
+    views: 30563,
+    createdAt: "2024-01-25"
   },
-
-  // 187. photography
   {
-    id: 187,
-    title: "霓虹丛林 / Neon Jungle No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过琥珀温润的渐变与流动的光影，打造出沉浸式的感官世界。将瞬间的感动凝固为永恒的画面。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art187/800/600",
-    likes: 700,
-    views: 85761,
-    createdAt: "2024-02-10"
+    id: 80,
+    title: "禽鸟·档案 / Service vessel with bamboo, plum blossoms, butterflies, and ",
+    description: "指尖上的禽鸟：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["手作","非遗","禽鸟"],
+    imageUrl: "/images/artworks/met-39522.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 381,
+    views: 30563,
+    createdAt: "2024-01-25"
   },
-
-  // 188. illustration
   {
-    id: 188,
-    title: "月下独舞 / Moonlit Solo No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过靛青深邃的渐变与流动的光影，打造出沉浸式的感官世界。在虚与实之间留下无尽的想象空间。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art188/800/600",
-    likes: 207,
-    views: 39134,
-    createdAt: "2023-10-28"
+    id: 81,
+    title: "清·山水·档案 / Landscapes",
+    description: "展开这卷山水，如同推开一扇通往清代画室的门。绢素会老，山水的呼吸不会。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["水墨","国风","山水"],
+    imageUrl: "/images/artworks/met-39931.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 381,
+    views: 30563,
+    createdAt: "2024-01-25"
   },
-
-  // 189. abstract
   {
-    id: 189,
-    title: "色彩漩涡 / Color Vortex No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过琥珀温润的渐变与流动的光影，勾勒出诗意般的画面。在静谧中传递出强烈的情感张力。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art189/800/600",
-    likes: 662,
-    views: 92997,
-    createdAt: "2023-07-30"
+    id: 82,
+    title: "书法笔触粒子",
+    description: "用 AI 重构书法笔触粒子：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-067.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 381,
+    views: 30563,
+    createdAt: "2024-01-25"
   },
-
-  // 190. 3d-art
   {
-    id: 190,
-    title: "风的形状 / Shape of Wind No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过玫瑰金辉的渐变与流动的光影，展露出细腻的情感肌理。唤起观者内心深处最柔软的共鸣。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art190/800/600",
-    likes: 442,
-    views: 58344,
-    createdAt: "2024-11-05"
+    id: 83,
+    title: "辽·苍龙·档案 / Plaque in the shape of a dragon",
+    description: "凝视这件辽代苍龙：Jade (nephrite)。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["国宝","馆藏","苍龙"],
+    imageUrl: "/images/artworks/met-39830.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 381,
+    views: 30563,
+    createdAt: "2024-01-25"
   },
-
-  // 191. digital-art
   {
-    id: 191,
-    title: "光与影的对话 / Dialogue of Light and Shadow No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过钴蓝渐变的渐变与流动的光影，展露出细腻的情感肌理。让人在凝视中感受时间凝固的瞬间。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art191/800/600",
-    likes: 95,
-    views: 86564,
-    createdAt: "2023-09-15"
+    id: 84,
+    title: "敦煌色系口红",
+    description: "围绕敦煌色系口红的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-101.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 381,
+    views: 30563,
+    createdAt: "2024-01-25"
   },
-
-  // 192. photography
   {
-    id: 192,
-    title: "宇宙尘埃 / Cosmic Dust No.4",
-    description: "这幅作品探索了时间与空间的褶皱，通过玫瑰金辉的渐变与流动的光影，创造出富有韵律的构图。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art192/800/600",
-    likes: 909,
-    views: 92251,
-    createdAt: "2024-08-02"
+    id: 85,
+    title: "西塘夜景",
+    description: "在西塘夜景，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-016.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 475,
+    views: 37563,
+    createdAt: "2024-05-03"
   },
-
-  // 193. illustration
   {
-    id: 193,
-    title: "玫瑰星云 / Rose Nebula No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过玫瑰金辉的渐变与流动的光影，构建出一个令人沉醉的梦境空间。引领观者进入一场关于美的深层探索。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art193/800/600",
-    likes: 153,
-    views: 41795,
-    createdAt: "2023-06-01"
+    id: 86,
+    title: "明·盘·拾遗 / Dish with Three Friends of Winter",
+    description: "盘不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["手作","盘"],
+    imageUrl: "/images/artworks/met-72729.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 475,
+    views: 37563,
+    createdAt: "2024-05-03"
   },
-
-  // 194. abstract
   {
-    id: 194,
-    title: "海底秘境 / Underwater Secret No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过粉紫色调的渐变与流动的光影，呈现出迷人的光影层次。引领观者进入一场关于美的深层探索。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art194/800/600",
-    likes: 921,
-    views: 8889,
-    createdAt: "2024-01-11"
+    id: 87,
+    title: "南宋·渔隐·拾遗 / Fisherman's Lodge At Mount Xisai",
+    description: "南宋代画家的渔隐，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["水墨","渔隐"],
+    imageUrl: "/images/artworks/met-40057.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 475,
+    views: 37563,
+    createdAt: "2024-05-03"
   },
-
-  // 195. 3d-art
   {
-    id: 195,
-    title: "日落余晖 / Sunset Afterglow No.4",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过薰衣草紫的渐变与流动的光影，构筑出宁静而深邃的意境。唤起观者内心深处最柔软的共鸣。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art195/800/600",
-    likes: 739,
-    views: 96823,
-    createdAt: "2023-12-26"
-  },
-
-  // 196. digital-art
-  {
-    id: 196,
-    title: "晨雾轻纱 / Morning Veil No.4",
-    description: "这幅作品探索了梦境与清醒的交织，通过玫瑰金辉的渐变与流动的光影，展露出细腻的情感肌理。在静谧中传递出强烈的情感张力。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art196/800/600",
-    likes: 747,
-    views: 27790,
-    createdAt: "2023-08-23"
-  },
-
-  // 197. photography
-  {
-    id: 197,
-    title: "星光漫步 / Starlight Stroll No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过暖橘金辉的渐变与流动的光影，呈现出迷人的光影层次。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art197/800/600",
-    likes: 611,
-    views: 97482,
-    createdAt: "2024-08-16"
-  },
-
-  // 198. illustration
-  {
-    id: 198,
-    title: "幻影之城 / Phantom City No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过翠绿流光的渐变与流动的光影，呈现出迷人的光影层次。让光影成为情感最忠实的表达载体。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art198/800/600",
-    likes: 69,
-    views: 98389,
-    createdAt: "2023-08-06"
-  },
-
-  // 199. abstract
-  {
-    id: 199,
-    title: "繁花似锦 / Blossom Tapestry No.4",
-    description: "这幅作品探索了自然与科技的融合，通过薄荷淡彩的渐变与流动的光影，勾勒出诗意般的画面。在虚与实之间留下无尽的想象空间。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art199/800/600",
-    likes: 150,
-    views: 8004,
-    createdAt: "2023-05-13"
-  },
-
-  // 200. 3d-art
-  {
-    id: 200,
-    title: "冰封时刻 / Frozen Moment No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过玫瑰金辉的渐变与流动的光影，展露出细腻的情感肌理。唤起观者内心深处最柔软的共鸣。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art200/800/600",
-    likes: 77,
-    views: 44319,
-    createdAt: "2023-04-30"
-  },
-
-  // 201. digital-art
-  {
-    id: 201,
-    title: "梦境碎片 / Dream Fragments No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过粉紫色调的渐变与流动的光影，创造出富有韵律的构图。唤起观者内心深处最柔软的共鸣。",
+    id: 88,
+    title: "灯彩霓虹重构",
+    description: "这件灯彩霓虹重构由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
     author: "林梦雨",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art201/800/600",
-    likes: 806,
-    views: 88624,
-    createdAt: "2023-04-06"
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-068.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 475,
+    views: 37563,
+    createdAt: "2024-05-03"
   },
-
-  // 202. photography
   {
-    id: 202,
-    title: "光之回廊 / Corridor of Light No.4",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过绛红霞光的渐变与流动的光影，构建出一个令人沉醉的梦境空间。唤起观者内心深处最柔软的共鸣。",
-    author: "陈墨白",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art202/800/600",
-    likes: 269,
-    views: 74012,
-    createdAt: "2024-05-31"
+    id: 89,
+    title: "汉·罐·拾遗 / Covered Jar (Hu)",
+    description: "大都会博物馆公开馆藏数字化影像。罐的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["国宝","罐"],
+    imageUrl: "/images/artworks/met-42367.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 475,
+    views: 37563,
+    createdAt: "2024-05-03"
   },
-
-  // 203. illustration
   {
-    id: 203,
-    title: "墨色山水 / Ink Landscape No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过翠绿流光的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "苏晚晴",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art203/800/600",
-    likes: 233,
-    views: 40874,
-    createdAt: "2023-12-21"
+    id: 90,
+    title: "龙纹滑板",
+    description: "龙纹滑板的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-100.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 475,
+    views: 37563,
+    createdAt: "2024-05-03"
   },
-
-  // 204. abstract
   {
-    id: 204,
-    title: "流光溢彩 / Flowing Radiance No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过琥珀温润的渐变与流动的光影，打造出沉浸式的感官世界。在虚与实之间留下无尽的想象空间。",
+    id: 91,
+    title: "敦煌鸣沙山月牙泉",
+    description: "敦煌鸣沙山月牙泉的四时晨昏各成篇章。此帧以留白与层次致敬新中式意境美学——山为骨、水为韵、灯影为点睛，正是\"可抵达的远方\"。",
     author: "顾北辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art204/800/600",
-    likes: 878,
-    views: 59203,
-    createdAt: "2024-10-22"
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-015.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
   },
-
-  // 205. 3d-art
   {
-    id: 205,
-    title: "夜空烟火 / Night Sky Fireworks No.4",
-    description: "这幅作品探索了宇宙与微观的呼应，通过薰衣草紫的渐变与流动的光影，营造出超现实的视觉体验。在静谧中传递出强烈的情感张力。",
-    author: "沈星河",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art205/800/600",
-    likes: 27,
-    views: 17689,
-    createdAt: "2024-08-17"
+    id: 92,
+    title: "禽鸟·档案 / Service vessel with bamboo, plum blossoms, butterflies, and ",
+    description: "指尖上的禽鸟：一针一线、一浸一染都是时间的手迹。登记在录的非遗技艺，等待被更多年轻的手接续。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["手作","非遗","禽鸟"],
+    imageUrl: "/images/artworks/met-44302.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
   },
-
-  // 206. digital-art
   {
-    id: 206,
-    title: "晨露未晞 / Morning Dew No.4",
-    description: "这幅作品探索了自然与科技的融合，通过粉紫色调的渐变与流动的光影，编织出如梦似幻的氛围。每一处细节都诉说着关于存在与虚无的思考。",
+    id: 93,
+    title: "元·观鹅·档案 / Wang Xizhi watching geese",
+    description: "展开这卷观鹅，如同推开一扇通往元代画室的门。绢素会老，山水的呼吸不会。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["水墨","国风","观鹅"],
+    imageUrl: "/images/artworks/met-40081.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 94,
+    title: "剪纸光影空间",
+    description: "用 AI 重构剪纸光影空间：提示词是新的毛笔，潜空间是新的宣纸。传统美学符号在算子里获得第二次呼吸。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-066.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 95,
+    title: "唐·吉金·档案 / Ladle",
+    description: "凝视这件唐代吉金：Silver。千年前的工匠不会想到，他们铸造的纹样会成为今天文创设计的母题。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["国宝","馆藏","吉金"],
+    imageUrl: "/images/artworks/met-49563.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 96,
+    title: "榫卯文具尺",
+    description: "围绕榫卯文具尺的这套设计语言：传统纹样做减法，现代工艺做加法，最终落在\"日常可用\"这个朴素的标尺上。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-103.jpg",
+    grade: "b",
+    totalScore: 6.8,
+    likes: 343,
+    views: 27900,
+    createdAt: "2023-12-15"
+  },
+  {
+    id: 97,
+    title: "婺源晒秋",
+    description: "在婺源晒秋，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
     author: "白若雪",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art206/800/600",
-    likes: 994,
-    views: 78824,
-    createdAt: "2024-05-21"
+    category: "scenic-photo",
+    tags: ["文旅摄影","风物纪实"],
+    imageUrl: "/images/artworks/gen-018.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 437,
+    views: 34900,
+    createdAt: "2024-03-23"
   },
-
-  // 207. photography
   {
-    id: 207,
-    title: "云海翻涌 / Rolling Cloud Sea No.4",
-    description: "这幅作品探索了光影与色彩的对话，通过薄荷淡彩的渐变与流动的光影，营造出超现实的视觉体验。唤起观者内心深处最柔软的共鸣。",
-    author: "江月明",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art207/800/600",
-    likes: 201,
-    views: 1800,
-    createdAt: "2024-01-28"
+    id: 98,
+    title: "清·月色·拾遗 / Moon-Shaped Bottle",
+    description: "月色不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["手作","月色"],
+    imageUrl: "/images/artworks/met-42209.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 437,
+    views: 34900,
+    createdAt: "2024-03-23"
   },
-
-  // 208. illustration
   {
-    id: 208,
-    title: "玻璃花园 / Glass Garden No.4",
-    description: "这幅作品探索了情感与记忆的沉淀，通过钴蓝渐变的渐变与流动的光影，呈现出迷人的光影层次。引领观者进入一场关于美的深层探索。",
-    author: "宋清欢",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art208/800/600",
-    likes: 335,
-    views: 30509,
-    createdAt: "2023-11-02"
+    id: 99,
+    title: "南宋·高士·拾遗 / Scholar viewing a waterfall",
+    description: "南宋代画家的高士，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["水墨","高士"],
+    imageUrl: "/images/artworks/met-40086.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 437,
+    views: 34900,
+    createdAt: "2024-03-23"
   },
-
-  // 209. abstract
   {
-    id: 209,
-    title: "彩虹尽头 / End of Rainbow No.4",
-    description: "这幅作品探索了潜意识与现实的边界，通过薄荷淡彩的渐变与流动的光影，呈现出迷人的光影层次。在虚与实之间留下无尽的想象空间。",
-    author: "周慕辰",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art209/800/600",
-    likes: 288,
-    views: 49942,
-    createdAt: "2024-05-29"
+    id: 100,
+    title: "昆曲水袖轨迹",
+    description: "这件昆曲水袖轨迹由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-069.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 437,
+    views: 34900,
+    createdAt: "2024-03-23"
   },
-
-  // 210. 3d-art
   {
-    id: 210,
-    title: "银河铁道 / Galaxy Railway No.4",
-    description: "这幅作品探索了自然与科技的融合，通过翠绿流光的渐变与流动的光影，勾勒出诗意般的画面。让光影成为情感最忠实的表达载体。",
-    author: "韩雨桐",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art210/800/600",
-    likes: 682,
-    views: 7991,
-    createdAt: "2024-11-21"
+    id: 101,
+    title: "唐·古艺·拾遗 / Epitaph with Cover for Master Xu",
+    description: "大都会博物馆公开馆藏数字化影像。古艺的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["国宝","古艺"],
+    imageUrl: "/images/artworks/met-42695.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 437,
+    views: 34900,
+    createdAt: "2024-03-23"
   },
-
-  // 211. digital-art
   {
-    id: 211,
-    title: "光影迷宫 / Light Maze No.4",
-    description: "这幅作品探索了情感与记忆的沉淀，通过琥珀温润的渐变与流动的光影，勾勒出诗意般的画面。让人在凝视中感受时间凝固的瞬间。",
-    author: "李清风",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art211/800/600",
-    likes: 116,
-    views: 4248,
-    createdAt: "2023-11-16"
+    id: 102,
+    title: "越剑书签",
+    description: "越剑书签的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-102.jpg",
+    grade: "b",
+    totalScore: 6.9,
+    likes: 437,
+    views: 34900,
+    createdAt: "2024-03-23"
   },
-
-  // 212. photography
   {
-    id: 212,
-    title: "永恒瞬间 / Eternal Moment No.4",
-    description: "这幅作品探索了具象与抽象的转换，通过钴蓝渐变的渐变与流动的光影，呈现出迷人的光影层次。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "吴映雪",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art212/800/600",
-    likes: 21,
-    views: 45804,
-    createdAt: "2023-11-14"
+    id: 103,
+    title: "宏村月沼",
+    description: "在宏村月沼，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-017.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 531,
+    views: 41900,
+    createdAt: "2024-06-30"
   },
-
-  // 213. illustration
   {
-    id: 213,
-    title: "静谧港湾 / Tranquil Harbor No.4",
-    description: "这幅作品探索了梦境与清醒的交织，通过粉紫色调的渐变与流动的光影，编织出如梦似幻的氛围。让人在凝视中感受时间凝固的瞬间。",
-    author: "张云深",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art213/800/600",
-    likes: 250,
-    views: 69451,
-    createdAt: "2023-02-04"
+    id: 104,
+    title: "周·钟·新语 / Bell (Yongzhong)",
+    description: "钟不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["匠心","手作","钟"],
+    imageUrl: "/images/artworks/met-61053.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 531,
+    views: 41900,
+    createdAt: "2024-06-30"
   },
-
-  // 214. abstract
   {
-    id: 214,
-    title: "星尘记忆 / Stardust Memory No.4",
-    description: "这幅作品探索了时间与空间的褶皱，通过粉紫色调的渐变与流动的光影，构筑出宁静而深邃的意境。每一处细节都诉说着关于存在与虚无的思考。",
-    author: "黄思远",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art214/800/600",
-    likes: 281,
-    views: 30481,
-    createdAt: "2024-07-28"
+    id: 105,
+    title: "元·诗帖·新语 / Poem of Farewell to Liu Man",
+    description: "元代画家的诗帖，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","水墨","诗帖"],
+    imageUrl: "/images/artworks/met-40105.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 531,
+    views: 41900,
+    createdAt: "2024-06-30"
   },
-
-  // 215. 3d-art
   {
-    id: 215,
-    title: "雾中风景 / Landscape in Mist No.4",
-    description: "这幅作品探索了情感与记忆的沉淀，通过绛红霞光的渐变与流动的光影，编织出如梦似幻的氛围。将瞬间的感动凝固为永恒的画面。",
-    author: "徐若曦",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art215/800/600",
-    likes: 112,
-    views: 58085,
-    createdAt: "2024-08-09"
+    id: 106,
+    title: "祥云低多边形",
+    description: "这件祥云低多边形由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-070.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 531,
+    views: 41900,
+    createdAt: "2024-06-30"
   },
-
-  // 216. digital-art
   {
-    id: 216,
-    title: "光之诗篇 / Poem of Light No.4",
-    description: "这幅作品探索了情感与记忆的沉淀，通过翠绿流光的渐变与流动的光影，创造出富有韵律的构图。以独特的视角诠释了梦境美学的精髓。",
-    author: "何慕言",
-    category: "digital-art",
-    imageUrl: "https://picsum.photos/seed/art216/800/600",
-    likes: 809,
-    views: 77955,
-    createdAt: "2024-07-05"
+    id: 107,
+    title: "唐·林鹿·新语 / Bowl with deer",
+    description: "大都会博物馆公开馆藏数字化影像。林鹿的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","国宝","林鹿"],
+    imageUrl: "/images/artworks/met-39650.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 531,
+    views: 41900,
+    createdAt: "2024-06-30"
   },
-
-  // 217. photography
   {
-    id: 217,
-    title: "梦境之翼 / Dream Wings No.5",
-    description: "这幅作品探索了自然与科技的融合，通过玫瑰金辉的渐变与流动的光影，呈现出迷人的光影层次。让光影成为情感最忠实的表达载体。",
-    author: "罗星尘",
-    category: "photography",
-    imageUrl: "https://picsum.photos/seed/art217/800/600",
-    likes: 748,
-    views: 982,
-    createdAt: "2023-10-09"
+    id: 108,
+    title: "祥云手机壳",
+    description: "祥云手机壳的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-105.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 531,
+    views: 41900,
+    createdAt: "2024-06-30"
   },
-
-  // 218. illustration
   {
-    id: 218,
-    title: "紫色迷雾 / Purple Mist No.5",
-    description: "这幅作品探索了梦境与清醒的交织，通过靛青深邃的渐变与流动的光影，构筑出宁静而深邃的意境。观者可以在色彩的流动中找到内心的宁静与共鸣。",
-    author: "高雪见",
-    category: "illustration",
-    imageUrl: "https://picsum.photos/seed/art218/800/600",
-    likes: 477,
-    views: 78459,
+    id: 109,
+    title: "泸沽湖",
+    description: "泸沽湖的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-020.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 46731,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 110,
+    title: "盒·手记 / Blind with covered box",
+    description: "这件盒记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["匠心","盒"],
+    imageUrl: "/images/artworks/met-60688.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 46731,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 111,
+    title: "元·书迹·手记 / Song of the Stone Drums",
+    description: "此作来自大都会博物馆公开馆藏，Handscroll; ink on paper。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","书迹"],
+    imageUrl: "/images/artworks/met-40512.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 46731,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 112,
+    title: "节气色彩场",
+    description: "节气色彩场：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-072.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 46731,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 113,
+    title: "唐·山水·手记 / Cup with figures in a landscape",
+    description: "唐代山水给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["考古美学","山水"],
+    imageUrl: "/images/artworks/met-44807.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 46731,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 114,
+    title: "青花瓷咖啡杯",
+    description: "把文创设计装进青花瓷咖啡杯：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-106.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 46731,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 115,
+    title: "稻城亚丁雪山",
+    description: "在稻城亚丁雪山，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-019.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 492,
+    views: 39030,
     createdAt: "2024-06-12"
   },
-
-  // 219. abstract
+  {
+    id: 116,
+    title: "清·古艺·新语 / Wrist rest",
+    description: "古艺不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["匠心","手作","古艺"],
+    imageUrl: "/images/artworks/met-42134.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 492,
+    views: 39030,
+    createdAt: "2024-06-12"
+  },
+  {
+    id: 117,
+    title: "清·花卉·新语 / Flowering Plum and Rock",
+    description: "清代画家的花卉，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","水墨","花卉"],
+    imageUrl: "/images/artworks/met-41908.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 492,
+    views: 39030,
+    createdAt: "2024-06-12"
+  },
+  {
+    id: 118,
+    title: "缠枝莲无限循环",
+    description: "这件缠枝莲无限循环由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-071.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 492,
+    views: 39030,
+    createdAt: "2024-06-12"
+  },
+  {
+    id: 119,
+    title: "唐·吉金·新语 / Censer",
+    description: "大都会博物馆公开馆藏数字化影像。吉金的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["考古美学","国宝","吉金"],
+    imageUrl: "/images/artworks/met-49560.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 492,
+    views: 39030,
+    createdAt: "2024-06-12"
+  },
+  {
+    id: 120,
+    title: "花窗糕点模具",
+    description: "花窗糕点模具的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-107.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 492,
+    views: 39030,
+    createdAt: "2024-06-12"
+  },
+  {
+    id: 121,
+    title: "大理洱海",
+    description: "大理洱海的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-021.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 586,
+    views: 46030,
+    createdAt: "2024-09-19"
+  },
+  {
+    id: 122,
+    title: "清·书迹·手记 / Calligraphy Couplet",
+    description: "这件书迹记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["匠心","书迹"],
+    imageUrl: "/images/artworks/met-72497.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 586,
+    views: 46030,
+    createdAt: "2024-09-19"
+  },
+  {
+    id: 123,
+    title: "南宋·花枝·手记 / Viewing plum blossoms by moonlight",
+    description: "此作来自大都会博物馆公开馆藏，Fan mounted as an album 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","花枝"],
+    imageUrl: "/images/artworks/met-44638.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 586,
+    views: 46030,
+    createdAt: "2024-09-19"
+  },
+  {
+    id: 124,
+    title: "太极阴阳流体",
+    description: "太极阴阳流体：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-073.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 586,
+    views: 46030,
+    createdAt: "2024-09-19"
+  },
+  {
+    id: 125,
+    title: "唐·仕女·手记 / Seated court lady",
+    description: "唐代仕女给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","仕女"],
+    imageUrl: "/images/artworks/met-75765.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 586,
+    views: 46030,
+    createdAt: "2024-09-19"
+  },
+  {
+    id: 126,
+    title: "脸谱挂饰",
+    description: "把文创设计装进脸谱挂饰：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","IP形象"],
+    imageUrl: "/images/artworks/gen-108.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 586,
+    views: 46030,
+    createdAt: "2024-09-19"
+  },
+  {
+    id: 127,
+    title: "鼓浪屿",
+    description: "鼓浪屿的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-022.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-27"
+  },
+  {
+    id: 128,
+    title: "清·古艺·样本 / Bucket",
+    description: "这件古艺记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["匠心","古艺"],
+    imageUrl: "/images/artworks/met-61904.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-27"
+  },
+  {
+    id: 129,
+    title: "明·山水·样本 / Landscapes, Figures, and Flowers",
+    description: "此作来自大都会博物馆公开馆藏，Album of twelve leaves; 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","山水"],
+    imageUrl: "/images/artworks/met-44759.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-27"
+  },
+  {
+    id: 130,
+    title: "甲骨文密码矩阵",
+    description: "甲骨文密码矩阵：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-075.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-27"
+  },
+  {
+    id: 131,
+    title: "唐·瓷韵·样本 / Set of twelve zodiac animals",
+    description: "唐代瓷韵给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["考古美学","瓷韵"],
+    imageUrl: "/images/artworks/met-49381.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-27"
+  },
+  {
+    id: 132,
+    title: "油纸伞灯",
+    description: "把文创设计装进油纸伞灯：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","东方美学"],
+    imageUrl: "/images/artworks/gen-111.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-27"
+  },
+  {
+    id: 133,
+    title: "颐和园昆明湖",
+    description: "在颐和园昆明湖，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-023.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 569,
+    views: 44563,
+    createdAt: "2024-08-10"
+  },
+  {
+    id: 134,
+    title: "清·香事·新语 / Incense holder",
+    description: "香事不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["匠心","香事"],
+    imageUrl: "/images/artworks/met-39875.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 569,
+    views: 44563,
+    createdAt: "2024-08-10"
+  },
+  {
+    id: 135,
+    title: "元·画迹·新语 / Farewell by a Stream on a Clear Day",
+    description: "元代画家的画迹，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","画迹"],
+    imageUrl: "/images/artworks/met-45647.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 569,
+    views: 44563,
+    createdAt: "2024-08-10"
+  },
+  {
+    id: 136,
+    title: "榫卯数字爆炸",
+    description: "这件榫卯数字爆炸由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-074.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 569,
+    views: 44563,
+    createdAt: "2024-08-10"
+  },
+  {
+    id: 137,
+    title: "清·瓶·新语 / Vase with scene of Tang Emperor Minghuang visiting the moon",
+    description: "大都会博物馆公开馆藏数字化影像。瓶的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["考古美学","瓶"],
+    imageUrl: "/images/artworks/met-47656.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 569,
+    views: 44563,
+    createdAt: "2024-08-10"
+  },
+  {
+    id: 138,
+    title: "熊猫文创玩偶",
+    description: "熊猫文创玩偶的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","IP形象"],
+    imageUrl: "/images/artworks/gen-109.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 569,
+    views: 44563,
+    createdAt: "2024-08-10"
+  },
+  {
+    id: 139,
+    title: "崇圣三塔",
+    description: "崇圣三塔的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-025.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 663,
+    views: 51563,
+    createdAt: "2024-11-17"
+  },
+  {
+    id: 140,
+    title: "清·古艺·手记 / Blind",
+    description: "这件古艺记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["匠心","古艺"],
+    imageUrl: "/images/artworks/met-60691.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 663,
+    views: 51563,
+    createdAt: "2024-11-17"
+  },
+  {
+    id: 141,
+    title: "山水·手记 / Landscape",
+    description: "此作来自大都会博物馆公开馆藏，Handscroll; ink on paper。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","山水"],
+    imageUrl: "/images/artworks/met-45650.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 663,
+    views: 51563,
+    createdAt: "2024-11-17"
+  },
+  {
+    id: 142,
+    title: "编钟声波可视化",
+    description: "编钟声波可视化：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-076.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 663,
+    views: 51563,
+    createdAt: "2024-11-17"
+  },
+  {
+    id: 143,
+    title: "清·花卉·手记 / Set of wine cups with flowers of the twelve months",
+    description: "清代花卉给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","花卉"],
+    imageUrl: "/images/artworks/met-52872.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 663,
+    views: 51563,
+    createdAt: "2024-11-17"
+  },
+  {
+    id: 144,
+    title: "龙舟模型",
+    description: "把文创设计装进龙舟模型：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-110.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 663,
+    views: 51563,
+    createdAt: "2024-11-17"
+  },
+  {
+    id: 145,
+    title: "天坛祈年殿",
+    description: "天坛祈年殿的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-024.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 757,
+    views: 58563,
+    createdAt: "2025-02-24"
+  },
+  {
+    id: 146,
+    title: "古艺·样本 / Wrist Rest with Scene from \"The West Chamber\"",
+    description: "这件古艺记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["东方美学","古艺"],
+    imageUrl: "/images/artworks/met-73223.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 757,
+    views: 58563,
+    createdAt: "2025-02-24"
+  },
+  {
+    id: 147,
+    title: "明·山水·样本 / Landscapes after Song and Yuan masters",
+    description: "此作来自大都会博物馆公开馆藏，Album of twelve leaves; 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["青绿山水","山水"],
+    imageUrl: "/images/artworks/met-49021.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 757,
+    views: 58563,
+    createdAt: "2025-02-24"
+  },
+  {
+    id: 148,
+    title: "苏绣针脚星河",
+    description: "苏绣针脚星河：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-077.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 757,
+    views: 58563,
+    createdAt: "2025-02-24"
+  },
+  {
+    id: 149,
+    title: "唐·古艺·样本 / Tomb guardian",
+    description: "唐代古艺给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["公有领域","古艺"],
+    imageUrl: "/images/artworks/met-44704.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 757,
+    views: 58563,
+    createdAt: "2025-02-24"
+  },
+  {
+    id: 150,
+    title: "红墙胶带",
+    description: "把文创设计装进红墙胶带：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-113.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 757,
+    views: 58563,
+    createdAt: "2025-02-24"
+  },
+  {
+    id: 151,
+    title: "乌镇乌篷船",
+    description: "乌镇乌篷船的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-026.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 48900,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 152,
+    title: "清·仙人·手记 / Chess playing in an immortal realm",
+    description: "这件仙人记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["匠心","仙人"],
+    imageUrl: "/images/artworks/met-39858.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 48900,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 153,
+    title: "清·山水·手记 / Landscapes in the manner of Song and Yuan masters",
+    description: "此作来自大都会博物馆公开馆藏，Album of ten paintings; 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","山水"],
+    imageUrl: "/images/artworks/met-49162.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 48900,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 154,
+    title: "活字印刷粒子",
+    description: "活字印刷粒子：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-079.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 48900,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 155,
+    title: "唐·苍龙·手记 / Dragon",
+    description: "唐代苍龙给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["考古美学","苍龙"],
+    imageUrl: "/images/artworks/met-49581.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 48900,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 156,
+    title: "兵马俑手办",
+    description: "把文创设计装进兵马俑手办：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","IP形象"],
+    imageUrl: "/images/artworks/gen-104.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 625,
+    views: 48900,
+    createdAt: "2024-10-07"
+  },
+  {
+    id: 157,
+    title: "茶卡盐湖",
+    description: "茶卡盐湖的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-028.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 719,
+    views: 55900,
+    createdAt: "2025-01-14"
+  },
+  {
+    id: 158,
+    title: "清·山水·样本 / Brush Holder with Travelers in a Landscape",
+    description: "这件山水记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["匠心","东方美学","山水"],
+    imageUrl: "/images/artworks/met-76442.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 719,
+    views: 55900,
+    createdAt: "2025-01-14"
+  },
+  {
+    id: 159,
+    title: "清·画迹·样本 / The Palace of Nine Perfections",
+    description: "此作来自大都会博物馆公开馆藏，Set of twelve hanging sc。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","青绿山水","画迹"],
+    imageUrl: "/images/artworks/met-49227.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 719,
+    views: 55900,
+    createdAt: "2025-01-14"
+  },
+  {
+    id: 160,
+    title: "铜鼓纹样声波",
+    description: "铜鼓纹样声波：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-080.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 719,
+    views: 55900,
+    createdAt: "2025-01-14"
+  },
+  {
+    id: 161,
+    title: "唐·菩萨·样本 / Bodhisattva",
+    description: "唐代菩萨给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","公有领域","菩萨"],
+    imageUrl: "/images/artworks/met-61747.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 719,
+    views: 55900,
+    createdAt: "2025-01-14"
+  },
+  {
+    id: 162,
+    title: "鼎形香薰",
+    description: "把文创设计装进鼎形香薰：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-114.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 719,
+    views: 55900,
+    createdAt: "2025-01-14"
+  },
+  {
+    id: 163,
+    title: "龙门石窟",
+    description: "记录龙门石窟的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-029.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 813,
+    views: 62900,
+    createdAt: "2025-04-23"
+  },
+  {
+    id: 164,
+    title: "盒·辑 / Blind with covered box",
+    description: "从染缸到绣绷，盒的美学从未断代。我们尝试用镜头为技艺存档，也为文创转化留下第一手灵感。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["东方美学","盒"],
+    imageUrl: "/images/artworks/met-60687.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 813,
+    views: 62900,
+    createdAt: "2025-04-23"
+  },
+  {
+    id: 165,
+    title: "清·写真·辑 / Portrait of Zhao Zhiqian",
+    description: "写真的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["青绿山水","写真"],
+    imageUrl: "/images/artworks/met-49453.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 813,
+    views: 62900,
+    createdAt: "2025-04-23"
+  },
+  {
+    id: 166,
+    title: "蓝染靛蓝流体",
+    description: "算法不懂留白，却生成了留白。蓝染靛蓝流体的生成过程本身就是一场行为艺术——提示、迭代、筛选、再提示。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-078.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 813,
+    views: 62900,
+    createdAt: "2025-04-23"
+  },
+  {
+    id: 167,
+    title: "唐·碗·辑 / Oval bowl",
+    description: "文物不言，纹样自证。这件唐代碗的高清影像已进入公有领域，等待被下一代创作者重新唤醒。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["公有领域","碗"],
+    imageUrl: "/images/artworks/met-65101.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 813,
+    views: 62900,
+    createdAt: "2025-04-23"
+  },
+  {
+    id: 168,
+    title: "玉璧音箱",
+    description: "玉璧音箱打样记录。从展柜里的文物到手心里的物件，文创的意义就是完成\"拥有文化\"这个古老愿望。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-115.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 813,
+    views: 62900,
+    createdAt: "2025-04-23"
+  },
+  {
+    id: 169,
+    title: "喀纳斯秋色",
+    description: "喀纳斯秋色的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-027.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-04"
+  },
+  {
+    id: 170,
+    title: "清·盏·样本 / Cup",
+    description: "这件盏记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["匠心","盏"],
+    imageUrl: "/images/artworks/met-60969.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-04"
+  },
+  {
+    id: 171,
+    title: "清·山水·样本 / Landscape",
+    description: "此作来自大都会博物馆公开馆藏，Folding fan mounted as a。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","山水"],
+    imageUrl: "/images/artworks/met-49454.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-04"
+  },
+  {
+    id: 172,
+    title: "青绿山水渐变场",
+    description: "青绿山水渐变场：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-081.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-04"
+  },
+  {
+    id: 173,
+    title: "唐·吉金·样本 / Scissors",
+    description: "唐代吉金给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["考古美学","吉金"],
+    imageUrl: "/images/artworks/met-42184.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-04"
+  },
+  {
+    id: 174,
+    title: "节气日历",
+    description: "把文创设计装进节气日历：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-116.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 680,
+    views: 53030,
+    createdAt: "2024-12-04"
+  },
+  {
+    id: 175,
+    title: "避暑山庄",
+    description: "记录避暑山庄的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-032.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 774,
+    views: 60030,
+    createdAt: "2025-04-05"
+  },
+  {
+    id: 176,
+    title: "清·盏·辑 / Cup",
+    description: "从染缸到绣绷，盏的美学从未断代。我们尝试用镜头为技艺存档，也为文创转化留下第一手灵感。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["东方美学","盏"],
+    imageUrl: "/images/artworks/met-60970.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 774,
+    views: 60030,
+    createdAt: "2025-04-05"
+  },
+  {
+    id: 177,
+    title: "清·山水·辑 / Landscape",
+    description: "山水的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["青绿山水","山水"],
+    imageUrl: "/images/artworks/met-49455.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 774,
+    views: 60030,
+    createdAt: "2025-04-05"
+  },
+  {
+    id: 178,
+    title: "长城线框景观",
+    description: "算法不懂留白，却生成了留白。长城线框景观的生成过程本身就是一场行为艺术——提示、迭代、筛选、再提示。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","数字转译"],
+    imageUrl: "/images/artworks/gen-082.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 774,
+    views: 60030,
+    createdAt: "2025-04-05"
+  },
+  {
+    id: 179,
+    title: "五代·菩萨·辑 / Seated bodhisattva",
+    description: "文物不言，纹样自证。这件五代代菩萨的高清影像已进入公有领域，等待被下一代创作者重新唤醒。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["公有领域","菩萨"],
+    imageUrl: "/images/artworks/met-61782.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 774,
+    views: 60030,
+    createdAt: "2025-04-05"
+  },
+  {
+    id: 180,
+    title: "蜀绣笔记本",
+    description: "蜀绣笔记本打样记录。从展柜里的文物到手心里的物件，文创的意义就是完成\"拥有文化\"这个古老愿望。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","视觉设计"],
+    imageUrl: "/images/artworks/gen-118.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 774,
+    views: 60030,
+    createdAt: "2025-04-05"
+  },
+  {
+    id: 181,
+    title: "西湖雷峰夕照",
+    description: "记录西湖雷峰夕照的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-031.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 868,
+    views: 67030,
+    createdAt: "2025-07-13"
+  },
+  {
+    id: 182,
+    title: "古艺 / Blind",
+    description: "从染缸到绣绷，古艺的美学从未断代。我们尝试用镜头为技艺存档，也为文创转化留下第一手灵感。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["东方美学","非遗","古艺"],
+    imageUrl: "/images/artworks/met-60693.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 868,
+    views: 67030,
+    createdAt: "2025-07-13"
+  },
+  {
+    id: 183,
+    title: "清·牡丹 / Herbaceous Peony",
+    description: "牡丹的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["青绿山水","国风","牡丹"],
+    imageUrl: "/images/artworks/met-49456.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 868,
+    views: 67030,
+    createdAt: "2025-07-13"
+  },
+  {
+    id: 184,
+    title: "故宫雪夜生成",
+    description: "算法不懂留白，却生成了留白。故宫雪夜生成的生成过程本身就是一场行为艺术——提示、迭代、筛选、再提示。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-084.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 868,
+    views: 67030,
+    createdAt: "2025-07-13"
+  },
+  {
+    id: 185,
+    title: "唐·佛容 / Buddha",
+    description: "文物不言，纹样自证。这件唐代佛容的高清影像已进入公有领域，等待被下一代创作者重新唤醒。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["公有领域","馆藏","佛容"],
+    imageUrl: "/images/artworks/met-61549.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 868,
+    views: 67030,
+    createdAt: "2025-07-13"
+  },
+  {
+    id: 186,
+    title: "苗银首饰",
+    description: "苗银首饰打样记录。从展柜里的文物到手心里的物件，文创的意义就是完成\"拥有文化\"这个古老愿望。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","东方美学"],
+    imageUrl: "/images/artworks/gen-117.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 868,
+    views: 67030,
+    createdAt: "2025-07-13"
+  },
+  {
+    id: 187,
+    title: "云冈石窟",
+    description: "行至云冈石窟，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-030.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 22,
+    views: 7540,
+    createdAt: "2024-02-24"
+  },
+  {
+    id: 188,
+    title: "清·罗汉·记 / Arhat holding a shoe",
+    description: "罗汉的经纬交织处，藏着中国人独有的耐心与浪漫。非遗技艺不该只在展柜里，让它走进日常，成为看得见、用得上的东方之美。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["非遗","匠心","罗汉"],
+    imageUrl: "/images/artworks/met-51281.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 22,
+    views: 7540,
+    createdAt: "2024-02-24"
+  },
+  {
+    id: 189,
+    title: "山水·记 / Landscape",
+    description: "古代笔墨，千年气韵。山水的构图与留白，至今仍是东方设计的底层语法——古画不语，自成丘壑。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["国风","馆藏真迹","山水"],
+    imageUrl: "/images/artworks/met-51305.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 22,
+    views: 7540,
+    createdAt: "2024-02-24"
+  },
+  {
+    id: 190,
+    title: "兵马俑像素军团",
+    description: "兵马俑像素军团——一场人机共创的实验。让算法研习传统纹样，再放任它在数字画布上自由生长，生成结果超出了所有预期。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-083.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 22,
+    views: 7540,
+    createdAt: "2024-02-24"
+  },
+  {
+    id: 191,
+    title: "唐·盒·记 / Box",
+    description: "唐代盒，馆藏级审美的日常转译。从博物馆展柜到桌面与书包，让国宝完成最后一步的跨界。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["馆藏","考古美学","盒"],
+    imageUrl: "/images/artworks/met-49565.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 22,
+    views: 7540,
+    createdAt: "2024-02-24"
+  },
+  {
+    id: 192,
+    title: "瓷板画装饰盘",
+    description: "瓷板画装饰盘——从图纸到打样的第 N 版。文创设计的全部秘密：把文化符号翻译成\"想要拥有\"的冲动。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","文创灵感"],
+    imageUrl: "/images/artworks/gen-119.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 22,
+    views: 7540,
+    createdAt: "2024-02-24"
+  },
+  {
+    id: 193,
+    title: "塔川秋色",
+    description: "在塔川秋色，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-033.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 504,
+    views: 39733,
+    createdAt: "2024-06-02"
+  },
+  {
+    id: 194,
+    title: "明·园冶·新语 / Brush holder with garden scene",
+    description: "园冶不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["匠心","手作","园冶"],
+    imageUrl: "/images/artworks/met-42157.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 504,
+    views: 39733,
+    createdAt: "2024-06-02"
+  },
+  {
+    id: 195,
+    title: "清·玉兔·新语 / Rabbit",
+    description: "清代画家的玉兔，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","水墨","玉兔"],
+    imageUrl: "/images/artworks/met-51499.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 504,
+    views: 39733,
+    createdAt: "2024-06-02"
+  },
+  {
+    id: 196,
+    title: "园林抽象几何",
+    description: "这件园林抽象几何由 AI 辅助生成。从东方意象到粒子解构，创作流程完全可复现——艺术民主化的一次微小实践。",
+    author: "林梦雨",
+    category: "ai-art",
+    tags: ["AI生成","算法美学"],
+    imageUrl: "/images/artworks/gen-085.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 504,
+    views: 39733,
+    createdAt: "2024-06-02"
+  },
+  {
+    id: 197,
+    title: "唐·古艺·新语 / Lion",
+    description: "大都会博物馆公开馆藏数字化影像。古艺的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","国宝","古艺"],
+    imageUrl: "/images/artworks/met-49588.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 504,
+    views: 39733,
+    createdAt: "2024-06-02"
+  },
+  {
+    id: 198,
+    title: "斗拱模型",
+    description: "斗拱模型的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-120.jpg",
+    grade: "b",
+    totalScore: 7,
+    likes: 504,
+    views: 39733,
+    createdAt: "2024-06-02"
+  },
+  {
+    id: 199,
+    title: "丝路驼队",
+    description: "丝路驼队的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-036.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 598,
+    views: 46733,
+    createdAt: "2024-09-09"
+  },
+  {
+    id: 200,
+    title: "清·渔隐·手记 / Brush Holder with Fisherman and Traveler",
+    description: "这件渔隐记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["匠心","渔隐"],
+    imageUrl: "/images/artworks/met-76443.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 598,
+    views: 46733,
+    createdAt: "2024-09-09"
+  },
+  {
+    id: 201,
+    title: "清·喜鹊·手记 / Wintery Bough and Magpies",
+    description: "此作来自大都会博物馆公开馆藏，Fan mounted as an album 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","喜鹊"],
+    imageUrl: "/images/artworks/met-51658.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 598,
+    views: 46733,
+    createdAt: "2024-09-09"
+  },
+  {
+    id: 202,
+    title: "生肖霓虹图腾",
+    description: "生肖霓虹图腾：当我们把文化基因喂给模型，它回馈的不是复制，而是一种陌生的熟悉感。也许这就是转译的魅力。",
+    author: "陆临川",
+    category: "ai-art",
+    tags: ["AI生成","人机共创"],
+    imageUrl: "/images/artworks/gen-086.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 598,
+    views: 46733,
+    createdAt: "2024-09-09"
+  },
+  {
+    id: 203,
+    title: "唐·盒·手记 / Six-lobed box",
+    description: "唐代盒给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["考古美学","盒"],
+    imageUrl: "/images/artworks/met-42181.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 598,
+    views: 46733,
+    createdAt: "2024-09-09"
+  },
+  {
+    id: 204,
+    title: "千里江山拼图",
+    description: "把文创设计装进千里江山拼图：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "唐拾光",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-121.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 598,
+    views: 46733,
+    createdAt: "2024-09-09"
+  },
+  {
+    id: 205,
+    title: "禾木村晨雾",
+    description: "禾木村晨雾的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-035.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 692,
+    views: 53733,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 206,
+    title: "古艺·样本 / Blind",
+    description: "这件古艺记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["匠心","东方美学","古艺"],
+    imageUrl: "/images/artworks/met-60690.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 692,
+    views: 53733,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 207,
+    title: "清·山水·样本 / Mountain Landscape",
+    description: "此作来自大都会博物馆公开馆藏，Hanging scroll; ink on s。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","青绿山水","山水"],
+    imageUrl: "/images/artworks/met-51674.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 692,
+    views: 53733,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 208,
+    title: "唐·碗·样本 / Bowl",
+    description: "唐代碗给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["考古美学","公有领域","碗"],
+    imageUrl: "/images/artworks/met-52970.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 692,
+    views: 53733,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 209,
+    title: "荷花茶宠",
+    description: "把文创设计装进荷花茶宠：色彩取自传统色谱，结构致敬营造法式，但产品逻辑完全是今天的。",
+    author: "苏晚晴",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-112.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 692,
+    views: 53733,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 210,
+    title: "元阳梯田日出",
+    description: "在元阳梯田日出，建筑嵌入山水，人文与自然互相成全。这张片子想留住的不只是风景，更是那种\"错过即遗憾\"的季节限定感。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","风物纪实"],
+    imageUrl: "/images/artworks/gen-034.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 560,
+    views: 44070,
+    createdAt: "2024-07-31"
+  },
+  {
+    id: 211,
+    title: "古艺·新语 / Blind",
+    description: "古艺不是老去的标本，而是活着的传承。古老技法与现代生活在这一帧相遇——民艺新生，从被看见开始。",
+    author: "顾北辰",
+    category: "heritage-craft",
+    tags: ["匠心","古艺"],
+    imageUrl: "/images/artworks/met-60692.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 560,
+    views: 44070,
+    createdAt: "2024-07-31"
+  },
+  {
+    id: 212,
+    title: "花卉·新语 / The Hundred Flowers",
+    description: "古代画家的花卉，把天地收进咫尺。今天的设计师仍在这套语言里取用：青绿为骨、水墨为魂。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","花卉"],
+    imageUrl: "/images/artworks/met-51768.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 560,
+    views: 44070,
+    createdAt: "2024-07-31"
+  },
+  {
+    id: 213,
+    title: "唐·瓷韵·新语 / Groom",
+    description: "大都会博物馆公开馆藏数字化影像。瓷韵的每一处锈色与包浆，都是时间亲手打磨的高级灰。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","瓷韵"],
+    imageUrl: "/images/artworks/met-49514.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 560,
+    views: 44070,
+    createdAt: "2024-07-31"
+  },
+  {
+    id: 214,
+    title: "古塔文创雪糕",
+    description: "古塔文创雪糕的灵感档案。好的文创不是把文物缩小印上去，而是提炼气质再重新长出来——这一稿我们认为是。",
+    author: "云知夏",
+    category: "creative-design",
+    tags: ["文创设计","创意"],
+    imageUrl: "/images/artworks/gen-122.jpg",
+    grade: "a",
+    totalScore: 8,
+    likes: 560,
+    views: 44070,
+    createdAt: "2024-07-31"
+  },
+  {
+    id: 215,
+    title: "黄果树瀑布",
+    description: "黄果树瀑布的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-038.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 654,
+    views: 51070,
+    createdAt: "2024-11-07"
+  },
+  {
+    id: 216,
+    title: "苏绣绣绷特写",
+    description: "这件苏绣绣绷特写记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "苏晚晴",
+    category: "heritage-craft",
+    tags: ["非遗","匠心"],
+    imageUrl: "/images/artworks/gen-124.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 654,
+    views: 51070,
+    createdAt: "2024-11-07"
+  },
+  {
+    id: 217,
+    title: "清·画迹·手记 / Ten Sites Associated with Ruan Yuan",
+    description: "此作来自大都会博物馆公开馆藏，Album of ten paintings; 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","画迹"],
+    imageUrl: "/images/artworks/met-646992.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 654,
+    views: 51070,
+    createdAt: "2024-11-07"
+  },
+  {
+    id: 218,
+    title: "唐·盏·手记 / Stem cup",
+    description: "唐代盏给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["考古美学","盏"],
+    imageUrl: "/images/artworks/met-49564.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 654,
+    views: 51070,
+    createdAt: "2024-11-07"
+  },
   {
     id: 219,
-    title: "星河倒影 / Galaxy Reflection No.5",
-    description: "这幅作品探索了时间与空间的褶皱，通过绛红霞光的渐变与流动的光影，构筑出宁静而深邃的意境。在静谧中传递出强烈的情感张力。",
-    author: "钱书瑶",
-    category: "abstract",
-    imageUrl: "https://picsum.photos/seed/art219/800/600",
-    likes: 289,
-    views: 25177,
-    createdAt: "2024-12-24"
+    title: "武夷山九曲溪",
+    description: "武夷山九曲溪的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","光影记录"],
+    imageUrl: "/images/artworks/gen-039.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 748,
+    views: 58070,
+    createdAt: "2025-02-14"
   },
-
-  // 220. 3d-art
   {
     id: 220,
-    title: "花语低吟 / Whispering Blooms No.5",
-    description: "这幅作品探索了喧嚣与宁静的对比，通过玫瑰金辉的渐变与流动的光影，打造出沉浸式的感官世界。让人在凝视中感受时间凝固的瞬间。",
-    author: "孙听澜",
-    category: "3d-art",
-    imageUrl: "https://picsum.photos/seed/art220/800/600",
-    likes: 439,
-    views: 7327,
-    createdAt: "2023-04-18"
+    title: "扎染手作",
+    description: "这件扎染手作记录了手作现场最真实的一刻：靛蓝与素白、丝线与绷架，匠人的呼吸都留在纹理里。",
+    author: "祝青梧",
+    category: "heritage-craft",
+    tags: ["非遗","手作"],
+    imageUrl: "/images/artworks/gen-123.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 748,
+    views: 58070,
+    createdAt: "2025-02-14"
+  },
+  {
+    id: 221,
+    title: "清·溪山·样本 / Inn and Travelers in Snowy Mountains",
+    description: "此作来自大都会博物馆公开馆藏，Hanging scroll; ink and 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["青绿山水","溪山"],
+    imageUrl: "/images/artworks/met-65640.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 748,
+    views: 58070,
+    createdAt: "2025-02-14"
+  },
+  {
+    id: 222,
+    title: "唐·盒·样本 / Cosmetics box",
+    description: "唐代盒给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "沈星河",
+    category: "museum-culture",
+    tags: ["公有领域","盒"],
+    imageUrl: "/images/artworks/met-74082.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 748,
+    views: 58070,
+    createdAt: "2025-02-14"
+  },
+  {
+    id: 223,
+    title: "荔波小七孔",
+    description: "荔波小七孔的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-037.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 615,
+    views: 48200,
+    createdAt: "2024-09-27"
+  },
+  {
+    id: 224,
+    title: "元·画迹·手记 / Woods and Valleys of Mount Yu",
+    description: "此作来自大都会博物馆公开馆藏，Hanging scroll; ink on p。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","画迹"],
+    imageUrl: "/images/artworks/met-45636.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 615,
+    views: 48200,
+    createdAt: "2024-09-27"
+  },
+  {
+    id: 225,
+    title: "唐·盘·手记 / Tripod offering dish",
+    description: "唐代盘给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "唐拾光",
+    category: "museum-culture",
+    tags: ["考古美学","盘"],
+    imageUrl: "/images/artworks/met-897920.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 615,
+    views: 48200,
+    createdAt: "2024-09-27"
+  },
+  {
+    id: 226,
+    title: "峨眉金顶云海",
+    description: "峨眉金顶云海的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-040.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 709,
+    views: 55200,
+    createdAt: "2025-01-27"
+  },
+  {
+    id: 227,
+    title: "南宋·古松·样本 / Viewing the Moon under a Pine Tree",
+    description: "此作来自大都会博物馆公开馆藏，Album leaf; ink and colo。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","青绿山水","古松"],
+    imageUrl: "/images/artworks/met-36037.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 709,
+    views: 55200,
+    createdAt: "2025-01-27"
+  },
+  {
+    id: 228,
+    title: "唐·苍龙·样本 / Dragon",
+    description: "唐代苍龙给了文创人最深的底气——提取造型、纹样与气质，转译成当代人愿意亲近的美学语言。",
+    author: "温叙白",
+    category: "museum-culture",
+    tags: ["考古美学","公有领域","苍龙"],
+    imageUrl: "/images/artworks/met-49580.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 709,
+    views: 55200,
+    createdAt: "2025-01-27"
+  },
+  {
+    id: 229,
+    title: "景德镇窑火",
+    description: "记录景德镇窑火的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","风物纪实"],
+    imageUrl: "/images/artworks/gen-042.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 803,
+    views: 62200,
+    createdAt: "2025-05-06"
+  },
+  {
+    id: 230,
+    title: "元·古松·辑 / Spring Clouds at the Pine Studio",
+    description: "古松的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["青绿山水","古松"],
+    imageUrl: "/images/artworks/met-41185.jpg",
+    grade: "ss",
+    totalScore: 9.3,
+    likes: 803,
+    views: 62200,
+    createdAt: "2025-05-06"
+  },
+  {
+    id: 231,
+    title: "曲阜孔庙古柏",
+    description: "曲阜孔庙古柏的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-043.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 671,
+    views: 52330,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 232,
+    title: "画迹·手记 / Illustration of Su Shi’s “Second Rhapsody on Red Cliff”",
+    description: "此作来自大都会博物馆公开馆藏，Fan mounted as an album 。公有领域的高清影像，正是国风数字文创最珍贵的矿藏。",
+    author: "江砚舟",
+    category: "guofeng-art",
+    tags: ["馆藏真迹","画迹"],
+    imageUrl: "/images/artworks/met-44451.jpg",
+    grade: "a",
+    totalScore: 8.1,
+    likes: 671,
+    views: 52330,
+    createdAt: "2024-12-17"
+  },
+  {
+    id: 233,
+    title: "都江堰",
+    description: "记录都江堰的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-044.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 786,
+    views: 60733,
+    createdAt: "2025-03-26"
+  },
+  {
+    id: 234,
+    title: "江流·辑 / Angling in the Autumn River",
+    description: "江流的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "林梦雨",
+    category: "guofeng-art",
+    tags: ["青绿山水","江流"],
+    imageUrl: "/images/artworks/met-42261.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 786,
+    views: 60733,
+    createdAt: "2025-03-26"
+  },
+  {
+    id: 235,
+    title: "丽江古城",
+    description: "记录丽江古城的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-041.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 880,
+    views: 67733,
+    createdAt: "2025-07-03"
+  },
+  {
+    id: 236,
+    title: "元·罗汉 / Luohan",
+    description: "罗汉的每一处笔触都经得起放大。我们将其数字化呈现，愿古人的丘壑，成为今人创作的原点。",
+    author: "陈墨白",
+    category: "guofeng-art",
+    tags: ["青绿山水","国风","罗汉"],
+    imageUrl: "/images/artworks/met-40446.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 880,
+    views: 67733,
+    createdAt: "2025-07-03"
+  },
+  {
+    id: 237,
+    title: "长白山天池",
+    description: "长白山天池的清晨属于慢的人。雾气、倒影与一盏灯火构成三段式叙事，愿每个看到它的人，都开始计划下一次出发。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-045.jpg",
+    grade: "s",
+    totalScore: 8.8,
+    likes: 748,
+    views: 57863,
+    createdAt: "2025-02-14"
+  },
+  {
+    id: 238,
+    title: "洪崖洞夜景",
+    description: "记录洪崖洞夜景的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-046.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 842,
+    views: 65070,
+    createdAt: "2025-05-24"
+  },
+  {
+    id: 239,
+    title: "大唐不夜城",
+    description: "记录大唐不夜城的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-047.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 936,
+    views: 63070,
+    createdAt: "2025-08-31"
+  },
+  {
+    id: 240,
+    title: "莫高窟九层楼",
+    description: "行至莫高窟九层楼，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-049.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 90,
+    views: 15901,
+    createdAt: "2023-03-24"
+  },
+  {
+    id: 241,
+    title: "秦淮河夫子庙",
+    description: "记录秦淮河夫子庙的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","城市漫步"],
+    imageUrl: "/images/artworks/gen-048.jpg",
+    grade: "ss",
+    totalScore: 9.4,
+    likes: 897,
+    views: 69200,
+    createdAt: "2025-07-21"
+  },
+  {
+    id: 242,
+    title: "挂壁公路",
+    description: "行至挂壁公路，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
+    author: "白若雪",
+    category: "scenic-photo",
+    tags: ["文旅摄影","人文地理"],
+    imageUrl: "/images/artworks/gen-051.jpg",
+    grade: "c",
+    totalScore: 5.8,
+    likes: 51,
+    views: 6200,
+    createdAt: "2023-03-06"
+  },
+  {
+    id: 243,
+    title: "青城山幽径",
+    description: "行至青城山幽径，恰好光影入画。古老街巷与山水彼此映照，快门按下的刹那，千年文脉有了新的注脚。带着这张照片去旅行，把远方带回家。",
+    author: "温叙白",
+    category: "scenic-photo",
+    tags: ["文旅摄影","山川古迹"],
+    imageUrl: "/images/artworks/gen-050.jpg",
+    grade: "c",
+    totalScore: 5.9,
+    likes: 145,
+    views: 13200,
+    createdAt: "2023-06-13"
+  },
+  {
+    id: 244,
+    title: "舟山渔港日出",
+    description: "记录舟山渔港日出的这一年，最动人的永远是\"有人正在那里生活\"。山水古迹是舞台，烟火人间才是主角。",
+    author: "顾北辰",
+    category: "scenic-photo",
+    tags: ["文旅摄影","风物纪实"],
+    imageUrl: "/images/artworks/gen-052.jpg",
+    grade: "sss",
+    totalScore: 9.9,
+    likes: 953,
+    views: 64330,
+    createdAt: "2023-01-24"
   }
 ];
-
-// 确保可在浏览器和Node环境使用
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ARTWORKS_SEED_DATA;
-}
 
 // ES Module export
 export default ARTWORKS_SEED_DATA;

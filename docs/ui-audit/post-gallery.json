@@ -1,0 +1,11 @@
+{
+  "total": 12,
+  "loaded": 0,
+  "anyPlaceholder": false,
+  "sampleSrcs": [
+    "http://localhost:5173/images/artworks/gen-087.jpg",
+    "http://localhost:5173/images/artworks/met-49540.jpg",
+    "http://localhost:5173/images/artworks/gen-054.jpg",
+    "http://localhost:5173/images/artworks/met-35993.jpg"
+  ]
+}
