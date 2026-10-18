@@ -94,7 +94,17 @@ const Search = {
           <div class="search-filters">
             <div class="filter-group">
               <label>分类</label>
-              <select id="filter-category"><option value="all">全部</option></select>
+              <div class="custom-select" id="filter-category-wrap">
+                <div class="custom-select-trigger" id="filter-category-trigger">
+                  <span class="custom-select-label">全部</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="custom-select-options" id="filter-category-options">
+                  <!-- JS 填充 -->
+                </div>
+                <!-- 保留原生 select 作值同步 -->
+                <select id="filter-category" hidden><option value="all">全部</option></select>
+              </div>
             </div>
             <div class="filter-group">
               <label>AI 评分</label>
@@ -514,7 +524,7 @@ const Search = {
     return sorted.map(([tag, count]) => ({
       tag,
       count,
-      size: Math.max(0.8, Math.min(2, count / 5))
+      size: Math.max(0.9, Math.min(1.12, 0.9 + (count / 20)))  // 收敛到 0.90~1.12em，避免 2em 大标题级突兀
     }));
   },
 
@@ -551,34 +561,83 @@ const Search = {
       });
       this._tagCloudRendered = true;
     }
-    // 填充分类下拉
+    // 填充分类下拉（自定义 dropdown — 避免原生 select option 白屏）
     const catSelect = document.getElementById('filter-category');
-    if (catSelect && catSelect.children.length <= 1) {
+    const optsWrap = document.getElementById('filter-category-options');
+    if (catSelect && optsWrap && optsWrap.children.length === 0) {
       const catLabels = window.Gallery ? Gallery.CATEGORY_LABELS : {};
       const cats = [...new Set(this.allArtworks.map(a => a.category))].filter(Boolean);
+      // 先给原生 select 补 <option>（值同步用）
       cats.forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
         opt.textContent = catLabels[cat] || cat;
         catSelect.appendChild(opt);
       });
+      // 自定义 option div
+      const allOption = document.createElement('div');
+      allOption.className = 'custom-select-option is-selected';
+      allOption.dataset.value = 'all';
+      allOption.textContent = '全部';
+      optsWrap.appendChild(allOption);
+      cats.forEach(cat => {
+        const opt = document.createElement('div');
+        opt.className = 'custom-select-option';
+        opt.dataset.value = cat;
+        opt.textContent = catLabels[cat] || cat;
+        optsWrap.appendChild(opt);
+      });
     }
     this._syncCategorySelect();
   },
 
   /**
-   * 绑定增强面板事件：分类下拉 + 评分输入
+   * 绑定增强面板事件：分类下拉（自定义 dropdown）+ 评分输入
    */
   _setupEnhancedPanelHandlers() {
-    const catSelect = document.getElementById('filter-category');
-    if (catSelect) {
-      catSelect.addEventListener('change', () => {
-        this.currentCategory = catSelect.value;
+    // 自定义 dropdown：分类
+    const wrap = document.getElementById('filter-category-wrap');
+    const trigger = document.getElementById('filter-category-trigger');
+    const optsWrap = document.getElementById('filter-category-options');
+    const hiddenSelect = document.getElementById('filter-category');
+
+    if (wrap && trigger && optsWrap && hiddenSelect && !wrap._bound) {
+      wrap._bound = true;
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // 关其他自定义下拉
+        document.querySelectorAll('.custom-select.is-open').forEach(w => { if (w !== wrap) w.classList.remove('is-open'); });
+        wrap.classList.toggle('is-open');
+      });
+      optsWrap.addEventListener('click', (e) => {
+        const opt = e.target.closest('.custom-select-option');
+        if (!opt) return;
+        const val = opt.dataset.value;
+        // 更新选中态
+        optsWrap.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('is-selected'));
+        opt.classList.add('is-selected');
+        // 更新 trigger label（从原生 select option 取文本）
+        const nativeOpt = hiddenSelect.querySelector(`option[value="${val}"]`);
+        const catLabels = window.Gallery ? Gallery.CATEGORY_LABELS : {};
+        const label = val === 'all' ? '全部' : (catLabels[val] || (nativeOpt?.textContent || val));
+        trigger.querySelector('.custom-select-label').textContent = label;
+        // 同步隐藏 select + 触发 change
+        hiddenSelect.value = val;
+        hiddenSelect.dispatchEvent(new Event('change'));
+        wrap.classList.remove('is-open');
+      });
+      // 点外部关闭
+      document.addEventListener('click', () => {
+        wrap.classList.remove('is-open');
+      });
+      hiddenSelect.addEventListener('change', () => {
+        this.currentCategory = hiddenSelect.value;
         if (this.currentResults.length) {
           this.renderSearchResults(this.currentResults, this.currentKeyword);
         }
       });
     }
+
     const scoreInput = document.getElementById('filter-min-score');
     if (scoreInput) {
       let scoreTimer = null;
@@ -596,11 +655,26 @@ const Search = {
   },
 
   /**
-   * 同步分类下拉选中态
+   * 同步分类下拉选中态（原生 select + 自定义 dropdown trigger + option 选中态）
    */
   _syncCategorySelect() {
+    const val = this.currentCategory;
     const catSelect = document.getElementById('filter-category');
-    if (catSelect) catSelect.value = this.currentCategory;
+    if (catSelect) catSelect.value = val;
+    // 同步自定义 dropdown
+    const trigger = document.getElementById('filter-category-trigger');
+    const optsWrap = document.getElementById('filter-category-options');
+    if (trigger && optsWrap) {
+      // label
+      const catLabels = window.Gallery ? Gallery.CATEGORY_LABELS : {};
+      const nativeOpt = catSelect?.querySelector(`option[value="${val}"]`);
+      const label = val === 'all' ? '全部' : (catLabels[val] || (nativeOpt?.textContent || val));
+      trigger.querySelector('.custom-select-label').textContent = label;
+      // option 选中态
+      optsWrap.querySelectorAll('.custom-select-option').forEach(o => {
+        o.classList.toggle('is-selected', o.dataset.value === val);
+      });
+    }
   },
 
   /**

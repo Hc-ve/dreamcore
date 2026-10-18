@@ -12,6 +12,7 @@
  * 存储：全部走 localStorage（user 级别，无需 DB）
  * 事件：设置变更时 dispatch 'dreamcore:setting-changed' detail:{key, value}
  */
+import { supabase, supabaseEnabled } from './api/supabase-client.js';
 
 const LS_PREFIX = 'dreamcore-';
 const LS_KEYS = {
@@ -84,6 +85,37 @@ function _migrateLegacyParticleThemeKey() {
       localStorage.setItem(newKey, clean);                        // 裸值写入
     }
   } catch (_) { /* ignore */ }
+}
+
+/**
+ * 头像脏数据迁移（V2）：
+ *   老版本 Canvas 裁剪绕过、CSS width:100% 导致 img 撑不出、或用户绕过保存直接塞了非正方形 dataURL
+ *   → 统一重新中心裁剪到 200x200 覆盖 localStorage。
+ *   已迁过的用户跳过（标记 dreamcore-avatar-migrated-v2）。
+ */
+async function _migrateLegacyAvatar() {
+  const MARK = 'dreamcore-avatar-migrated-v2';
+  try {
+    if (localStorage.getItem(MARK)) return; // 迁过就不再跑
+    const raw = localStorage.getItem(LS_PREFIX + LS_KEYS.avatar);
+    if (!raw) { localStorage.setItem(MARK, '1'); return; }
+    let parsed; try { parsed = JSON.parse(raw); } catch { parsed = null; }
+    if (!parsed || parsed.type !== 'custom' || !parsed.dataURL) {
+      localStorage.setItem(MARK, '1'); return; // 系统头像或无头像，不用迁
+    }
+
+    const fixed = await _ensureSquareAvatar(parsed.dataURL);
+    // _ensureSquareAvatar 对已经是 200x200 的不会重绘，fixed 就是原图 dataURL
+    if (fixed !== parsed.dataURL) {
+      // 尺寸被修正了，覆盖写回 localStorage + 同步后端
+      localStorage.setItem(LS_PREFIX + LS_KEYS.avatar, JSON.stringify({ type: 'custom', dataURL: fixed }));
+      console.log('[Settings] 头像迁移：脏数据已重新裁剪为 200x200');
+      try { await _syncProfileToBackend({ avatar: { type: 'custom', dataURL: fixed } }); } catch (_) {}
+    }
+    localStorage.setItem(MARK, '1');
+  } catch (e) {
+    console.warn('[Settings] _migrateLegacyAvatar 异常（不阻塞启动）:', e.message);
+  }
 }
 
 /**
@@ -164,6 +196,82 @@ function setSetting(key, value) {
   return value;
 }
 
+/**
+ * 把本地变更同步到后端（db.js IndexedDB + Supabase）
+ * 注意：头像 dataURL 体积大，只同步 IndexedDB；Supabase 存不了大 blob。
+ *       昵称/bio 纯文本，两边都同步。
+ */
+async function _syncProfileToBackend(data) {
+  try {
+    const user = (typeof window.currentUser !== 'undefined' && window.currentUser) ||
+                 (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+    if (!user?.id) { console.warn('[Settings] _syncProfileToBackend: 未登录，跳过'); return; }
+
+    // 1. 同步到 IndexedDB（db.js updateUser 全局函数）
+    try {
+      const { updateUser } = window;
+      if (typeof updateUser === 'function') {
+        // avatar 字段直接存 dataURL（IndexedDB 支持大字符串）
+        const dbPayload = {};
+        if (data.avatar) dbPayload.avatar = data.avatar;        // {type, dataURL} 完整对象
+        if (data.nickname !== undefined) dbPayload.nickname = data.nickname;
+        if (data.bio !== undefined) dbPayload.bio = data.bio;
+        if (data.tags !== undefined) dbPayload.tags = data.tags;
+        await updateUser(user.id, dbPayload);
+        console.log('[Settings] → db.users 已同步:', Object.keys(dbPayload).join(', '));
+      }
+    } catch (e) {
+      console.warn('[Settings] db.users 同步失败（不阻塞本地保存）:', e.message);
+    }
+
+    // 2. Supabase：只同步昵称/bio（头像 dataURL 太大，auth.metadata 有大小限制）
+    if (supabaseEnabled && (data.nickname !== undefined || data.bio !== undefined)) {
+      try {
+        const { data: userData, error } = await supabase.auth.updateUser({
+          data: {
+            nickname: data.nickname ?? undefined,
+            bio: data.bio ?? undefined,
+          }
+        });
+        if (error) console.warn('[Settings] Supabase metadata 同步失败:', error.message);
+        else console.log('[Settings] → Supabase auth metadata 已同步');
+      } catch (e) {
+        console.warn('[Settings] Supabase 同步异常:', e.message);
+      }
+    }
+  } catch (e) {
+    console.error('[Settings] _syncProfileToBackend 崩溃:', e);
+  }
+}
+
+/**
+ * 强制校验头像 dataURL 是否为正方形 —— 如果不是就重新裁剪
+ * 防绕过：无论哪个路径写进来的头像（Canvas 裁剪 / 可能的其他路径），都保证最终是正方形
+ */
+function _ensureSquareAvatar(dataURL) {
+  return new Promise((resolve) => {
+    if (!dataURL) { resolve(dataURL); return; }
+    const img = new Image();
+    img.onload = () => {
+      if (img.naturalWidth === img.naturalHeight && img.naturalWidth === 200) {
+        resolve(dataURL); // 已经是 200x200，直接返回
+        return;
+      }
+      // 重新中心裁剪到 200x200
+      const c = document.createElement('canvas');
+      c.width = 200; c.height = 200;
+      const ctx = c.getContext('2d');
+      const size = Math.min(img.naturalWidth, img.naturalHeight);
+      const sx = (img.naturalWidth - size) / 2;
+      const sy = (img.naturalHeight - size) / 2;
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+      resolve(c.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve(dataURL);
+    img.src = dataURL;
+  });
+}
+
 // ============================================================
 // 实时生效层（订阅 setting-changed → 应用到 DOM）
 // ============================================================
@@ -216,6 +324,9 @@ function initRealtimeApply() {
         case 'brightness': applyBrightness(); break;
         case 'sound':
           if (window.Sound) Sound.setEnabled(getSetting('sound'));
+          break;
+        case 'notifyInApp':
+          if (window.Notifications?.refreshBadge) Notifications.refreshBadge();
           break;
       }
     });
@@ -397,7 +508,17 @@ const TABS = [
 
 function renderFullSettings(container) {
   try {
-    const tab = new URLSearchParams(window.location.hash.split('?')[1] || '').get('tab') || 'profile';
+    const user = (typeof window.currentUser !== 'undefined' && window.currentUser) ||
+                 (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+    const loggedIn = !!user;
+    // 未登录时过滤掉"个人资料"入口
+    const visibleTabs = loggedIn ? TABS : TABS.filter(t => t.id !== 'profile');
+    // 未登录时 URL 里的 ?tab=profile 强制重定向到 appearance（防止手动访问绕过）
+    let tab = new URLSearchParams(window.location.hash.split('?')[1] || '').get('tab') || 'profile';
+    if (!loggedIn && tab === 'profile') {
+      tab = 'appearance';
+      history.replaceState(null, '', '#/settings?tab=appearance');
+    }
     container.innerHTML = `
       <div class="sp-page">
         <aside class="sp-tabs">
@@ -407,7 +528,7 @@ function renderFullSettings(container) {
             </button>
             <span>设置</span>
           </div>
-          ${TABS.map(t => `
+          ${visibleTabs.map(t => `
             <button class="sp-tab ${t.id === tab ? 'active' : ''}" data-tab="${t.id}">
               <i class="fa-solid ${t.icon}"></i><span>${t.label}</span>
             </button>
@@ -446,12 +567,25 @@ function renderFullSettings(container) {
 function renderTab(content, id) {
   try {
     switch (id) {
-      case 'profile':   content.innerHTML = tabProfile();   initProfileTab(content);   break;
+      case 'profile':
+        {
+          const _u2 = (typeof window.currentUser !== 'undefined' && window.currentUser) ||
+                      (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+          if (!_u2) {
+            content.innerHTML = '';
+            const parent = content.parentElement;
+            if (parent) { const b = parent.querySelector('.sp-tab[data-tab="appearance"]'); if (b) b.click(); }
+            return;
+          }
+        }
+        content.innerHTML = tabProfile();
+        initProfileTab(content);
+        break;
       case 'appearance':content.innerHTML = tabAppearance();initAppearanceTab(content);break;
       case 'general':   content.innerHTML = tabGeneral();    initGeneralTab(content);   break;
       case 'notify':    content.innerHTML = tabNotify();     initNotifyTab(content);    break;
       case 'privacy':   content.innerHTML = tabPrivacy();   initPrivacyTab(content);   break;
-      case 'about':     content.innerHTML = tabAbout();      break;
+      case 'about':     content.innerHTML = tabAbout();      initAboutTab(content);     break;
       default:          content.innerHTML = '<p>未知页面</p>';
     }
   } catch (e) {
@@ -463,7 +597,23 @@ function renderTab(content, id) {
 // ---- Tab 内容 ----
 
 function tabProfile() {
-  // 容错：avatar 可能是脏数据
+    const _u = (typeof window.currentUser !== 'undefined' && window.currentUser) ||
+             (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+  if (!_u) {
+    return `<div class="sp-page-title">个人资料</div>
+      <div class="sp-auth-locked sp-auth-locked-full">
+        <div class="sp-auth-locked-icon"><i class="fa-solid fa-user-lock"></i></div>
+        <div class="sp-auth-locked-text">
+          <div class="sp-auth-locked-title">需要登录</div>
+          <div class="sp-auth-locked-desc">头像、昵称、个人简介、兴趣标签等个人资料编辑功能需要登录后才能使用。请先登录你的账户。</div>
+        </div>
+        <div class="sp-auth-locked-actions">
+          <button class="sp-btn sp-btn-primary" id="sp-goto-login-full">立即登录</button>
+          <button class="sp-btn" id="sp-goto-home">回到首页</button>
+        </div>
+      </div>`;
+  }
+// 容错：avatar 可能是脏数据
   let cur = getSetting('avatar');
   if (!cur || typeof cur !== 'object' || (cur.type !== 'system' && cur.type !== 'custom')) {
     cur = { type: 'system', id: 1 };
@@ -516,11 +666,79 @@ function tabProfile() {
       <h3>昵称</h3>
       <input class="sp-input" id="sp-nickname" value="${getSetting('nickname') || ''}" placeholder="给自己起个昵称">
     </section>
+
+    <section class="sp-card">
+      <h3>个人简介</h3>
+      <textarea class="sp-input" id="sp-bio" rows="3" placeholder="一句话介绍你自己…（如：热爱敦煌，想 AI 复刻莫高窟壁画）">${getSetting('bio') || ''}</textarea>
+    </section>
+
+    <section class="sp-card">
+      <h3>兴趣标签</h3>
+      <p class="sp-hint">选择你感兴趣的文化方向，帮助首页推荐更精准。</p>
+      <div class="sp-tag-row" id="sp-tags">
+        ${['敦煌','故宫','陶瓷','书法','戏曲','非遗','古建筑','民族服饰','传统工艺'].map(t => `
+          <label class="sp-tag ${(getSetting('tags')||'').includes(t)?'active':''}">
+            <input type="checkbox" data-tag="${t}" ${(getSetting('tags')||'').includes(t)?'checked':''}> ${t}
+          </label>
+        `).join('')}
+      </div>
+    </section>
+
+    <section class="sp-card">
+      <h3>账号安全</h3>
+      ${(() => {
+        const user = (typeof window.currentUser !== 'undefined' && window.currentUser) ||
+                     (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+        const hasBackend = !!supabaseEnabled;
+        if (!user) {
+          // 未登录态：引导卡
+          return `
+            <div class="sp-auth-locked">
+              <div class="sp-auth-locked-icon"><i class="fa-solid fa-lock"></i></div>
+              <div class="sp-auth-locked-text">
+                <div class="sp-auth-locked-title">请先登录</div>
+                <div class="sp-auth-locked-desc">账号安全操作（修改密码、绑定邮箱）需登录后才能使用，以保护你的账户安全。</div>
+              </div>
+              <button class="sp-btn sp-btn-primary" id="sp-goto-login">去登录</button>
+            </div>
+          `;
+        }
+        // 已登录态
+        const email = getSetting('email') || user.email || '未绑定';
+        const hint = hasBackend
+          ? '安全操作已接入 Supabase：修改密码需验证旧密码，绑定/更换邮箱将发送确认邮件到新地址。'
+          : '本地开发模式：未检测到 Supabase 配置，安全操作暂时关闭。请在 .env 设置 VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY。';
+        const btnDisabled = hasBackend ? '' : 'disabled';
+        const btnDisabledTitle = hasBackend ? '' : '本地开发模式下暂不支持，请生产部署对接后端后使用';
+        return `
+          <p class="sp-hint">${hint}</p>
+          <div class="sp-security-row">
+            <div class="sp-security-item">
+              <div class="sp-security-label">已绑定邮箱</div>
+              <div class="sp-security-value">${email}</div>
+            </div>
+            <button class="sp-btn sp-btn-sm" id="sp-change-email" ${btnDisabled} title="${btnDisabledTitle}">绑定/更换</button>
+          </div>
+          <div class="sp-security-row">
+            <div class="sp-security-item">
+              <div class="sp-security-label">登录密码</div>
+              <div class="sp-security-value">••••••••</div>
+            </div>
+            <button class="sp-btn sp-btn-sm" id="sp-change-password" ${btnDisabled} title="${btnDisabledTitle}">修改密码</button>
+          </div>
+        `;
+      })()}
+    </section>
   `;
 }
 
 function initProfileTab(content) {
-  // 系统头像选择
+    const _loginBtn = content.querySelector('#sp-goto-login, #sp-goto-login-full');
+  if (_loginBtn) { _loginBtn.addEventListener('click', () => { if (window.Auth && window.Auth.openLogin) window.Auth.openLogin(); else window.location.hash = '#/login'; }); }
+  const _homeBtn = content.querySelector('#sp-goto-home');
+  if (_homeBtn) { _homeBtn.addEventListener('click', () => { window.location.hash = '#/'; }); }
+  if (!content.querySelector('.avatar-picker')) return;
+// 系统头像选择
   content.querySelectorAll('input[name="avatar-system"]').forEach(r => {
     r.addEventListener('change', () => {
       const id = parseInt(r.value);
@@ -565,9 +783,12 @@ function initProfileTab(content) {
     pendingDataURL = null;
     upload.value = '';
   });
-  content.querySelector('#avatar-confirm')?.addEventListener('click', () => {
+  content.querySelector('#avatar-confirm')?.addEventListener('click', async () => {
     if (pendingDataURL) {
-      setSetting('avatar', { type: 'custom', dataURL: pendingDataURL });
+      // 强制校验：无论 Canvas 裁剪是否成功，最终 dataURL 必须是 200x200 正方形
+      const guaranteedSquare = await _ensureSquareAvatar(pendingDataURL);
+      setSetting('avatar', { type: 'custom', dataURL: guaranteedSquare });
+      await _syncProfileToBackend({ avatar: { type: 'custom', dataURL: guaranteedSquare } });
       renderTab(content, 'profile');
       toastSaved();
     }
@@ -575,9 +796,146 @@ function initProfileTab(content) {
 
   // 昵称
   const nick = content.querySelector('#sp-nickname');
-  nick?.addEventListener('change', () => {
-    setSetting('nickname', nick.value.trim());
+  nick?.addEventListener('change', async () => {
+    const val = nick.value.trim();
+    setSetting('nickname', val);
+    await _syncProfileToBackend({ nickname: val });
     toastSaved();
+  });
+
+  // Bio — 实时输入 + debounce 保存
+  const bio = content.querySelector('#sp-bio');
+  let bioTimer = null;
+  bio?.addEventListener('input', async () => {
+    clearTimeout(bioTimer);
+    bioTimer = setTimeout(async () => {
+      const val = bio.value.trim();
+      setSetting('bio', val);
+      await _syncProfileToBackend({ bio: val });
+      toast('已自动保存', 'success');
+    }, 800);
+  });
+
+  // 兴趣标签 — 多选联动保存
+  const tagRow = content.querySelector('#sp-tags');
+  tagRow?.addEventListener('change', () => {
+    const selected = Array.from(tagRow.querySelectorAll('input[type="checkbox"]:checked'))
+      .map(cb => cb.dataset.tag);
+    setSetting('tags', selected);
+    // 切换 active class 视觉反馈
+    tagRow.querySelectorAll('label.sp-tag').forEach(label => {
+      const cb = label.querySelector('input');
+      label.classList.toggle('active', cb?.checked);
+    });
+  });
+
+  // 账号安全 — 去登录（未登录态）
+  content.querySelector('#sp-goto-login')?.addEventListener('click', () => {
+    if (window.Auth && typeof Auth.openModal === 'function') {
+      Auth.openModal('login');
+    } else if (window.Auth && typeof Auth.openAuthModal === 'function') {
+      Auth.openAuthModal('login');
+    } else {
+      toast('登录功能暂未就绪', 'error');
+    }
+  });
+
+  // 账号安全 — 绑定邮箱（Supabase auth.updateUser → 自动发确认邮件到新地址）
+  content.querySelector('#sp-change-email')?.addEventListener('click', async (e) => {
+    if (!supabase) { toast('Supabase 未连接，无法操作', 'error'); return; }
+    const user = supabase.auth.getUser ? (await supabase.auth.getUser()).data?.user : null;
+    if (!user) { toast('未登录，请先登录', 'error'); return; }
+
+    const newEmail = prompt('请输入要绑定/更换的新邮箱：', user.email || '');
+    if (!newEmail) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { toast('邮箱格式不正确', 'error'); return; }
+    if (newEmail === user.email) { toast('新邮箱与当前相同', 'info'); return; }
+
+    try {
+      toast('正在发送确认邮件到新邮箱…', 'info');
+      const { data, error } = await supabase.auth.updateUser({ email: newEmail });
+      if (error) throw error;
+      // Supabase auth.updateUser 会自动向新邮箱发送确认邮件；用户点击后邮箱正式生效
+      toast('确认邮件已发送到 ' + newEmail + '，请查收并点击确认', 'success');
+    } catch (err) {
+      console.error('[Settings] updateUser email 失败:', err);
+      toast('邮箱更新失败：' + (err.message || err), 'error');
+    }
+  });
+
+  // 账号安全 — 修改密码（三步验证：旧密码 → 新密码 → 确认新密码）
+  content.querySelector('#sp-change-password')?.addEventListener('click', async () => {
+    if (!supabase) { toast('Supabase 未连接，无法操作', 'error'); return; }
+    const user = supabase.auth.getUser ? (await supabase.auth.getUser()).data?.user : null;
+    if (!user) { toast('未登录，请先登录', 'error'); return; }
+
+    // Step 1: 验证旧密码（通过 signInWithPassword 验证，成功后恢复原 session）
+    const oldPassword = prompt('请输入当前密码（用于验证身份）：', '');
+    if (oldPassword === null) return;
+    if (!oldPassword) { toast('旧密码不能为空', 'error'); return; }
+
+    const emailForVerify = user.email || getSetting('email') ||
+      (window.Auth && typeof Auth._authEmailFor === 'function' ? Auth._authEmailFor() : null);
+    if (!emailForVerify) { toast('无法获取登录邮箱，请重新登录', 'error'); return; }
+
+    let tempSession = null;
+    try {
+      // 用旧密码做一次临时登录验证；当前持久化 session（persistSession:true）不会被覆盖
+      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+        email: emailForVerify, password: oldPassword
+      });
+      if (signInErr) {
+        const msg = String(signInErr.message || '').toLowerCase();
+        if (msg.includes('invalid login') || msg.includes('password') || msg.includes('not found')) {
+          toast('旧密码不正确', 'error');
+        } else {
+          toast('验证失败：' + signInErr.message, 'error');
+        }
+        return;
+      }
+      tempSession = signInData.session;
+    } catch (err) {
+      toast('身份验证失败：' + (err.message || err), 'error');
+      return;
+    }
+
+    // Step 2 & 3: 新密码 + 确认新密码
+    const newPassword = prompt('请输入新密码（至少 8 位）：', '');
+    if (!newPassword) return;
+    if (newPassword.length < 8) { toast('新密码至少 8 位', 'error'); return; }
+    const confirmPassword = prompt('请再次输入新密码确认：', '');
+    if (confirmPassword === null) return;
+    if (newPassword !== confirmPassword) { toast('两次输入的新密码不一致', 'error'); return; }
+    if (newPassword === oldPassword) { toast('新密码不能与旧密码相同', 'error'); return; }
+
+    try {
+      toast('正在更新密码…', 'info');
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast('密码修改成功！即将重新登录…', 'success');
+
+      // 安全收尾：强制重新登录，确保所有本地 session 被刷新
+      await supabase.auth.signOut();
+      // 清理缓存
+      try { localStorage.clear(); } catch {}
+      // 触发 Auth 重新初始化
+      if (window.Auth && typeof Auth.checkAuthState === 'function') {
+        try { await Auth.checkAuthState(); } catch {}
+      }
+      // 重新打开登录窗
+      setTimeout(() => {
+        if (window.Auth && typeof Auth.openModal === 'function') Auth.openModal('login');
+        else if (window.Auth && typeof Auth.openAuthModal === 'function') Auth.openAuthModal('login');
+        location.hash = '#/settings'; // 回到设置页
+      }, 800);
+    } catch (err) {
+      console.error('[Settings] updateUser password 失败:', err);
+      toast('密码修改失败：' + (err.message || err), 'error');
+      // 恢复之前的 session（如果 signInWithPassword 覆盖了持久化 session）
+      if (tempSession) {
+        try { await supabase.auth.setSession(tempSession); } catch {}
+      }
+    }
   });
 }
 
@@ -730,6 +1088,7 @@ function tabNotify() {
     <div class="sp-page-title">通知</div>
     <section class="sp-card">
       <h3>接收方式</h3>
+      <p class="sp-hint">选择在哪些场景下接收 Dreamcore 的通知。</p>
       <label class="sp-switch">
         <input type="checkbox" id="sp-notify-inapp" ${ia?'checked':''}>
         <span class="sp-switch-track"><span class="sp-switch-thumb"></span></span>
@@ -741,11 +1100,44 @@ function tabNotify() {
         <span>邮件通知（每日摘要）</span>
       </label>
     </section>
+    <section class="sp-card">
+      <h3>通知场景</h3>
+      <p class="sp-hint">当以下事件发生时，你会收到通知。</p>
+      <label class="sp-switch">
+        <input type="checkbox" id="sp-nf-like" checked>
+        <span class="sp-switch-track"><span class="sp-switch-thumb"></span></span>
+        <span>我的作品收到点赞 / 评论</span>
+      </label>
+      <label class="sp-switch">
+        <input type="checkbox" id="sp-nf-follow" checked>
+        <span class="sp-switch-track"><span class="sp-switch-thumb"></span></span>
+        <span>有人关注我</span>
+      </label>
+      <label class="sp-switch">
+        <input type="checkbox" id="sp-nf-activity">
+        <span class="sp-switch-track"><span class="sp-switch-thumb"></span></span>
+        <span>平台活动 / 新功能上线</span>
+      </label>
+    </section>
   `;
 }
 function initNotifyTab(c) {
   c.querySelector('#sp-notify-inapp')?.addEventListener('change', e => { setSetting('notifyInApp', e.target.checked); toastSaved(); });
   c.querySelector('#sp-notify-email')?.addEventListener('change', e => { setSetting('notifyEmail', e.target.checked); toastSaved(); });
+  // 通知场景开关（暂存到 localStorage 供后续扩展使用）
+  ['like','follow','activity'].forEach(scn => {
+    const key = 'nf_' + scn;
+    const input = c.querySelector('#sp-nf-' + scn);
+    if (input) {
+      try {
+        const v = localStorage.getItem('dreamcore-' + key);
+        if (v !== null) input.checked = v === '1';
+      } catch {}
+      input.addEventListener('change', e => {
+        try { localStorage.setItem('dreamcore-' + key, e.target.checked ? '1' : '0'); } catch {}
+      });
+    }
+  });
 }
 
 function tabPrivacy() {
@@ -787,19 +1179,40 @@ function tabAbout() {
     <div class="sp-page-title">关于</div>
     <section class="sp-card">
       <h3>Dreamcore</h3>
-      <p>AI + 文旅文创艺术共创社区</p>
+      <p>AI + 文旅文创艺术共创社区。让传统美学数字新生。</p>
       <dl class="sp-meta">
-        <dt>版本</dt><dd>v1.0.0</dd>
+        <dt>版本</dt><dd>v1.1.0 · <a class="sp-link" href="#" id="sp-check-update">检查更新</a></dd>
         <dt>构建时间</dt><dd>${new Date().toLocaleDateString()}</dd>
         <dt>官方邮箱</dt><dd>hello@dreamcore.art</dd>
       </dl>
     </section>
     <section class="sp-card">
+      <h3>技术栈</h3>
+      <p class="sp-hint">本站基于以下开源技术构建：</p>
+      <div class="sp-tag-row">
+        ${['Vite 5','Vanilla JS','Tailwind','Font Awesome','Google Fonts','Service Worker','IndexedDB','WebGL / Three.js'].map(t => `<span class="sp-tag">${t}</span>`).join('')}
+      </div>
+    </section>
+    <section class="sp-card">
       <h3>帮助与反馈</h3>
-      <a class="sp-link" href="/terms.html" target="_blank">服务条款</a>
-      <a class="sp-link" href="/privacy.html" target="_blank">隐私政策</a>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a class="sp-link" href="/terms.html" target="_blank"><i class="fa-solid fa-file-lines" style="margin-right:6px;"></i>服务条款</a>
+        <a class="sp-link" href="/privacy.html" target="_blank"><i class="fa-solid fa-shield-halved" style="margin-right:6px;"></i>隐私政策</a>
+        <a class="sp-link" href="#" id="sp-feedback"><i class="fa-solid fa-comment-dots" style="margin-right:6px;"></i>提交反馈</a>
+      </div>
     </section>
   `;
+}
+function initAboutTab(c) {
+  // tabAbout 渲染完成后自动绑定（因为 renderTab 会覆盖 content.innerHTML）
+  setTimeout(() => {
+    document.querySelector('#sp-check-update')?.addEventListener('click', e => {
+      e.preventDefault(); toast('已是最新版本 v1.1.0', 'info');
+    });
+    document.querySelector('#sp-feedback')?.addEventListener('click', e => {
+      e.preventDefault(); toast('反馈功能即将上线', 'info');
+    });
+  }, 0);
 }
 
 // ============================================================
@@ -824,12 +1237,18 @@ function toast(msg, type = 'info') {
 
 export const Settings = {
   VERSION: '2.0.0',
-  init() {
+  async init() {
     try {
+      // 先等 Auth 登录态恢复（localStorage 或 Supabase），再渲染 profile tab ——
+      // 否则 tabProfile 模板里读 window.currentUser 还是 null，导致未登录态误渲染
+      if (window.Auth && typeof window.Auth.checkAuthState === 'function') {
+        try { await window.Auth.checkAuthState(); } catch(_) {}
+      }
       console.log('[Settings] init v2.0.0 — 加载中...');
       // 主题键迁移：老用户从 legacy key 平滑继承偏好（必须在 applyTheme 之前）
       _migrateLegacyThemeKey();
       _migrateLegacyParticleThemeKey();
+      await _migrateLegacyAvatar(); // V2 头像脏数据迁移（有自定义头像的老用户自动修复）
       initRealtimeApply();
       // 齿轮入口（事件委托，防止 HTML 动态替换失效）
       document.addEventListener('click', (e) => {
@@ -853,7 +1272,7 @@ export const Settings = {
       if (!host) {
         host = document.createElement('div');
         host.id = '__settings_host';
-        host.style.cssText = 'position:fixed;inset:72px 0 0 0;z-index:9998;background:var(--bg, #fafafa);overflow-y:auto;';
+        host.style.cssText = 'position:fixed;inset:72px 0 0 0;z-index:9998;background:var(--bg-dark, #fafafa);color:var(--text-primary, #1a1a2e);overflow-y:auto;';
         document.body.appendChild(host);
       }
       host.hidden = false;

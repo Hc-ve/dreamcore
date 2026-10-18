@@ -4,6 +4,16 @@
 // 注意: 通知铃铛 HTML 由 auth.js 渲染，此处负责绑定事件和数据逻辑
 // ============================================================
 
+// 与 main.js 里的 _notifyEnabled 保持一致的轻量守卫
+function _notifyEnabled() {
+  try {
+    const v = localStorage.getItem('dreamcore-notifyInApp');
+    if (v === null) return true;
+    let p; try { p = JSON.parse(v); } catch { p = v; }
+    return p !== false;
+  } catch { return true; }
+}
+
 const Notifications = {
   isOpen: false,
   currentUserId: null,
@@ -270,9 +280,16 @@ const Notifications = {
   },
 
   async refreshBadge() {
-    this._updateUserId();
     const badge = document.getElementById('notification-badge');
     if (!badge) return;
+
+    // 通知开关关闭时，强制隐藏徽标（不请求后端）
+    if (!_notifyEnabled()) {
+      badge.style.display = 'none';
+      return;
+    }
+
+    this._updateUserId();
 
     if (!this.currentUserId) {
       badge.style.display = 'none';

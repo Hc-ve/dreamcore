@@ -1235,6 +1235,12 @@ body.modal-open .ai-reaction-bubble {
   --bg-surface-hover: #3a2e23; --bg-hover: rgba(245, 236, 224, 0.05);
   --text-primary: #f5ece0; --text-secondary: #d8cbb8; --text-tertiary: #a2937e;
   --accent: #e0745f; --indigo-accent: #d4af37; --border: #4a3a2b; --border-subtle: #342a20;
+  /* 2026-10 修复：深底 Modal 令牌（之前缺失导致 Modal 吃默认 dark 值，与国风深底不统一） */
+  --modal-bg: rgba(26, 20, 16, 0.94);
+  --modal-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  --modal-border-grad: linear-gradient(135deg, rgba(26,20,16,0.95), rgba(74,58,43,0.7) 20%, transparent 50%, rgba(74,58,43,0.5) 80%, rgba(26,20,16,0.9));
+  --glass-bg: rgba(36, 28, 22, 0.78);
+  --glass-border: rgba(212, 175, 55, 0.16);
 }
 
 /* ---- 17.2 非遗 · 靛蓝扎染 ---- */
@@ -1258,6 +1264,11 @@ body.modal-open .ai-reaction-bubble {
   --bg-surface-hover: #24374a; --bg-hover: rgba(216, 235, 255, 0.05);
   --text-primary: #e6eef7; --text-secondary: #b6c8da; --text-tertiary: #8ba0b6;
   --accent: #6fa8dc; --indigo-accent: #9dbfe0; --border: #2c4054; --border-subtle: #1f2e3c;
+  --modal-bg: rgba(15, 24, 32, 0.94);
+  --modal-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  --modal-border-grad: linear-gradient(135deg, rgba(15,24,32,0.95), rgba(44,64,84,0.7) 20%, transparent 50%, rgba(44,64,84,0.5) 80%, rgba(15,24,32,0.9));
+  --glass-bg: rgba(22, 34, 44, 0.78);
+  --glass-border: rgba(111, 168, 220, 0.16);
 }
 
 /* ---- 17.3 极简 · 石墨纯白 ---- */
@@ -1281,6 +1292,11 @@ body.modal-open .ai-reaction-bubble {
   --bg-surface-hover: #24292f; --bg-hover: rgba(240, 242, 245, 0.05);
   --text-primary: #eceef1; --text-secondary: #b8bcc4; --text-tertiary: #868d98;
   --accent: #e5e7eb; --indigo-accent: #9ca3af; --border: #2b3036; --border-subtle: #1f2429;
+  --modal-bg: rgba(13, 15, 18, 0.94);
+  --modal-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  --modal-border-grad: linear-gradient(135deg, rgba(13,15,18,0.95), rgba(43,48,54,0.7) 20%, transparent 50%, rgba(43,48,54,0.5) 80%, rgba(13,15,18,0.9));
+  --glass-bg: rgba(22, 25, 29, 0.78);
+  --glass-border: rgba(156, 163, 175, 0.14);
 }
 
 /* ---- 17.4 默认（墨韵丹青）—— data-style 被移除，:root 生效，无需声明 ---- */
@@ -1288,3 +1304,539 @@ body.modal-open .ai-reaction-bubble {
 /* ---- 17.5 导航栏底色改为令牌派生（R4 根因修复），使品牌面随风格主题联动 ---- */
 #navbar { background: color-mix(in srgb, var(--bg-card) 85%, transparent) !important; }
 [data-theme="dark"] #navbar { background: color-mix(in srgb, var(--bg-dark) 85%, transparent) !important; }
+
+/* ---- 17.6 Hero 装饰光球窄屏溢出收敛（P2-3：390px 下 o3 溢出 44px） ---- */
+@media (max-width: 480px) {
+  .hero-orb.o3 { width: 120px !important; height: 120px !important; left: 55% !important; opacity: 0.28 !important; }
+  .hero-orb.o2 { width: 180px !important; height: 180px !important; opacity: 0.32 !important; }
+}
+
+/* ============================================================
+   §18 Hero 视觉硬伤修复（用户实测反馈）
+   根因链：Hero 标题字体断裂 / 今日卡片 emoji 残留 / 窄屏 overflow
+   ============================================================ */
+
+/* ---- 18.1 Hero 标题 "AI" 字体断裂（<em> 西文 italic 与中文宋体混排气质冲突） ---- */
+/* style.css L1126 .hero-title em 只设了 italic + gradient text-fill，
+   但 Cormorant Garamond italic 与 Noto Serif SC 中文宋体在同一行呈现
+   两种截然不同的字体气质（西文衬线斜体 vs 中文宋体）。
+   方案：em 去 italic + font-family inherit 统一为 Noto Serif SC，
+   gradient text-fill 作为唯一强调手段（朱砂→黛青） */
+.hero-title em, h1.hero-title em {
+  font-family: inherit !important;      /* 强制继承 Noto Serif SC，切断 Cormorant italic 路径 */
+  font-style: normal !important;        /* 去 italic，避免中西文混排断裂 */
+  font-weight: 600 !important;          /* 用稍重字重作为西文缩写的强调手段 */
+  background: linear-gradient(135deg, var(--accent) 0%, var(--indigo-accent) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ---- 18.2 今日文化画语 emoji 残留 ---- */
+/* §15.8 只覆盖了 .ca-card-icon / .atlas-emoji / .gallery-card.emoji-icon 等，
+   没覆盖 .hero-daily-icon → JS 替换失败时 emoji 裸奔。
+   方案：将 hero-daily-icon 纳入丹青字样块降级，与 §15.8 同方案 */
+.ca-grid .ca-card-icon,
+.ca-card .ca-emoji,
+.atlas-grid .atlas-emoji,
+.atlas-card .atlas-emoji,
+.gallery-card .emoji-icon,
+.grade-emoji, .grade-🏆,
+.hero-daily-icon,
+.fp-badge-icon {
+  display: inline-block !important;
+  font-family: "Noto Serif SC", "SimSun", serif !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--indigo-accent) !important;
+  background: rgba(45,74,107,0.08) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 2px !important;
+  padding: 2px 8px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+/* SVG icon 来自 icons.js 时不走上述降级，恢复原始尺寸和着色 */
+.hero-daily-icon svg, .fp-badge-icon svg {
+  width: 1.9rem !important;
+  height: 1.9rem !important;
+  stroke: currentColor !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* ---- 18.3 Hero 今日卡片窄屏 overflow 防护 ---- */
+.hero-daily {
+  max-width: 560px !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+}
+@media (max-width: 480px) {
+  .hero-daily {
+    max-width: calc(100vw - 32px) !important;
+    padding: 12px 14px !important;
+  }
+  .hero-daily-text {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+}
+
+/* ============================================================
+   §19 深色模式导航栏 / Hero-cta 图标与 placeholder 可见度
+   用户实测反馈：深底上 icon / placeholder 对比度不足
+   ============================================================ */
+
+/* ---- 19.1 导航栏搜索框 dark 模式 icon + placeholder ---- */
+[data-theme="dark"] .nav-search i,
+[data-theme="dark"] .header-search i,
+[data-theme="dark"] .search-bar i {
+  color: var(--text-secondary) !important;
+}
+[data-theme="dark"] .nav-search input::placeholder,
+[data-theme="dark"] .header-search input::placeholder,
+[data-theme="dark"] .search-bar input::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.8 !important;
+}
+
+/* ---- 19.2 Hero-cta btn-ghost dark 模式图标对比度 ---- */
+[data-theme="dark"] .hero-cta .btn-ghost i,
+[data-theme="dark"] .hero-cta .btn-ghost svg {
+  color: var(--text-primary) !important;
+  opacity: 0.92 !important;
+}
+
+/* ============================================================
+   §20 2026-10 修复：设置页 / Avatar 选择器深色模式适配
+   根因：settings.css 里 [data-theme="dark"] .avatar-option.selected
+         的 background 用 var(--accent-soft, ...)，但 --accent-soft 在某些风格下被
+         设为粉白色 rgba(253,242,240) 导致 dark 模式下选中态仍然是"白块"。
+         这里直接用更强特异性覆盖 + 明确的 dark 半透明色
+   ============================================================ */
+
+[data-theme="dark"] .avatar-option.selected {
+  background: rgba(212, 86, 76, 0.18) !important;
+  border-color: var(--accent) !important;
+}
+[data-theme="dark"][data-style="guofeng"] .avatar-option.selected {
+  background: rgba(224, 116, 95, 0.20) !important;
+  border-color: var(--accent) !important;
+}
+[data-theme="dark"][data-style="feiyi"] .avatar-option.selected {
+  background: rgba(111, 168, 220, 0.18) !important;
+  border-color: var(--accent) !important;
+}
+[data-theme="dark"][data-style="minimal"] .avatar-option.selected {
+  background: rgba(229, 231, 235, 0.12) !important;
+  border-color: var(--accent) !important;
+}
+
+#__settings_host {
+  background: var(--bg-dark, #faf6ee) !important;
+  color: var(--text-primary, #1a1614) !important;
+}
+
+/* ============================================================
+   §21 Bug A 修复：modal-overlay 背景不透明 + blur 强化
+   根因：overlay rgba(0,0,0,0.55) 仍然能透看到首页 Hero，
+   用户看到"组件渲染在首页下方"以为 modal 没渲染。
+   修复：浅模式 0.85 + blur 12px；深模式 0.92 + blur 12px；
+         modal-box 背景提至 0.98 消除透感；
+         配合 ModalScrollLock 锁 body 滚动。
+   ============================================================ */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(12px) saturate(100%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(100%) !important;
+}
+[data-theme="dark"] .modal-overlay {
+  background: rgba(5, 2, 8, 0.92) !important;
+}
+.modal-overlay .modal-box,
+.modal-overlay .score-page-box,
+.modal-overlay .edit-box,
+.modal-overlay .craft-box,
+.modal-overlay .tutor-box,
+.modal-overlay .curate-box,
+.modal-overlay .partner-box,
+.modal-overlay .lb-panel,
+.modal-overlay .auth-box,
+.modal-overlay .publish-box,
+.modal-overlay .profile-box,
+.modal-overlay .welcome-box {
+  background: var(--modal-bg, rgba(255,253,249,0.98)) !important;
+  backdrop-filter: blur(14px) saturate(100%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(100%) !important;
+}
+
+/* ============================================================
+   §22 Bug 1 修复：Hero 首屏布局重叠
+   原结构：flex center + overflow:hidden + .hero-scroll absolute
+   → daily card 与 scroll indicator 挤在一起/被截断
+   修：改为 flex-column + space-between + scroll 进入 flow + 补 padding-bottom
+   ============================================================ */
+#hero {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 100px 28px 120px !important; /* 底部留够 scroll indicator 空间 */
+  overflow: visible !important; /* 不截断 scroll indicator */
+  min-height: 100vh !important;
+}
+#hero .hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 1 auto;
+  gap: 28px; /* Bug 1：cta/sub/daily 各子块间统一间距 */
+}
+#hero .hero-content .hero-sub { margin-bottom: 0 !important; }
+#hero .hero-content .hero-daily { margin: 0 !important; }
+#hero .hero-scroll {
+  position: relative !important; /* 进入 flow，不再 absolute */
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin-top: 48px;
+  order: 2;
+}
+#hero .hero-content .hero-daily {
+  margin-bottom: 24px;
+}
+
+/* 窄屏适配 */
+@media (max-width: 640px) {
+  #hero { padding: 80px 20px 100px !important; }
+  #hero .hero-scroll { margin-top: 36px; }
+}
+
+/* ============================================================
+   §23 Bug 2+3 修复：cursor 在 blur/scroll 时的边界情况
+   - window.blur 隐藏 cursor（切走屏幕后不卡旧位置）
+   - window.focus + DOMContentLoaded 时重置到 viewport 中心
+   - cursor z-index 统一提升到 10001（modal-overlay 是 1000）
+   - cursor pointer-events:none 兜底
+   ============================================================ */
+.cursor-ring, .cursor-dot, .cursor-trail, .cursor-click-ripple, .cursor-click-particle {
+  z-index: 10001 !important;
+  pointer-events: none !important;
+}
+/* window.blur 时 cursor 隐藏 */
+body.cursor-blurred .cursor-ring,
+body.cursor-blurred .cursor-dot { opacity: 0 !important; transition: opacity 0.3s; }
+body.cursor-blurred { cursor: auto !important; }
+
+/* ============================================================
+   §24 搜索弹窗视觉统一
+   - .tag-cloud-item 收窄字号范围到 0.9~1.12em（JS 已修复），
+     CSS 层再加 min/max 兜底，保证不会超过 18px，不低于 13px
+   - 圆角从 100px 收敛到 4px（对齐项目统一圆角）
+   - hover 态从紫粉改为朱砂淡底
+   - 深色模式适配
+   ============================================================ */
+.search-panel .tag-cloud-item {
+  font-size: clamp(0.85rem, 0.85em, 1.12rem) !important;
+  border-radius: 4px !important;
+  padding: 4px 12px;
+  border: 1px solid var(--border-subtle, #eee);
+  background: var(--bg-card, #fff);
+  color: var(--text-secondary, #555);
+  line-height: 1.6;
+  transition: all 0.2s ease;
+}
+.search-panel .tag-cloud-item:hover {
+  background: var(--accent-soft, rgba(168, 38, 31, 0.08));
+  color: var(--accent, #a8261f);
+  border-color: var(--accent, #a8261f);
+}
+[data-theme="dark"] .search-panel .tag-cloud-item {
+  background: var(--bg-surface, #26211c);
+  border-color: var(--border, #3a3228);
+  color: var(--text-secondary, #d4cbb9);
+}
+[data-theme="dark"] .search-panel .tag-cloud-item:hover {
+  background: rgba(212, 86, 76, 0.18);
+  color: var(--accent, #d4564c);
+  border-color: var(--accent, #d4564c);
+}
+
+/* 搜索弹窗整体风格化 */
+.search-panel.glass {
+  background: var(--modal-bg, rgba(255, 253, 249, 0.9)) !important;
+  border: 1px solid var(--border, #e6dccb) !important;
+  backdrop-filter: blur(var(--lg-blur, 10px)) saturate(100%) !important;
+  border-radius: var(--radius, 4px) !important;
+  box-shadow: var(--lg-shadow-strong, 0 4px 24px rgba(26, 22, 20, 0.1)) !important;
+}
+[data-theme="dark"] .search-panel.glass {
+  background: var(--modal-bg, rgba(26, 22, 20, 0.92)) !important;
+  border-color: var(--border, #3a3228) !important;
+}
+.search-header input {
+  background: transparent !important;
+  color: var(--text-primary, #1a1614) !important;
+  border-bottom: 1px solid var(--border, #e6dccb) !important;
+  font-size: 16px !important;
+}
+.search-header input::placeholder { color: var(--text-tertiary, #9c8f7a) !important; }
+.search-dropdown-title {
+  font-size: 13px !important;
+  color: var(--text-tertiary, #6b6157) !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+}
+.search-hot-list .chip,
+.search-history-list .chip {
+  font-size: 13px !important;
+  border-radius: 4px !important;
+  padding: 4px 10px;
+  background: var(--bg-surface, #f3ece0);
+  border: 1px solid var(--border-subtle, #f0e8d8);
+  color: var(--text-secondary, #3d3630);
+}
+[data-theme="dark"] .search-hot-list .chip,
+[data-theme="dark"] .search-history-list .chip {
+  background: var(--bg-surface, #26211c);
+  border-color: var(--border, #3a3228);
+  color: var(--text-secondary, #d4cbb9);
+}
+
+/* 筛选区 */
+.search-filters .filter-group label {
+  font-size: 12px !important;
+  color: var(--text-tertiary, #6b6157);
+  font-weight: 500;
+  text-transform: none;
+}
+.search-filters select,
+.search-filters input[type="number"] {
+  background: var(--bg-surface, #f3ece0);
+  border: 1px solid var(--border, #e6dccb);
+  border-radius: 4px;
+  color: var(--text-primary, #1a1614);
+  font-size: 13px !important;
+  padding: 4px 8px;
+}
+[data-theme="dark"] .search-filters select,
+[data-theme="dark"] .search-filters input[type="number"] {
+  background: var(--bg-surface, #26211c);
+  border-color: var(--border, #3a3228);
+  color: var(--text-primary, #f2ece1);
+}
+
+/* 搜索结果空态提示 */
+.search-empty-hint {
+  color: var(--text-tertiary, #6b6157) !important;
+  font-size: 13px !important;
+  padding: 20px;
+  text-align: center;
+  border: 1px dashed var(--border-subtle, #f0e8d8);
+  border-radius: 4px;
+}
+[data-theme="dark"] .search-empty-hint {
+  border-color: var(--border, #3a3228);
+}
+
+/* ============================================================
+   §25 自定义 dropdown（替换原生 select — 避免 dark 模式下 option 白屏）
+   ============================================================ */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  min-width: 100px;
+  width: 120px;
+}
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg-surface, #f3ece0);
+  border: 1px solid var(--border, #e6dccb);
+  border-radius: 4px;
+  color: var(--text-primary, #1a1614);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease;
+}
+.custom-select-trigger:hover { border-color: var(--accent, #a8261f); }
+.custom-select-label { line-height: 1; }
+.custom-select-trigger i { font-size: 10px; opacity: 0.6; transition: transform 0.2s; }
+.custom-select.is-open .custom-select-trigger i { transform: rotate(180deg); }
+
+.custom-select-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border, #e6dccb);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(26,22,20,0.15);
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+  display: none;
+}
+.custom-select.is-open .custom-select-options {
+  display: block;
+  animation: cs-fade 0.12s ease-out;
+}
+@keyframes cs-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-select-option {
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--text-secondary, #3d3630);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+}
+.custom-select-option:hover {
+  background: var(--accent-soft, rgba(168,38,31,0.08));
+  color: var(--accent, #a8261f);
+}
+.custom-select-option.is-selected {
+  background: var(--accent-soft, rgba(168,38,31,0.1));
+  color: var(--accent, #a8261f);
+  font-weight: 600;
+}
+
+/* ==== dark 模式 ==== */
+[data-theme="dark"] .custom-select-trigger {
+  background: var(--bg-surface, #26211c);
+  border-color: var(--border, #3a3228);
+  color: var(--text-primary, #f2ece1);
+}
+[data-theme="dark"] .custom-select-trigger:hover { border-color: var(--accent, #d4564c); }
+[data-theme="dark"] .custom-select-options {
+  background: var(--bg-card, #1e1a16);
+  border-color: var(--border, #3a3228);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .custom-select-option {
+  color: var(--text-secondary, #d4cbb9);
+}
+[data-theme="dark"] .custom-select-option:hover {
+  background: rgba(212,86,76,0.18);
+  color: var(--accent, #d4564c);
+}
+[data-theme="dark"] .custom-select-option.is-selected {
+  background: rgba(212,86,76,0.22);
+  color: var(--accent, #d4564c);
+}
+
+/* ============================================================
+   §26 账号安全模块（未登录态状态卡 + disabled 按钮）
+   ============================================================ */
+.sp-auth-locked {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--bg-surface, #f3ece0);
+  border: 1px dashed var(--border, #e6dccb);
+  border-radius: 4px;
+  margin-top: 4px;
+}
+[data-theme="dark"] .sp-auth-locked {
+  background: rgba(58, 50, 40, 0.35);
+  border-color: var(--border, #3a3228);
+}
+.sp-auth-locked-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent, #a8261f);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 16px;
+}
+.sp-auth-locked-text { flex: 1; min-width: 0; }
+.sp-auth-locked-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #1a1614);
+  margin-bottom: 4px;
+}
+.sp-auth-locked-desc {
+  font-size: 12px;
+  color: var(--text-tertiary, #6b6157);
+  line-height: 1.5;
+}
+.sp-btn-primary {
+  padding: 6px 16px;
+  background: var(--accent, #a8261f);
+  color: #fff;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.sp-btn-primary:hover { background: #8a1e18; transform: translateY(-1px); }
+
+/* disabled 按钮 */
+.sp-btn:disabled,
+.sp-btn-sm:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--bg-surface, #f3ece0);
+  color: var(--text-tertiary, #999);
+  border-color: var(--border-subtle, #eee);
+}
+
+/* ============================================================
+   §27 设置页字号统一
+   - settings.css 原始字号层级偏低（h3=15px/hint=12px/desc=11px）
+   - 批量抬升 1-2px，保证可读性与项目全局（base 16px）一致
+   ============================================================ */
+/* 全局提升：settings 全屏容器基础字号 +2px */
+#__settings_host, .sp-page, .sp-content {
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+/* Tab 按钮 */
+.sp-tab span { font-size: 14px !important; }
+/* 卡片标题 */
+.sp-card h3 { font-size: 17px !important; }
+.sp-card h3 i { font-size: 15px !important; }
+/* hint / 说明 */
+.sp-hint { font-size: 13px !important; line-height: 1.6 !important; }
+/* switch 文字 */
+.sp-switch-text { font-size: 14px !important; }
+/* 输入框 */
+.sp-input { font-size: 15px !important; }
+/* 主题卡片 */
+.sp-theme-card-name { font-size: 15px !important; }
+.sp-theme-card-desc { font-size: 12px !important; }
+/* 头像选项 */
+.avatar-option-name { font-size: 13px !important; }
+.avatar-upload-box span { font-size: 12px !important; }
+.avatar-upload-box small { font-size: 11px !important; }
+/* security 行 */
+.sp-security-label { font-size: 13px !important; }
+.sp-security-value { font-size: 14px !important; }
+/* buttons */
+.sp-btn-sm { font-size: 13px !important; }
+/* labels */
+label { font-size: 14px !important; }

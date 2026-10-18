@@ -147,15 +147,26 @@ function _isUILight() {
  */
 function _resolveThemeParams(theme) {
   const isLight = _isUILight();
-  const palette = _resolvePalette(theme);
+  let palette = _resolvePalette(theme);
+  // 暗色模式下 AdditiveBlending 需要更亮的颜色 — 将每个颜色分量乘 1.6，
+  // 保证粒子在深底上可辨但不过度饱和；×1.9 在 2.8 sizeMul 下过于刺眼
+  if (!isLight) {
+    palette = palette.map(hex => {
+      const r = Math.min(1, ((hex >> 16) & 0xff) / 255 * 1.6);
+      const g = Math.min(1, ((hex >> 8) & 0xff) / 255 * 1.6);
+      const b = Math.min(1, (hex & 0xff) / 255 * 1.6);
+      return ((r * 255) << 16 | (g * 255) << 8 | b * 255) >>> 0;
+    });
+  }
   // 雾色从 --bg-dark 读取（亮暗不同：亮色 #f5f3fa / 暗色 #0a0612）
   const fogColor = _readCSSColor('--bg-dark') || 0x0a0612;
   const fogDensity = isLight ? (theme.lightFogDensity || theme.fogDensity) : theme.fogDensity;
-  // 亮色模式下粒子放大 + NormalBlending 保证亮底可见
-  const sizeMul = isLight ? (theme.lightSizeBoost || 1) : 1;
+  // 亮色模式下粒子放大保证亮底可见；暗色模式需要更大（深底上 1~2px 的光点几乎不可察）
+  // dark sizeMul 从 1.15 → 2.0（2.8 太大导致全屏光斑遮挡 Hero 内容）
+  const sizeMul = isLight ? (theme.lightSizeBoost || 1) : 2.0;
   const glowOpacity = isLight ? (theme.lightGlowOpacity || theme.glowOpacity) : theme.glowOpacity;
   const blending = isLight ? 'normal' : 'additive';
-  const alphaMul = isLight ? 1.0 : 0.9;
+  const alphaMul = isLight ? 1.0 : 0.95;
   return { isLight, palette, fogColor, fogDensity, sizeMul, glowOpacity, blending, alphaMul };
 }
 

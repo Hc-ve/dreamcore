@@ -64,6 +64,8 @@ import { ARTWORKS_SEED_DATA } from '../data/artworks.js';
 // 文化知识库（首页"今日文化画语"）
 import { CULTURE_THEMES } from '../data/culture-knowledge.js';
 import { CULTURE_BADGES } from '../data/culture-badges.js';
+// 文化 SVG 图标库（替换 UI 层 emoji）
+import { fromEmoji, iconHtml } from './icons.js';
 
 // 功能模块
 import { Auth, currentUser } from './auth.js';
@@ -298,7 +300,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   if (window.Sound) Sound.init();
 
   // 设置模块：Drawer 快捷面板 + 全屏页 + 实时生效（主题/字体/亮度）
-  Settings.init();
+  // 注意：Settings.init() 现在是 async —— 内部先 await Auth.checkAuthState()
+  // 再渲染 profile tab，保证登录态已恢复。
+  await Settings.init();
 
   // 应用存储的音效偏好
   if (window.Sound) Sound.setEnabled(Settings.getSetting('sound'));
@@ -414,6 +418,16 @@ window.ModalScrollLock = ModalScrollLock;
 // 类型: success / error / warn / info
 // 支持: 顶部滑入动画、自动消失、手动关闭、图标
 // ------------------------------------------------------------
+// 直接读 localStorage 的轻量守卫（避免 Settings 还没 init 时调用 getSetting）
+function _notifyEnabled() {
+  try {
+    const v = localStorage.getItem('dreamcore-notifyInApp');
+    if (v === null) return true; // DEFAULTS.notifyInApp = true
+    let p; try { p = JSON.parse(v); } catch { p = v; }
+    return p !== false;
+  } catch { return true; }
+}
+
 const ToastManager = {
   container: null,
   _ensureContainer() {
@@ -433,6 +447,7 @@ const ToastManager = {
     return icons[type] || icons.info;
   },
   show(msg, type = 'info', duration = 3000) {
+    if (!_notifyEnabled()) return null;
     const container = this._ensureContainer();
     const t = document.createElement('div');
     t.className = `toast toast-${type} glass`;
@@ -658,7 +673,7 @@ function renderHeroDaily() {
   const fact = (t.facts && t.facts[0]) || '';
   box.innerHTML = `
     <a class="hero-daily-card" href="#/atlas?theme=${encodeURIComponent(t.themeId)}" aria-label="在文化图鉴中了解${t.name}">
-      <span class="hero-daily-icon" aria-hidden="true">${badge ? badge.icon : '📜'}</span>
+      <span class="hero-daily-icon" aria-hidden="true">${badge ? (fromEmoji(badge.icon) || badge.icon) : iconHtml('paper')}</span>
       <span class="hero-daily-body">
         <span class="hero-daily-label">今日文化画语 · ${t.name}</span>
         <span class="hero-daily-text">${fact}</span>
@@ -817,6 +832,25 @@ function bindCustomCursor() {
     createClickRipple(e.clientX, e.clientY);
     createClickParticles(e.clientX, e.clientY);
   });
+
+  // Bug 2+3 修复：window 焦点丢失/恢复时 cursor 的显示/隐藏
+  // — 防止 Alt+Tab 切走后 cursor 停在旧位置（用户感觉"偏移/消失"）
+  window.addEventListener('blur', () => {
+    document.body.classList.add('cursor-blurred');
+  });
+  window.addEventListener('focus', () => {
+    document.body.classList.remove('cursor-blurred');
+    // 重置 cursor 位置到 viewport 中心（等待用户第一次 mousemove 即可）
+    // 同时清理所有残留的 trail/ripple/particle
+    document.querySelectorAll('.cursor-trail, .cursor-click-ripple, .cursor-click-particle').forEach(el => el.remove());
+  });
+  // 页面刚加载无 mousemove 时，cursor 停在 viewport 中心等待首次移动
+  if (mx === 0 && my === 0) {
+    mx = window.innerWidth / 2;
+    my = window.innerHeight / 2;
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    rx = mx; ry = my;
+  }
 }
 
 // 创建拖尾粒子
