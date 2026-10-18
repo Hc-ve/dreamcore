@@ -1061,8 +1061,9 @@ body::after {
 /* 用户菜单 */
 .user-menu { position: relative; }
 .user-avatar-btn {
+  width: 30px; height: 30px;
   border: none; background: none; padding: 0; border-radius: 50%;
-  cursor: pointer; transition: transform 0.3s;
+  cursor: pointer; transition: transform 0.3s; overflow: hidden;
 }
 .user-avatar-btn:hover { transform: scale(1.08); }
 .user-dropdown {
@@ -6621,3 +6622,7 @@ html[data-theme="dark"] .dashboard-meta { color: rgba(229,231,235,0.6); }
 }
 @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes popIn { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+
+
+/* 下拉菜单里的大头像按钮 — 44x44 */
+.user-avatar-btn.lg { width: 44px; height: 44px; }

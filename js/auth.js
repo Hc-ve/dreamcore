@@ -128,7 +128,7 @@ const Auth = {
         if (window.Settings?.getSetting) {
           const av = window.Settings.getSetting('avatar');
           if (av && av.type === 'custom' && av.dataURL) {
-            avatarHtml = `<img src="${av.dataURL}" class="avatar-circle avatar-img" alt="头像">`;
+            avatarHtml = `<img src="${av.dataURL}" class="avatar-circle avatar-img" width="30" height="30" alt="头像">`;
           } else if (av && av.type === 'system') {
             // 系统头像：从 Settings 模块的 SYSTEM_AVATARS 取
             // 直接读 svg 字符串比较稳——Settings 暴露的 Settings.SYSTEM_AVATARS
@@ -148,7 +148,7 @@ const Auth = {
           </button>
           <div class="user-dropdown" id="user-dropdown">
             <div class="dropdown-header">
-              ${avatarHtml.replace('avatar-btn', 'avatar-btn lg').replace('class="avatar-circle', 'class="avatar-circle lg')}
+              <div class="user-avatar-btn lg">${avatarHtml.replace('class="avatar-circle', 'class="avatar-circle lg').replace('width="30" height="30"', 'width="44" height="44"')}</div>
               <div>
                 <div class="dd-name">${this._esc(currentUser.username)}</div>
                 <div class="dd-email">${this._esc(currentUser.email || '共创伙伴')}</div>

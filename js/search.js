@@ -39,9 +39,8 @@ const Search = {
 
   async showSearchBar() {
     if (typeof Sound !== 'undefined') Sound.playSound('pop');
-    if (this.allArtworks.length === 0) {
-      this.allArtworks = await getAllArtworks();
-    }
+    // 每次打开都刷新 IndexedDB —— 用户发布/删除/编辑作品后 Search 必须感知变化
+    this.allArtworks = await getAllArtworks();
     const overlay = document.getElementById('search-modal');
     if (overlay) {
       if (!this.isOpen) {

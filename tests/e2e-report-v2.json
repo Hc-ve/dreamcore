@@ -1,15 +1,15 @@
 {
   "meta": {
-    "startTime": "2026-10-18T06:39:33.182Z",
+    "startTime": "2026-10-18T09:52:11.354Z",
     "env": "Edge stable (chromium channel)",
     "baseURL": "http://localhost:5173/",
     "viewport": {
       "width": 1440,
       "height": 900
     },
-    "endTime": "2026-10-18T06:41:12.972Z",
+    "endTime": "2026-10-18T09:52:53.014Z",
     "consoleErrorCount": 0,
-    "consoleWarnCount": 1,
+    "consoleWarnCount": 0,
     "failedRequests": 0
   },
   "summary": {
@@ -17,7 +17,7 @@
     "passed": 63,
     "failed": 0,
     "warnings": 0,
-    "durationMs": 99790
+    "durationMs": 41659
   },
   "bugs": [],
   "uxIssues": [],
@@ -27,7 +27,7 @@
       "hash": "",
       "name": "home",
       "title": "Dreamcore · AI+文旅文创艺术共创社区",
-      "loadMs": 2250
+      "loadMs": 1809
     },
     {
       "hash": "#/gallery",
@@ -39,109 +39,109 @@
       "hash": "#/search?q=敦煌",
       "name": "search",
       "title": "搜索 \"敦煌\" · Dreamcore",
-      "loadMs": 1523
+      "loadMs": 1512
     },
     {
       "hash": "#/score",
       "name": "score",
       "title": "AI智能评分 · Dreamcore",
-      "loadMs": 1511
+      "loadMs": 1516
     },
     {
       "hash": "#/craft",
       "name": "craft",
       "title": "AI文创衍生品 · Dreamcore",
-      "loadMs": 1521
+      "loadMs": 1510
     },
     {
       "hash": "#/scan",
       "name": "scan",
       "title": "AI识文化 · Dreamcore",
-      "loadMs": 1529
+      "loadMs": 1514
     },
     {
       "hash": "#/tutor",
       "name": "tutor",
       "title": "AI陪练 · Dreamcore",
-      "loadMs": 1522
+      "loadMs": 1507
     },
     {
       "hash": "#/curate",
       "name": "curate",
       "title": "AI智能策展 · Dreamcore",
-      "loadMs": 1534
+      "loadMs": 1511
     },
     {
       "hash": "#/leaderboard",
       "name": "leaderboard",
       "title": "排行榜 · Dreamcore",
-      "loadMs": 1532
+      "loadMs": 1517
     },
     {
       "hash": "#/atlas",
       "name": "atlas",
       "title": "文化故事图鉴 · Dreamcore",
-      "loadMs": 1535
+      "loadMs": 1511
     },
     {
       "hash": "#/footprint",
       "name": "footprint",
       "title": "文化探索足迹 · Dreamcore",
-      "loadMs": 1524
+      "loadMs": 1511
     },
     {
       "hash": "#/pricing",
       "name": "pricing",
       "title": "定价方案 · Dreamcore",
-      "loadMs": 1535
+      "loadMs": 1516
     },
     {
       "hash": "#/scenic",
       "name": "scenic",
       "title": "景区推荐 · Dreamcore",
-      "loadMs": 1525
+      "loadMs": 1508
     },
     {
       "hash": "#/ai-disclosure",
       "name": "ai-disclosure",
       "title": "AI 生成披露 · Dreamcore",
-      "loadMs": 1527
+      "loadMs": 1511
     },
     {
       "hash": "#/partner",
       "name": "partner",
       "title": "合伙人申请 · Dreamcore",
-      "loadMs": 1518
+      "loadMs": 1506
     },
     {
       "hash": "#/admin",
       "name": "admin",
       "title": "管理后台 · Dreamcore",
-      "loadMs": 1521
+      "loadMs": 1517
     },
     {
       "hash": "#/edit",
       "name": "edit",
       "title": "AI修图工作台 · Dreamcore",
-      "loadMs": 1520
+      "loadMs": 1522
     },
     {
       "hash": "#/profile",
       "name": "profile",
       "title": "个人中心 · Dreamcore",
-      "loadMs": 1533
+      "loadMs": 1524
     },
     {
       "hash": "#/settings?tab=appearance",
       "name": "settings",
       "title": "设置 · Dreamcore",
-      "loadMs": 1530
+      "loadMs": 1513
     }
   ],
   "perf": [
     {
       "route": "home",
-      "navigateMs": 2250
+      "navigateMs": 1809
     },
     {
       "route": "gallery",
@@ -149,78 +149,72 @@
     },
     {
       "route": "search",
-      "navigateMs": 1523
+      "navigateMs": 1512
     },
     {
       "route": "score",
-      "navigateMs": 1511
+      "navigateMs": 1516
     },
     {
       "route": "craft",
-      "navigateMs": 1521
+      "navigateMs": 1510
     },
     {
       "route": "scan",
-      "navigateMs": 1529
+      "navigateMs": 1514
     },
     {
       "route": "tutor",
-      "navigateMs": 1522
+      "navigateMs": 1507
     },
     {
       "route": "curate",
-      "navigateMs": 1534
+      "navigateMs": 1511
     },
     {
       "route": "leaderboard",
-      "navigateMs": 1532
+      "navigateMs": 1517
     },
     {
       "route": "atlas",
-      "navigateMs": 1535
+      "navigateMs": 1511
     },
     {
       "route": "footprint",
-      "navigateMs": 1524
+      "navigateMs": 1511
     },
     {
       "route": "pricing",
-      "navigateMs": 1535
+      "navigateMs": 1516
     },
     {
       "route": "scenic",
-      "navigateMs": 1525
+      "navigateMs": 1508
     },
     {
       "route": "ai-disclosure",
-      "navigateMs": 1527
+      "navigateMs": 1511
     },
     {
       "route": "partner",
-      "navigateMs": 1518
+      "navigateMs": 1506
     },
     {
       "route": "admin",
-      "navigateMs": 1521
+      "navigateMs": 1517
     },
     {
       "route": "edit",
-      "navigateMs": 1520
+      "navigateMs": 1522
     },
     {
       "route": "profile",
-      "navigateMs": 1533
+      "navigateMs": 1524
     },
     {
       "route": "settings",
-      "navigateMs": 1530
+      "navigateMs": 1513
     }
   ],
-  "consoleErrors": [
-    {
-      "type": "warning",
-      "text": "Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
-      "time": 1792305652306
-    }
-  ]
+  "consoleErrors": []
 }

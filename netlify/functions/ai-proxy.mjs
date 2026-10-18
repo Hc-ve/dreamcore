@@ -238,7 +238,8 @@ async function callTextProvider(provider, { prompt, system, model, storyTask, ma
     const r = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: { Authorization: `Bearer ${DEEPSEEK_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: model || 'deepseek-chat', messages: buildMessages(system, prompt), max_tokens: maxTokens, temperature: temperature })
+      // seed：每次随机采样种子——避免相同 prompt（仅 nonce 差异）返回完全一致结果
+      body: JSON.stringify({ model: model || 'deepseek-chat', messages: buildMessages(system, prompt), max_tokens: maxTokens, temperature: temperature, seed: Math.floor(Math.random() * 2147483647) })
     });
     const d = await r.json();
     if (!r.ok) throw new Error(`DeepSeek 调用失败 ${r.status}: ${JSON.stringify(d).slice(0, 200)}`);
@@ -252,7 +253,7 @@ async function callTextProvider(provider, { prompt, system, model, storyTask, ma
     const r = await fetch(`${MIMO_BASE}/chat/completions`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${MIMO_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: model || 'mimo-v2.5-pro', messages: buildMessages(system, prompt), max_tokens: maxTokens || 800, temperature: temperature == null ? 0.8 : temperature })
+      body: JSON.stringify({ model: model || 'mimo-v2.5-pro', messages: buildMessages(system, prompt), max_tokens: maxTokens || 800, temperature: temperature == null ? 0.8 : temperature, seed: Math.floor(Math.random() * 2147483647) })
     });
     const d = await r.json();
     if (!r.ok) throw new Error(`MIMO 调用失败 ${r.status}: ${JSON.stringify(d).slice(0, 200)}`);
@@ -266,7 +267,7 @@ async function callTextProvider(provider, { prompt, system, model, storyTask, ma
   const payload = {
     model: model || 'qwen-plus',
     input: { messages: buildMessages(system, prompt) },
-    parameters: { max_tokens: maxTokens, temperature: temperature, ...(search ? { enable_search: true } : {}) }
+    parameters: { max_tokens: maxTokens, temperature: temperature, seed: Math.floor(Math.random() * 2147483647), ...(search ? { enable_search: true } : {}) }
   };
   const r = await fetch(`${DASHSCOPE_BASE}/services/aigc/text-generation/generation`, {
     method: 'POST',

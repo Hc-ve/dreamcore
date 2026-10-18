@@ -748,7 +748,11 @@ const Publish = {
     try {
       const imageDescription = this._getImageDescription();
       const category = this._getCurrentCategory();
-      const result = await AI.generateTitleSuggestions(imageDescription, category);
+      // 🔑 先做本地图像特征分析，把视觉标签传进去（纯 Canvas，无 API 依赖）
+      const feature = this.currentFile?.file && window.AI?.analyzeImage
+        ? await window.AI.analyzeImage(this.currentFile.file).catch(() => null)
+        : null;
+      const result = await AI.generateTitleSuggestions(imageDescription, category, feature);
       this._renderAISuggestPanel(result);
     } catch (err) {
       this._showAIPanelError(err && err.message ? err.message : 'AI推荐生成失败，请重试');

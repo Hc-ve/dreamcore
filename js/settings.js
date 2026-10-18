@@ -91,10 +91,10 @@ function _migrateLegacyParticleThemeKey() {
  * 头像脏数据迁移（V2）：
  *   老版本 Canvas 裁剪绕过、CSS width:100% 导致 img 撑不出、或用户绕过保存直接塞了非正方形 dataURL
  *   → 统一重新中心裁剪到 200x200 覆盖 localStorage。
- *   已迁过的用户跳过（标记 dreamcore-avatar-migrated-v2）。
+ *   已迁过的用户跳过（标记 dreamcore-avatar-migrated-v3）。
  */
 async function _migrateLegacyAvatar() {
-  const MARK = 'dreamcore-avatar-migrated-v2';
+  const MARK = 'dreamcore-avatar-migrated-v3';
   try {
     if (localStorage.getItem(MARK)) return; // 迁过就不再跑
     const raw = localStorage.getItem(LS_PREFIX + LS_KEYS.avatar);

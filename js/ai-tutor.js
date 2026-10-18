@@ -1853,22 +1853,306 @@ const AI = {
   },
 
   // ============================================================
-  // 作品智能推荐（标题文案生成）
+  // 作品智能推荐（标题文案生成）—— 新版：支持图像特征 + 每次唯一 nonce
   // ============================================================
-  async generateTitleSuggestions(imageDescription, category) {
+
+  // ======== 图像特征分析、fallback（语义化模板池 + shuffle）、新版 generateTitleSuggestions
+  // 全部在下方 block 中定义
+  // ========
+
+  // ============================================================
+  // 图像特征分析（纯前端 Canvas，无 API 依赖）
+  // 降采样 + HSV 统计 → 输出 视觉标签 + 主色 + 色调 + 亮度 + 丰富度
+  // ============================================================
+  async analyzeImage(fileOrDataURL) {
+    let dataURL = fileOrDataURL;
+    if (fileOrDataURL instanceof Blob || fileOrDataURL instanceof File) {
+      dataURL = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(fileOrDataURL);
+      });
+    }
+    if (!dataURL || typeof dataURL !== 'string') return null;
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(this._analyzeImageFromImg(img));
+      img.onerror = () => resolve(null);
+      img.src = dataURL;
+    });
+  },
+
+  _analyzeImageFromImg(img) {
+    const W = 48, H = 48;  // 降采样到 48×48 像素分析
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, W, H);
+    const data = ctx.getImageData(0, 0, W, H).data;
+
+    let totalR = 0, totalG = 0, totalB = 0;
+    let totalH = 0, totalS = 0, totalV = 0;
+    let warmCount = 0, coolCount = 0;
+    const hueBuckets = new Array(36).fill(0);  // 36 个色相桶（10°/桶）
+    const colorBuckets = new Map();           // 量化 RGB 桶（4^3=64 桶）
+    let purePixels = 0, totalCount = 0;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+      if (a < 20) continue;
+      totalCount++;
+      totalR += r; totalG += g; totalB += b;
+
+      const { h, s, v } = this._rgbToHsv(r, g, b);
+      totalH += h; totalS += s; totalV += v;
+
+      if (s > 0.15) {
+        hueBuckets[Math.floor(h / 10)]++;
+        purePixels++;
+        // 暖（红橙黄 h<60 或 h>330）vs 冷（青绿蓝 120<h<270）
+        if ((h < 60 || h > 330) && s > 0.2) warmCount++;
+        if (h > 120 && h < 270 && s > 0.2) coolCount++;
+      }
+      // 量化 RGB 桶
+      const qr = Math.min(3, Math.floor(r / 64));
+      const qg = Math.min(3, Math.floor(g / 64));
+      const qb = Math.min(3, Math.floor(b / 64));
+      const key = `${qr},${qg},${qb}`;
+      colorBuckets.set(key, (colorBuckets.get(key) || 0) + 1);
+    }
+
+    if (totalCount === 0) return null;
+
+    const avgR = Math.round(totalR / totalCount);
+    const avgG = Math.round(totalG / totalCount);
+    const avgB = Math.round(totalB / totalCount);
+    const avgH = totalH / totalCount;
+    const avgS = totalS / totalCount;
+    const avgV = totalV / totalCount;
+    const richness = hueBuckets.filter(n => n > totalCount * 0.02).length;  // 超过 2% 的色相桶数
+
+    // 主色 = 出现最多的 3 个量化颜色
+    const topColors = [...colorBuckets.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
+      .map(([k, cnt]) => {
+        const [qr, qg, qb] = k.split(',').map(Number);
+        return { r: qr * 64 + 32, g: qg * 64 + 32, b: qb * 64 + 32, pct: cnt / totalCount };
+      });
+
+    // 视觉标签判定
+    const tags = [];
+    if (avgV < 0.22) tags.push('dark', 'moody');
+    else if (avgV > 0.78) tags.push('bright', 'airy');
+    if (avgS < 0.12) tags.push('muted', 'minimal');
+    else if (avgS > 0.55) tags.push('vibrant', 'colorful');
+    if (coolCount > warmCount * 1.5 && avgS > 0.15) tags.push('cool-toned');
+    else if (warmCount > coolCount * 1.5 && avgS > 0.15) tags.push('warm-toned');
+
+    // 语义化标签（基于主色 + 色调 + 亮度）
+    const primaryHue = this._dominantHue(hueBuckets);
+    if (richness >= 8 && avgS > 0.3) tags.push('diverse', 'dreamlike');
+    if (richness < 3) tags.push('monochrome', 'minimalist');
+
+    // 综合场景标签（给 fallback 选模板用）
+    const sceneTags = [];
+    // 青绿/青蓝(teal) → 山水/森林/自然
+    // 注意：170-200 的青蓝色（如青绿森林的深色水域/阴影）同样是自然场景，
+    // 之前区间只到 170 会让 teal 主色图落入规则空隙被误判为 abstract —— 已扩展到 200
+    if ((primaryHue >= 90 && primaryHue <= 200) && avgS > 0.2 && avgV > 0.25) {
+      sceneTags.push('landscape', 'nature');
+      if (primaryHue <= 170) sceneTags.push('chinese-traditional');
+      if (avgS > 0.4 && richness > 4) sceneTags.push('lush', 'serene');
+    }
+    // 暖色橙红 → 夕阳/黄昏
+    if ((primaryHue >= 0 && primaryHue <= 40) && avgS > 0.25 && avgV > 0.3) {
+      sceneTags.push('sunset', 'warm', 'evening');
+    }
+    // 低亮 + 冷蓝 → 夜空/深海
+    if (avgV < 0.25 && primaryHue >= 200 && primaryHue <= 260) {
+      sceneTags.push('night', 'cosmic', 'deep');
+    }
+    // 多彩 + 高饱和 → 抽象/缤纷
+    if (richness >= 10 && avgS > 0.4) sceneTags.push('abstract', 'vibrant');
+    // 暗 + 低饱和 → 神秘/梦境
+    if (avgV < 0.3 && avgS < 0.25) sceneTags.push('mysterious', 'dreamy');
+
+    const ratio = img.naturalWidth / Math.max(1, img.naturalHeight);
+    const orientation = ratio > 1.2 ? 'wide' : ratio < 0.83 ? 'tall' : 'square';
+
+    return {
+      avgColor: { r: avgR, g: avgG, b: avgB },
+      topColors,
+      avgH, avgS, avgV,
+      richness,
+      dominantHue: primaryHue,
+      warmRatio: warmCount / Math.max(1, warmCount + coolCount),
+      coolRatio: coolCount / Math.max(1, warmCount + coolCount),
+      orientation,
+      tags,
+      sceneTags,
+      semanticTags: [...new Set([...sceneTags, ...tags])].slice(0, 6),
+    };
+  },
+
+  _rgbToHsv(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const d = max - min;
+    let h = 0;
+    if (d !== 0) {
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+    return { h: h * 360, s: max === 0 ? 0 : d / max, v: max };
+  },
+
+  _dominantHue(hueBuckets) {
+    let max = 0, idx = 0;
+    for (let i = 0; i < hueBuckets.length; i++) {
+      if (hueBuckets[i] > max) { max = hueBuckets[i]; idx = i; }
+    }
+    return idx * 10 + 5;  // 桶中心
+  },
+
+  // ============================================================
+  // 重写 fallback：接受图像特征，从语义化模板池选 + 每次 shuffle
+  // ============================================================
+  _fallbackTitles(categoryName, feature, description) {
+    // 语义化模板池（与视觉标签对应）
+    const pools = {
+      'landscape': [
+        '山水之间', '青峦叠翠', '溪山行旅', '云雾山居',
+        '翠谷幽境', '水墨幻境', '秋山新雨', '山河入梦',
+        '青山不老', '溪光山色', '云岫归人', '林泉高致',
+        '野渡舟横', '松间明月', '山居秋暝', '远岫晴云',
+      ],
+      'nature': [
+        '绿野仙踪', '林间低语', '翠影摇曳', '花间密语',
+        '自然之诗', '绿野漫步', '林间秘境', '春野拾趣',
+      ],
+      'chinese-traditional': [
+        '古韵新声', '国风入梦', '千年画卷', '古韵流芳',
+        '丹青妙境', '水墨丹青', '诗意东方', '古韵今风',
+      ],
+      'sunset': [
+        '落日熔金', '黄昏序章', '暮光私语', '晚霞织梦',
+        '夕阳之歌', '暮色温柔', '落日诗篇', '黄昏的拥抱',
+      ],
+      'night': [
+        '夜色温柔', '月光如水', '星辰低语', '暗夜秘境',
+        '午夜梦呓', '星尘漫游', '夜色交响曲', '深邃之梦',
+      ],
+      'cosmic': [
+        '星际漫游', '光年之外', '星云梦旅', '宇宙低语',
+        '星辰大海', '银河彼岸', '深空回响', '星尘诗篇',
+      ],
+      'abstract': [
+        '色彩的呼吸', '梦境织锦', '无形之形', '色彩交响',
+        '幻象之舞', '流光溢彩', '梦境碎片', '色彩流韵',
+      ],
+      'vibrant': [
+        '缤纷幻境', '色彩绽放', '华彩乐章', '绚烂之梦',
+        '色彩嘉年华', '光之盛宴', '流光舞曲', '霓虹梦境',
+      ],
+      'minimal': [
+        '极简之美', '留白诗意', '简至极致', '素心若雪',
+        '空境之美', '淡极始知', '无声之韵', '静谧之境',
+      ],
+      'mysterious': [
+        '秘境回响', '暗夜低语', '梦的低语', '迷雾之旅',
+        '神秘花园', '隐世秘境', '未知之境', '暗夜秘语',
+      ],
+      'dreamlike': [
+        '梦境漫游', '似梦非梦', '梦境织者', '梦的入口',
+        '翩然入梦', '梦境私语', '奇幻梦境', '梦游仙境',
+      ],
+    };
+
+    // category 基础池（保留兼容，但被 feature 覆盖优先级低）
+    const categoryPools = {
+      '数字艺术': ['梦境碎片', '数字幻影', '像素星河', '赛博梦境', '代码之诗', '数据之梦'],
+      '摄影': ['光影诗篇', '瞬间永恒', '光之记忆', '时间切片', '光影私语', '瞬间之美'],
+      '插画': ['梦的入口', '色彩幻想', '童话边境', '梦境画廊', '诗意描绘', '视觉童话'],
+      '抽象艺术': ['色彩交响', '意境流', '无形之梦', '色彩回响', '抽象之诗', '色彩秘境'],
+      '3D艺术': ['维度之梦', '立体幻境', '空间诗学', '维度漫游', '空间梦境', '立体之诗'],
+      '艺术': ['梦境之光', '灵感绽放', '梦的碎片', '艺术幻境', '灵感之境', '梦境回响'],
+    };
+
+    // 根据 feature.semanticTags 选池，合并后 shuffle
+    let merged = [];
+    if (feature && feature.semanticTags && feature.semanticTags.length) {
+      for (const tag of feature.semanticTags) {
+        if (pools[tag]) merged.push(...pools[tag]);
+      }
+    }
+    // 兜底：加 category 基础池
+    const catPool = categoryPools[categoryName] || categoryPools['艺术'];
+    merged.push(...catPool);
+    // 去重
+    merged = [...new Set(merged)];
+
+    // Fisher-Yates shuffle（每次不同）
+    for (let i = merged.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [merged[i], merged[j]] = [merged[j], merged[i]];
+    }
+
+    // 取前 3
+    const titles = merged.slice(0, 3);
+
+    // 文案：结合 feature + category
+    const scene = (feature?.semanticTags || []).join(' / ') || categoryName;
+    const mood = [];
+    if (feature?.avgV < 0.3) mood.push('低明度');
+    else if (feature?.avgV > 0.7) mood.push('明亮');
+    if (feature?.avgS > 0.4) mood.push('高饱和');
+    if (feature?.avgS < 0.2) mood.push('淡雅');
+    if (feature?.coolRatio > feature?.warmRatio) mood.push('冷调');
+    else mood.push('暖调');
+    const moodStr = mood.join('、') || '梦幻';
+
+    const descTemplates = [
+      `一幅${moodStr}的${categoryName}作品，在${scene}的氛围中编织出独特的视觉诗篇，邀请观者进入一个超越现实的想象空间。`,
+      `${moodStr}光影下，${scene}的主题如梦般浮现，每一处色彩都在轻声诉说着属于它的故事。`,
+      `这是一件${moodStr}的${scene}作品，艺术家以梦幻般的笔触，将${categoryName}的魅力展现得淋漓尽致。`,
+      `在${scene}的意境中，${moodStr}的色彩铺展开来，仿佛打开了一扇通往梦境的门。`,
+    ];
+    const generatedDesc = descTemplates[Math.floor(Math.random() * descTemplates.length)];
+
+    return { titles, description: generatedDesc };
+  },
+
+  generateTitleSuggestions(imageDescription, category, feature) {
     const categoryName = {
-      'digital-art': '数字艺术',
-      'photography': '摄影',
-      'illustration': '插画',
-      'abstract': '抽象艺术',
+      'digital-art': '数字艺术', 'photography': '摄影',
+      'illustration': '插画', 'abstract': '抽象艺术',
       '3d-art': '3D艺术'
     }[category] || '艺术';
 
+    const hasImageContext = feature && (feature.sceneTags?.length || feature.semanticTags?.length);
+    const hasDesc = imageDescription && imageDescription.trim() &&
+      !/^(screenshot|img_|photo_|dsc_|202\d[_-])/i.test(imageDescription.trim());
+
+    const promptDesc = hasDesc ? imageDescription :
+      hasImageContext
+        ? `图像视觉特征：${(feature.semanticTags || []).join('、')}。主色调 HSV=(${Math.round(feature.avgH)}°,${(feature.avgS*100).toFixed(0)}%,${(feature.avgV*100).toFixed(0)}%)`
+        : '一件充满梦幻感的艺术作品';
+
+    // 🔑 每次调用注入唯一创意种子 —— 强制 LLM 输出多样化（配合较低 temperature）
+    const nonce = `${Date.now().toString(36)}-${Math.floor(Math.random() * 9999)}`;
+
     const prompt = `请为一件${categoryName}类型的作品推荐3个标题和1段简短文案。
-作品描述：${imageDescription || '一件充满梦幻感的艺术作品'}
+【唯一创意种子】${nonce}（请在此种子启发下创作新颖独特的意境和用词——但绝对不要在标题或文案中直接出现此种子的任何数字、字母或符号！）
+${hasImageContext ? '【重要】作品视觉特征标签：' + (feature.semanticTags || []).join('、') + '。标题必须体现这些特征！' : ''}
+作品描述：${promptDesc}
 要求：
-- 标题要有创意、有梦幻感、简短（不超过10个字）
+- 标题要有创意、有梦幻感、简短（不超过10个字），体现作品风格和视觉特征
+- 3个标题要各不相同，避免词穷或风格重复
 - 文案2-3句话，符合Dreamcore梦境美学风格
+- 严禁在任何输出中包含种子编号或任何数字字母串
 - 请严格用以下JSON格式返回，不要添加其他文字：
 {"titles": ["标题1", "标题2", "标题3"], "description": "文案内容"}`;
 
@@ -1877,39 +2161,19 @@ const AI = {
       { role: 'user', content: prompt }
     ];
 
-    const result = await this._callAPI(messages);
-    if (!result) return this._fallbackTitles(categoryName);
-
-    try {
-      // 尝试提取JSON
-      const jsonMatch = result.match(/\{[\s\S]*\}/);
-      const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : result);
-      if (parsed.titles && parsed.description) return parsed;
-      return this._fallbackTitles(categoryName);
-    } catch {
-      return this._fallbackTitles(categoryName);
-    }
+    return this._callAPI(messages).then(result => {
+      if (!result) return this._fallbackTitles(categoryName, feature, imageDescription);
+      try {
+        const jsonMatch = result.match(/\{[\s\S]*\}/);
+        const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : result);
+        if (parsed.titles && parsed.description) return parsed;
+        return this._fallbackTitles(categoryName, feature, imageDescription);
+      } catch {
+        return this._fallbackTitles(categoryName, feature, imageDescription);
+      }
+    });
   },
 
-  _fallbackTitles(categoryName) {
-    const titles = {
-      '数字艺术': ['梦境碎片', '数字幻影', '像素星河'],
-      '摄影': ['光影诗篇', '瞬间永恒', '光之记忆'],
-      '插画': ['梦的入口', '色彩幻想', '童话边境'],
-      '抽象艺术': ['无形之梦', '色彩交响', '意境流'],
-      '3D艺术': ['维度之梦', '立体幻境', '空间诗学'],
-      '艺术': ['梦境之光', '灵感绽放', '梦的碎片']
-    };
-    const list = titles[categoryName] || titles['艺术'];
-    return {
-      titles: list,
-      description: '一件充满梦幻感的艺术作品，在色彩与光影中编织出独特的视觉诗篇，邀请观者进入一个超越现实的想象空间。'
-    };
-  },
-
-  // ============================================================
-  // 工具函数
-  // ============================================================
   _esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
