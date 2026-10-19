@@ -150,4 +150,111 @@ test.describe('P1-3 数字人讲解员「小梦」', () => {
       .toBe('stopped');
     expect(await page.evaluate(() => window.__ttsPaused)).toBeGreaterThanOrEqual(1);
   });
+
+  // ============================================================
+  // 修复回归（2026-10-18）：「语音讲解」缺暂停/关闭入口 + 「小梦」挂件不可点击
+  // ============================================================
+  test('合成中可取消：加载态按钮可点击，再点即取消且不进入播放', async ({ page }) => {
+    await clearStorage(page.context());
+    // 延迟响应，制造「语音合成中…」窗口，验证此时可取消
+    await page.route('**/api/ai/tts', async (route) => {
+      await new Promise(r => setTimeout(r, 3000));
+      await route.fulfill({
+        status: 200, contentType: 'application/json',
+        body: JSON.stringify({ audioUrl: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=' })
+      });
+    });
+    await openApp(page);
+    await stubAudio(page);
+    await loadDigitalGuide(page);
+
+    await page.goto('/#/atlas?theme=dunhuang');
+    const overlay = page.locator('#culture-atlas-page');
+    await overlay.locator('.ca-detail-name').waitFor({ timeout: 10000 });
+    const btn = overlay.locator('.tts-btn[data-tts-text]').first();
+    await btn.waitFor({ timeout: 10000 });
+
+    // 点击 → 进入加载态，按钮文案提示「点击取消」
+    await btn.click();
+    await expect(btn).toHaveClass(/tts-loading/, { timeout: 3000 });
+    await expect(btn).toContainText('点击取消');
+
+    // 再点同一按钮 → 立即取消，按钮复位
+    await btn.click();
+    await expect(btn).not.toHaveClass(/tts-loading/, { timeout: 3000 });
+    await expect(btn).toContainText('语音讲解');
+
+    // 原请求返回后不得进入播放，挂件应已淡出
+    await page.waitForTimeout(3600);
+    await expect(btn).not.toHaveClass(/tts-playing/);
+    await expect(page.locator('#digital-guide')).toBeHidden({ timeout: 4000 });
+  });
+
+  test('关闭图鉴浮层即停止讲解（不依赖 hashchange）', async ({ page }) => {
+    await clearStorage(page.context());
+    await mockTtsRoute(page);
+    await openApp(page);
+    await stubAudio(page);
+    await loadDigitalGuide(page);
+
+    await page.goto('/#/atlas?theme=dunhuang');
+    const overlay = page.locator('#culture-atlas-page');
+    await overlay.locator('.ca-detail-name').waitFor({ timeout: 10000 });
+    const btn = overlay.locator('.tts-btn[data-tts-text]').first();
+    await btn.waitFor({ timeout: 10000 });
+
+    await btn.click();
+    await expect(btn).toHaveClass(/tts-playing/, { timeout: 5000 });
+
+    // 关闭浮层：hash 不变（无 hashchange），必须由 closeAtlas 主动停讲解
+    await overlay.locator('[data-close]').first().click();
+    expect(await page.evaluate(() => window.__ttsPaused)).toBeGreaterThanOrEqual(1);
+    await expect(page.locator('#digital-guide')).toBeHidden({ timeout: 5000 });
+  });
+
+  test('讲解中点击「小梦」挂件：可停止讲解（挂件不再是无反应的装饰）', async ({ page }) => {
+    await clearStorage(page.context());
+    await mockTtsRoute(page);
+    await openApp(page);
+    await stubAudio(page);
+    await loadDigitalGuide(page);
+
+    await page.goto('/#/atlas?theme=dunhuang');
+    const overlay = page.locator('#culture-atlas-page');
+    await overlay.locator('.ca-detail-name').waitFor({ timeout: 10000 });
+    const btn = overlay.locator('.tts-btn[data-tts-text]').first();
+    await btn.waitFor({ timeout: 10000 });
+
+    await btn.click();
+    const dg = page.locator('#digital-guide');
+    await expect(dg).toHaveClass(/dg-playing/, { timeout: 5000 });
+    await expect(dg).toHaveAttribute('title', /点击停止/);
+
+    // 直接点击挂件本体 → 停止讲解
+    await dg.locator('.dg-body').click();
+    expect(await page.evaluate(() => window.__ttsPaused)).toBeGreaterThanOrEqual(1);
+    await expect(dg).toBeHidden({ timeout: 5000 });
+  });
+
+  test('合成超时兜底按文本长度放宽（长讲解不再被 20s 误杀）', async ({ page }) => {
+    await clearStorage(page.context());
+    await openApp(page);
+
+    // tts-player 暴露 getTimeoutMs 便于回归断言：长文本超时必须显著大于旧的 20s 固定阈值，
+    // 否则云端耗时 30s+ 的正常讲解会被 abort 成「signal is aborted without reason」
+    const t = await page.evaluate(() => {
+      const f = window.TTSPlayer && window.TTSPlayer.getTimeoutMs;
+      if (typeof f !== 'function') return null;
+      return { short: f('短句'), long: f('文'.repeat(2000)) };
+    });
+    expect(t).not.toBeNull();
+    // 短文本走下限保护（30s），不会因文本极短而瞬间超时
+    expect(t.short).toBeGreaterThanOrEqual(30000);
+    // 2000 字（云函数文本上限量级）封顶在 180s，避免请求彻底挂死时无限等待
+    expect(t.long).toBeLessThanOrEqual(180000);
+    expect(t.long).toBeGreaterThan(t.short);
+    // 实测敦煌讲解约 313 字、云端同步合成约 34s → 超时必须放宽到 60s 以上
+    const dunhuang = await page.evaluate(() => window.TTSPlayer.getTimeoutMs('敦煌'.repeat(157)));
+    expect(dunhuang).toBeGreaterThan(60000);
+  });
 });

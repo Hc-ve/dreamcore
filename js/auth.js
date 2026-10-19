@@ -39,6 +39,11 @@ async function _cloudProfileToUser() {
   return {
     id: user.id,
     username: (profile && profile.username) || meta.username || '用户',
+    // 自定义资料：昵称/简介随 metadata 带出；avatar 为 dataURL（体积大）不入 metadata，
+    // 登录后由 Settings.hydrateUserProfile 从本地 users 记录回灌。
+    nickname: meta.nickname || '',
+    bio: meta.bio || '',
+    avatar: null,
     email: meta.email || user.email || '',
     isAdmin: !!((profile && profile.role === 'admin') || meta.isAdmin),
     role: meta.role === 'superadmin' ? 'superadmin' : (((profile && profile.role === 'admin') || meta.isAdmin) ? 'admin' : 'user'),
@@ -51,8 +56,14 @@ async function _cloudProfileToUser() {
 async function _ensureLocalUser() {
   if (!currentUser) return;
   const fn = window.ensureLocalUserForCloudUser;
-  if (typeof fn !== 'function') return;
-  try { await fn(currentUser); } catch (_) { /* 本地同步失败不阻塞登录 */ }
+  if (typeof fn === 'function') {
+    try { await fn(currentUser); } catch (_) { /* 本地同步失败不阻塞登录 */ }
+  }
+  // 记录建立后再回灌个人资料：头像/昵称/简介/标签按 userId 独立存储并写入账户级缓存，
+  // 保证同一浏览器切换账户时资料互不串扰（Bug #1/#2 修复的关键一环）
+  if (window.Settings && typeof window.Settings.hydrateUserProfile === 'function') {
+    try { await window.Settings.hydrateUserProfile(currentUser); } catch (_) { /* 回灌失败不阻塞登录 */ }
+  }
 }
 
 // M6a-2 密保答案哈希：sha256(username:answer)，与云函数 auth-reset.mjs 保持一致
@@ -106,8 +117,10 @@ const Auth = {
   },
 
   // 获取当前用户（供其他模块读取最新状态）
+  // 统一以 window.currentUser 为准（auth.js 内部赋值时始终同步写两者），
+  // 避免「双份 currentUser 不一致」导致路由/设置模块误判为未登录
   getCurrentUser() {
-    return currentUser;
+    return window.currentUser || currentUser;
   },
 
   // ----------------------------------------------------------
@@ -117,27 +130,29 @@ const Auth = {
     const area = document.getElementById('nav-user-area');
     if (!area) return;
 
-    if (currentUser) {
-      // 已登录：只显示用户头像菜单（通知铃铛已移至设置页）
-      const initial = (currentUser.username || '?').charAt(0).toUpperCase();
-      const isAdmin = currentUser.isAdmin;
+    // 登录态取值统一以 window.currentUser 为准（全项目 20+ 模块的全局约定），
+    // 回退到模块内 currentUser。auth.js 内部每次赋值都同步写两者，因此生产环境二者恒等；
+    // 统一后既消除「双份 currentUser 可能不一致」的隐患，也让外部注入的登录态被正确识别。
+    const user = window.currentUser || currentUser;
 
-      // 优先用 Settings 里的头像
+    if (user) {
+      // 已登录：只显示用户头像菜单（通知铃铛已移至设置页）
+      const initial = (user.username || '?').charAt(0).toUpperCase();
+      const isAdmin = user.isAdmin;
+
+      // 头像：以「当前账户」的资料为准（user.avatar，回退到账户级 Settings 缓存）
+      // 账户级存储 → 换账户登录时绝不会显示上一位用户的头像（Bug #1）
       let avatarHtml = `<span class="avatar-circle">${initial}</span>`;
       try {
-        if (window.Settings?.getSetting) {
-          const av = window.Settings.getSetting('avatar');
-          if (av && av.type === 'custom' && av.dataURL) {
-            avatarHtml = `<img src="${av.dataURL}" class="avatar-circle avatar-img" width="30" height="30" alt="头像">`;
-          } else if (av && av.type === 'system') {
-            // 系统头像：从 Settings 模块的 SYSTEM_AVATARS 取
-            // 直接读 svg 字符串比较稳——Settings 暴露的 Settings.SYSTEM_AVATARS
-            const SA = window.Settings.SYSTEM_AVATARS || [];
-            const found = SA.find(a => a.id === av.id);
-            if (found && found.svg) {
-              avatarHtml = `<span class="avatar-circle avatar-svg-wrap">${found.svg}</span>`;
-            }
-          }
+        const S = window.Settings;
+        const av = (user.avatar && user.avatar.type)
+          ? user.avatar
+          : ((S && typeof S.getSetting === 'function') ? S.getSetting('avatar') : null);
+        if (S && typeof S.renderAvatarHtml === 'function') {
+          avatarHtml = S.renderAvatarHtml(
+            { avatar: av, username: user.username, nickname: user.nickname },
+            { px: 30 }
+          );
         }
       } catch (e) { /* 忽略，fallback 到 initial */ }
 
@@ -150,8 +165,8 @@ const Auth = {
             <div class="dropdown-header">
               <div class="user-avatar-btn lg">${avatarHtml.replace('class="avatar-circle', 'class="avatar-circle lg').replace('width="30" height="30"', 'width="44" height="44"')}</div>
               <div>
-                <div class="dd-name">${this._esc(currentUser.username)}</div>
-                <div class="dd-email">${this._esc(currentUser.email || '共创伙伴')}</div>
+                <div class="dd-name">${this._esc(user.nickname || user.username)}</div>
+                <div class="dd-email">${this._esc(user.email || '共创伙伴')}</div>
               </div>
             </div>
             <button class="dropdown-item" data-action="profile">
@@ -627,7 +642,7 @@ const Auth = {
   // 检查是否登录，未登录则弹窗。返回是否已登录
   // ----------------------------------------------------------
   requireLogin() {
-    if (currentUser) return true;
+    if (window.currentUser || currentUser) return true;
     this.showAuthModal('login');
     this._toast('请先登录后再操作', 'warn');
     return false;

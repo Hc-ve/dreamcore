@@ -198,14 +198,17 @@ const Notifications = {
           content = this._esc(notif.content || '有新通知');
       }
 
-      const avatarText = (fromUser?.username || '?').charAt(0).toUpperCase();
+      // 头像统一走 Settings.renderAvatarHtml：fromUser 是 users 记录，自定义头像直接生效
+      const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+        ? window.Settings.renderAvatarHtml(fromUser || { username: '?' }, { sizeClass: 'sm' })
+        : `<span class="avatar-circle sm">${this._esc((fromUser?.username || '?').charAt(0).toUpperCase())}</span>`;
       const timeText = this._fmtTime(notif.createdAt);
       const thumbHtml = artwork ? `<div class="notif-thumb"><img src="${this._esc(artwork.imageUrl)}" alt="" /></div>` : '';
 
       items.push(`
         <div class="notif-item ${notif.read ? 'is-read' : 'is-unread'}" data-id="${notif.id}" data-type="${notif.type}" data-artwork="${notif.artworkId || ''}" data-user="${notif.fromUserId || ''}">
           <div class="notif-avatar">
-            <span class="avatar-circle sm">${this._esc(avatarText)}</span>
+            ${avatarHtml}
             <span class="notif-icon" style="color:${iconColor}"><i class="${iconClass}"></i></span>
           </div>
           <div class="notif-content">

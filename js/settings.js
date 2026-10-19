@@ -35,6 +35,10 @@ const LS_KEYS = {
   aiTraining: 'aiTraining',     // boolean 用户资产是否允许 AI 训练
   avatar: 'avatar',             // {type:'system'|'custom', id:number, dataURL:string}
   nickname: 'nickname',
+  // bio / tags 此前未登记 → LS_KEYS[key] 为 undefined，拼接出 dreamcore-undefined 脏键，
+  // bio 与 tags 互相覆盖且全账户共享。登记后统一走「账户级」存储，按 userId 隔离。
+  bio: 'bio',
+  tags: 'tags',
 };
 
 // 遗留主题 key（index.html 防闪烁脚本 / particles.js 使用的裸字符串键）
@@ -88,33 +92,27 @@ function _migrateLegacyParticleThemeKey() {
 }
 
 /**
- * 头像脏数据迁移（V2）：
- *   老版本 Canvas 裁剪绕过、CSS width:100% 导致 img 撑不出、或用户绕过保存直接塞了非正方形 dataURL
- *   → 统一重新中心裁剪到 200x200 覆盖 localStorage。
- *   已迁过的用户跳过（标记 dreamcore-avatar-migrated-v3）。
+ * 一次性清理历史「全局账户键」（跨账户泄漏源）。
+ * 旧版本把 avatar / nickname / bio / tags 存在不带 userId 的全局键里：
+ *   dreamcore-avatar、dreamcore-nickname，而 bio 与 tags 因未登记共用 dreamcore-undefined。
+ * 同一浏览器上切换账户时，后登录者会读到前一位用户的资料（Bug #1 头像串扰）。
+ * 新版已改为账户级键（dreamcore-<key>-u-<userId>），此处把遗留全局键移除，
+ * 避免任何旧逻辑继续读到外泄数据。真实资料仍可从 IndexedDB users 记录回灌。
  */
-async function _migrateLegacyAvatar() {
-  const MARK = 'dreamcore-avatar-migrated-v3';
+function _purgeLegacyGlobalProfileKeys() {
+  const MARK = 'dreamcore-profile-scope-migrated-v1';
   try {
-    if (localStorage.getItem(MARK)) return; // 迁过就不再跑
-    const raw = localStorage.getItem(LS_PREFIX + LS_KEYS.avatar);
-    if (!raw) { localStorage.setItem(MARK, '1'); return; }
-    let parsed; try { parsed = JSON.parse(raw); } catch { parsed = null; }
-    if (!parsed || parsed.type !== 'custom' || !parsed.dataURL) {
-      localStorage.setItem(MARK, '1'); return; // 系统头像或无头像，不用迁
-    }
-
-    const fixed = await _ensureSquareAvatar(parsed.dataURL);
-    // _ensureSquareAvatar 对已经是 200x200 的不会重绘，fixed 就是原图 dataURL
-    if (fixed !== parsed.dataURL) {
-      // 尺寸被修正了，覆盖写回 localStorage + 同步后端
-      localStorage.setItem(LS_PREFIX + LS_KEYS.avatar, JSON.stringify({ type: 'custom', dataURL: fixed }));
-      console.log('[Settings] 头像迁移：脏数据已重新裁剪为 200x200');
-      try { await _syncProfileToBackend({ avatar: { type: 'custom', dataURL: fixed } }); } catch (_) {}
-    }
+    if (localStorage.getItem(MARK)) return; // 只跑一次
+    localStorage.removeItem(LS_PREFIX + 'avatar');
+    localStorage.removeItem(LS_PREFIX + 'nickname');
+    localStorage.removeItem(LS_PREFIX + 'bio');
+    localStorage.removeItem(LS_PREFIX + 'tags');
+    localStorage.removeItem(LS_PREFIX + 'undefined');          // bio/tags 历史脏键
+    localStorage.removeItem('dreamcore-avatar-migrated-v3');   // 旧头像迁移标记，一并作废
     localStorage.setItem(MARK, '1');
+    console.log('[Settings] 已清理历史全局账户键（头像/昵称/简介/标签），改为按 userId 隔离存储');
   } catch (e) {
-    console.warn('[Settings] _migrateLegacyAvatar 异常（不阻塞启动）:', e.message);
+    console.warn('[Settings] _purgeLegacyGlobalProfileKeys 异常（不阻塞启动）:', e.message);
   }
 }
 
@@ -148,6 +146,8 @@ const DEFAULTS = {
   aiTraining: false,
   avatar: { type: 'system', id: 1 },
   nickname: '',
+  bio: '',
+  tags: [],
 };
 
 // 风格主题元数据（与 particles.js PARTICLE_THEMES 同步）
@@ -159,12 +159,42 @@ const PARTICLE_THEME_OPTIONS = [
 ];
 
 // ============================================================
+// 账户级 vs 设备级存储
+// ============================================================
+// 「用户数据」= avatar / nickname / bio / tags → 必须按 userId 隔离，
+//   否则同一浏览器切换账户会互相串改（历史 Bug #1：admin 上传头像后 h.c 也被覆盖）。
+// 「设备偏好」= 主题/字体/亮度/音效/渲染质量… → 保持全局共享（本就是本机偏好）。
+const ACCOUNT_SCOPED_KEYS = ['avatar', 'nickname', 'bio', 'tags'];
+
+/** 当前登录用户 id（字符串化，兼容云端 UUID 与本地自增数字 id） */
+function _currentUserId() {
+  try {
+    const u = (typeof window.currentUser !== 'undefined' && window.currentUser) ||
+      (window.Auth && window.Auth.getCurrentUser && window.Auth.getCurrentUser()) || null;
+    return (u && u.id != null) ? String(u.id) : null;
+  } catch (_) { return null; }
+}
+
+/**
+ * 解析持久化键：
+ *   账户级 → dreamcore-<key>-u-<userId>
+ *   设备级 → dreamcore-<key>
+ * 未登录时账户级键返回 null（不可读写，杜绝写入无人认领的共享键）。
+ */
+function _resolveLsKey(key) {
+  const base = LS_PREFIX + LS_KEYS[key];
+  if (!ACCOUNT_SCOPED_KEYS.includes(key)) return base;
+  const uid = _currentUserId();
+  return uid ? `${base}-u-${uid}` : null;
+}
+
+// ============================================================
 // 存储层
 // ============================================================
 
 function getSetting(key) {
-  // 统一单一 key 存储：值写 JSON.parse/stringify 处理，避免旧版双写带来的引号污染
-  const lsKey = LS_PREFIX + LS_KEYS[key];
+  const lsKey = _resolveLsKey(key);
+  if (!lsKey) return DEFAULTS[key]; // 未登录：账户级设置只返回默认值
   const stored = localStorage.getItem(lsKey);
   if (stored === null) return DEFAULTS[key];
   let v;
@@ -175,9 +205,17 @@ function getSetting(key) {
 }
 
 function setSetting(key, value) {
-  const lsKey = LS_PREFIX + LS_KEYS[key];
+  const lsKey = _resolveLsKey(key);
+  if (!lsKey) {
+    if (window.DEBUG_SETTINGS) console.warn('[Settings] setSetting 跳过（未登录，账户级键不可写）:', key);
+    return value;
+  }
   // particle-theme 与 particles.js / HEAD 脚本共用，必须写「无引号裸值」避免 JSON.stringify 污染
   localStorage.setItem(lsKey, key === 'particleTheme' ? String(value) : JSON.stringify(value));
+  // 账户级资料变更 → 镜像到 currentUser，保证导航栏等视图即时一致（同一对象引用）
+  if (ACCOUNT_SCOPED_KEYS.includes(key) && window.currentUser) {
+    window.currentUser[key] = value;
+  }
   // theme 是 index.html 防闪烁脚本 / particles.js 共用的遗留裸键，
   // 必须额外以「无引号裸值」形式同步，否则 HEAD 脚本读取到 `"dark"` 会判定失败。
   if (key === 'theme') _syncLegacyThemeKey(value);
@@ -194,6 +232,90 @@ function setSetting(key, value) {
   }
   if (window.DEBUG_SETTINGS) console.log('[Settings] setSetting', key, '=', value);
   return value;
+}
+
+// ============================================================
+// 用户资料：统一头像渲染 + 登录后回灌
+// ============================================================
+
+const _escHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[c]));
+
+/**
+ * 统一「用户头像」渲染（以用户记录里的 avatar 为数据源）。
+ * 痛点修复（Bug #2）：作品详情页作者行、艺术家主页、个人资料页此前都硬编码
+ * 「用户名首字符」色块，导致用户设置的自定义头像在他人视角完全不生效。
+ * @param {object} user  形如 { avatar, username, nickname }；avatar 为
+ *                       {type:'custom',dataURL} | {type:'system',id} | null
+ * @param {object} opts  { sizeClass, px, style }
+ * @returns {string} 头像 HTML 片段
+ */
+function renderAvatarHtml(user, opts = {}) {
+  const { sizeClass = '', px = 0, style = '' } = opts;
+  const cls = ('avatar-circle ' + sizeClass).trim();
+  const styleAttr = style ? ` style="${style}"` : '';
+  const av = user && user.avatar;
+  if (av && av.type === 'custom' && av.dataURL) {
+    const dim = px > 0 ? ` width="${px}" height="${px}"` : '';
+    return `<img src="${av.dataURL}" class="${cls} avatar-img"${dim}${styleAttr} alt="头像">`;
+  }
+  if (av && av.type === 'system') {
+    const found = SYSTEM_AVATARS.find(a => a.id === av.id);
+    if (found && found.svg) return `<span class="${cls} avatar-svg-wrap"${styleAttr}>${found.svg}</span>`;
+  }
+  const initial = String((user && (user.nickname || user.username)) || '?').charAt(0).toUpperCase();
+  return `<span class="${cls}"${styleAttr}>${_escHtml(initial)}</span>`;
+}
+
+/**
+ * 一次性读取 users 表，构建 String(id) → 用户记录 的映射。
+ * 评论区 / 通知 / 排行榜这类「只持有作者名」的展示面用它批量取头像，
+ * 避免逐条 getUserById 产生 N 次查询。读取失败时返回空表，调用方回退首字母。
+ */
+async function buildUserMap() {
+  const map = new Map();
+  try {
+    const users = (typeof window.getAllUsers === 'function') ? await window.getAllUsers() : [];
+    (users || []).forEach(u => { if (u && u.id != null) map.set(String(u.id), u); });
+  } catch (_) { /* 读表失败不阻塞展示 */ }
+  return map;
+}
+
+/**
+ * 登录后回灌当前账户的个人资料，并写入「账户级」缓存。
+ * 权威源优先级：IndexedDB users 记录 → Supabase user_metadata（昵称/简介）→ 默认值。
+ * 同时镜像到 currentUser 对象（与 window.currentUser 同一引用），供同步 API 读取。
+ */
+async function hydrateUserProfile(user) {
+  if (!user || user.id == null) return user;
+  const uid = String(user.id);
+
+  let rec = null;
+  try { if (typeof window.getUserById === 'function') rec = await window.getUserById(user.id); } catch (_) { /* 记录缺失不阻塞 */ }
+
+  const avatar = (rec && rec.avatar) ||
+    (user.avatar && user.avatar.type ? user.avatar : null) ||
+    { type: 'system', id: 1 };
+  const nickname = (rec && rec.nickname) || user.nickname || '';
+  const bio = (rec && rec.bio) || user.bio || '';
+  const tags = (rec && Array.isArray(rec.tags)) ? rec.tags : (Array.isArray(user.tags) ? user.tags : []);
+
+  // 直接写账户级 localStorage 缓存（不走 setSetting，避免触发事件风暴/重渲染）
+  const put = (key, val) => {
+    try { localStorage.setItem(`${LS_PREFIX}${LS_KEYS[key]}-u-${uid}`, JSON.stringify(val)); } catch (_) {}
+  };
+  put('avatar', avatar);
+  put('nickname', nickname);
+  put('bio', bio);
+  put('tags', tags);
+
+  user.avatar = avatar;
+  user.nickname = nickname;
+  user.bio = bio;
+  user.tags = tags;
+  if (window.DEBUG_SETTINGS) console.log('[Settings] hydrateUserProfile →', uid, { avatar: avatar.type, nickname, bio });
+  return user;
 }
 
 /**
@@ -1160,16 +1282,46 @@ function tabPrivacy() {
     </section>
   `;
 }
+// 后台运营资产（运营上传/后台配置），不属于用户侧缓存：
+// 「清除全部本地数据」必须保留，否则会误删后台已上传的 3D 模型资产——
+// 该数据仅存于浏览器 IndexedDB、无云端备份，一旦清掉不可恢复。
+const PRESERVED_STORES = ['custom_3d_models', 'admin_logs', 'site_settings'];
+
+/** 逐 store 清空指定库（保留 keep 中的表），不整库删除；库不存在时安全返回 */
+function _clearStoresExcept(dbName, keep) {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(dbName);
+    req.onsuccess = () => {
+      const db = req.result;
+      const names = Array.from(db.objectStoreNames || []).filter(n => !keep.includes(n));
+      if (!names.length) { db.close(); resolve(); return; }
+      const tx = db.transaction(names, 'readwrite');
+      names.forEach(n => tx.objectStore(n).clear());
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+      tx.onabort = () => { db.close(); reject(tx.error); };
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
 function initPrivacyTab(c) {
   c.querySelector('#sp-ai-training')?.addEventListener('change', e => { setSetting('aiTraining', e.target.checked); toastSaved(); });
   c.querySelector('#sp-clear-cache')?.addEventListener('click', async () => {
-    if (!confirm('确认清除？这会删除你浏览器里所有 Dreamcore 本地数据，包括登录状态、设置、3D 模型。')) return;
+    if (!confirm('确认清除？这会删除浏览器里的 Dreamcore 本地数据：登录状态、偏好设置、作品/草稿等。\n（后台已上传的 3D 模型资产与站点配置会保留。）')) return;
+    // 二次确认：该操作对用户数据不可恢复，防误触
+    if (!confirm('再次确认：本地用户数据清除后不可恢复，是否继续？')) return;
     localStorage.clear();
     try {
       const dbs = await indexedDB.databases();
-      for (const db of dbs) { if (db.name) indexedDB.deleteDatabase(db.name); }
+      for (const db of dbs) {
+        if (!db.name) continue;
+        // DreamcoreArtDB 逐表清空（保留后台运营资产）；其余库不含后台资产，整库删除
+        if (db.name === 'DreamcoreArtDB') await _clearStoresExcept(db.name, PRESERVED_STORES);
+        else indexedDB.deleteDatabase(db.name);
+      }
     } catch {}
-    alert('已清除全部本地数据，页面即将刷新');
+    alert('已清除本地数据（后台 3D 模型与站点配置已保留），页面即将刷新');
     location.reload();
   });
 }
@@ -1196,8 +1348,8 @@ function tabAbout() {
     <section class="sp-card">
       <h3>帮助与反馈</h3>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <a class="sp-link" href="/terms.html" target="_blank"><i class="fa-solid fa-file-lines" style="margin-right:6px;"></i>服务条款</a>
-        <a class="sp-link" href="/privacy.html" target="_blank"><i class="fa-solid fa-shield-halved" style="margin-right:6px;"></i>隐私政策</a>
+        <a class="sp-link" href="#/terms"><i class="fa-solid fa-file-lines" style="margin-right:6px;"></i>服务条款</a>
+        <a class="sp-link" href="#/privacy"><i class="fa-solid fa-shield-halved" style="margin-right:6px;"></i>隐私政策</a>
         <a class="sp-link" href="#" id="sp-feedback"><i class="fa-solid fa-comment-dots" style="margin-right:6px;"></i>提交反馈</a>
       </div>
     </section>
@@ -1248,7 +1400,11 @@ export const Settings = {
       // 主题键迁移：老用户从 legacy key 平滑继承偏好（必须在 applyTheme 之前）
       _migrateLegacyThemeKey();
       _migrateLegacyParticleThemeKey();
-      await _migrateLegacyAvatar(); // V2 头像脏数据迁移（有自定义头像的老用户自动修复）
+      _purgeLegacyGlobalProfileKeys(); // 清理历史全局账户键（跨账户泄漏源），改为按 userId 隔离
+      // 登录态已恢复 → 回灌当前账户的头像/昵称/简介（权威源：IndexedDB users 记录）
+      if (window.currentUser && window.currentUser.id != null) {
+        try { await hydrateUserProfile(window.currentUser); } catch (_) { /* 回灌失败不阻塞启动 */ }
+      }
       initRealtimeApply();
       // 齿轮入口（事件委托，防止 HTML 动态替换失效）
       document.addEventListener('click', (e) => {
@@ -1272,7 +1428,7 @@ export const Settings = {
       if (!host) {
         host = document.createElement('div');
         host.id = '__settings_host';
-        host.style.cssText = 'position:fixed;inset:72px 0 0 0;z-index:9998;background:var(--bg-dark, #fafafa);color:var(--text-primary, #1a1a2e);overflow-y:auto;';
+        host.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--bg-dark, #fafafa);color:var(--text-primary, #1a1a2e);overflow-y:auto;';
         document.body.appendChild(host);
       }
       host.hidden = false;
@@ -1284,6 +1440,9 @@ export const Settings = {
   // 给 main.js 用
   getSetting, setSetting,
   SYSTEM_AVATARS, // 暴露给 auth.js 读导航栏头像渲染
+  renderAvatarHtml,   // 统一用户头像渲染（读用户记录里的 avatar）
+  hydrateUserProfile, // 登录后回灌当前账户资料（头像/昵称/简介/标签）
+  buildUserMap,       // 批量解析 userId → 用户记录（评论区/通知/排行榜取头像）
 };
 window.Settings = Settings;
 

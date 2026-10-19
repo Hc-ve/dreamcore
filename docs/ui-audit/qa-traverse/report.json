@@ -1,0 +1,1659 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "name": "home",
+      "meta": {
+        "title": "Dreamcore · AI+文旅文创艺术共创社区",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/gallery",
+      "name": "gallery",
+      "meta": {
+        "title": "文旅画廊 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/gallery",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/atlas",
+      "name": "atlas",
+      "meta": {
+        "title": "文化故事图鉴 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/atlas",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/leaderboard",
+      "name": "leaderboard",
+      "meta": {
+        "title": "排行榜 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/leaderboard",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/footprint",
+      "name": "footprint",
+      "meta": {
+        "title": "文化探索足迹 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/footprint",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [
+        {
+          "type": "console.warning",
+          "msg": "Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently"
+        }
+      ],
+      "totalErrors": 1
+    },
+    {
+      "route": "#/scenic",
+      "name": "scenic",
+      "fatal": "page.screenshot: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n"
+    },
+    {
+      "route": "#/scan",
+      "name": "scan",
+      "meta": {
+        "title": "AI识文化 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/scan",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/craft",
+      "name": "craft",
+      "fatal": "page.screenshot: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n"
+    },
+    {
+      "route": "#/tutor",
+      "name": "tutor",
+      "meta": {
+        "title": "AI陪练 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/tutor",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/publish",
+      "name": "publish",
+      "meta": {
+        "title": "页面未找到 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/publish",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    },
+    {
+      "route": "#/settings",
+      "name": "settings",
+      "meta": {
+        "title": "设置 · Dreamcore",
+        "h1": "当AI遇见文旅让传统美学数字新生",
+        "h2s": [
+          "文旅画廊",
+          "三星堆盲盒",
+          "唐·古艺 / Panel in the Shape of a Sarcophagus Door",
+          "水墨赛博山水",
+          "明·书迹 / Calligraphy"
+        ],
+        "canvasW": 1440,
+        "canvasH": 900
+      },
+      "clicks": [
+        {
+          "i": 0,
+          "target": "跳转到主要内容",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 1,
+          "target": "Dreamcore",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 2,
+          "target": "文化探索",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 3,
+          "target": "发布",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 4,
+          "target": "创作工坊",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 5,
+          "target": "登录",
+          "clicked": true,
+          "clickErr": null,
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 6,
+          "target": "搜索作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 7,
+          "target": "发布作品",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 8,
+          "target": "AI识文化",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 9,
+          "target": "文化图鉴",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 10,
+          "target": "探索足迹",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 11,
+          "target": "景区推荐",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 12,
+          "target": "AI评分",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 13,
+          "target": "AI修图",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 14,
+          "target": "AI文创",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 15,
+          "target": "AI陪练",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 16,
+          "target": "AI策展",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 17,
+          "target": "合伙人计划",
+          "clicked": false,
+          "clickErr": "locator.click: Element is not visible\nCall log:\n\u001b[2m  - waiting for locator('but",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 18,
+          "target": "创作者排行榜",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        },
+        {
+          "i": 19,
+          "target": "个人中心",
+          "clicked": false,
+          "clickErr": "locator.click: Element is outside of the viewport\nCall log:\n\u001b[2m  - waiting for ",
+          "nav": "#/settings",
+          "drawer": false,
+          "modal": false
+        }
+      ],
+      "errors": [],
+      "totalErrors": 0
+    }
+  ],
+  "errors": [],
+  "clicked": []
+}

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Dreamcore 一键启动：Vite 前端 + UV BFF + ollama 自持模型
- * 用法：npm run start   或   node scripts/dev-all.mjs
+ * 用法：npm run dev / npm run start / npm run dev:all / node scripts/dev-all.mjs
+ * 注意：本脚本内部用 `npm run dev:vite` 拉起 Vite（`dev` 已指向本脚本，直接写 dev 会递归）
  *
  * 特性：
  *   - 并行拉起三个服务，输出加前缀区分
@@ -40,11 +41,20 @@ if (ollamaUp) {
   console.log('[ollama] 11434 已被占用，跳过启动（需手动处理若为僵死进程）');
 }
 
+// UV BFF 是否已在运行（默认 3001，可被 PORT 环境变量覆盖）
+// 已监听则复用：否则 bff-uv 会 EADDRINUSE 退出 → fail-fast 连带把 Vite/ollama 一起拉停
+//（Vite 端口被占用会自动顺延到 5174，无需处理）
+const UV_PORT = Number(process.env.PORT || 3001);
+const uvUp = await isPortOpen(UV_PORT);
+if (uvUp) {
+  console.log(`[bff-uv] ${UV_PORT} 已被占用，跳过启动（复用已有 UV BFF）`);
+}
+
 const services = [
   {
     name: 'vite',
     cmd: IS_WIN ? 'npm.cmd' : 'npm',
-    args: ['run', 'dev'],
+    args: ['run', 'dev:vite'],  // 必须走 dev:vite —— 若写 'dev' 会递归调回 dev-all.mjs
     cwd: ROOT,
     env: process.env,
     skip: false,
@@ -55,7 +65,7 @@ const services = [
     args: ['run', 'server:uv'],
     cwd: ROOT,
     env: process.env,
-    skip: false,
+    skip: uvUp,   // 3001 已监听则复用已有 BFF，避免 EADDRINUSE → fail-fast 拉停全部服务
   },
 ];
 

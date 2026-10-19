@@ -25,6 +25,7 @@
   var labelEl = null;  // .dg-label 文字标签
   var hideTimer = 0;   // stopped/error 的 1.2s 延时句柄
   var outTimer = 0;    // 淡出动画后的收尾句柄
+  var sourceHash = ''; // 本次讲解发起的路由（tts-state 事件携带），供点击返回讲解页
 
   // ---------------- 内联 SVG 拟人形象（纯代码绘制，不引外部图） ----------------
   // 圆脸 + 齐刘海 + 侧边青绿飘带（敦煌飞天）+ 眯眯眼 + 腮红 + 头顶发饰；
@@ -71,7 +72,9 @@
       + '#digital-guide.dg-out { animation: dg-out .45s ease forwards; }'
       + '@keyframes dg-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }'
       + '@keyframes dg-out { from { opacity: 1; } to { opacity: 0; transform: translateY(10px); } }'
-      + '.dg-body { display: flex; align-items: center; gap: 5px; }'
+      + '.dg-body { display: flex; align-items: center; gap: 5px; pointer-events: auto; cursor: pointer; transition: transform .2s ease; }'
+      + '.dg-body:hover { transform: scale(1.05); }'
+      + '.dg-label { pointer-events: auto; cursor: pointer; }'
       + '.dg-chip { width: 72px; height: 72px; border-radius: 50%;'
       +   ' background: radial-gradient(circle at 50% 30%, rgba(52,211,153,.16), rgba(14,11,30,.62) 72%);'
       +   ' border: 1px solid rgba(52,211,153,.3);'
@@ -128,6 +131,22 @@
       + '<div class="dg-label">' + LABEL_IDLE + '</div>';
     document.body.appendChild(el);
     labelEl = el.querySelector('.dg-label');
+    // 点击挂件：停止讲解；若讲解发起于其他路由，则返回该讲解页
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isActive()) return; // 非讲解中不响应
+      try { window.TTSPlayer && window.TTSPlayer.stop && window.TTSPlayer.stop(); } catch (_) {}
+      if (sourceHash && window.location.hash !== sourceHash) {
+        window.location.hash = sourceHash; // 触发 hashchange → 目标路由 openFromHash 重新打开讲解页
+      }
+      if (window.showToast) window.showToast('已停止语音讲解', 'success');
+    });
+  }
+
+  // 是否处于「讲解中」（loading / playing）
+  function isActive() {
+    return !!el && (el.classList.contains('dg-loading') || el.classList.contains('dg-playing'));
   }
 
   // ---------------- 状态机：tts-state → CSS 类切换 ----------------
@@ -139,6 +158,7 @@
     var active = (state === 'loading' || state === 'playing');
     el.classList.add('dg-show', 'dg-' + state);
     labelEl.textContent = active ? LABEL_ACTIVE : LABEL_IDLE;
+    el.title = active ? '点击停止语音讲解' : ''; // 提示挂件可交互
     if (!active) {
       // 停止/出错：停留 1.2s → 淡出 .45s → 回归 display:none
       hideTimer = setTimeout(function () {
@@ -153,6 +173,7 @@
   document.addEventListener('tts-state', function (e) {
     var state = e && e.detail && e.detail.state;
     if (VALID_STATES.indexOf(state) === -1) return;
+    if (e.detail && typeof e.detail.hash === 'string') sourceHash = e.detail.hash; // 记录讲解发起路由
     mount(); // 防御：若尚未挂载（如动态 import 早于 body）则补挂
     setState(state);
   });

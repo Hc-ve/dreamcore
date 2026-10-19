@@ -8,6 +8,9 @@
 // ============================================================
 
 import { supabase, supabaseEnabled } from './api/supabase-client.js';
+// fflate：3D 模型备份打包/解包（GLB 已是二进制，用 ZIP level 0 直接存储，
+// 避免 JSON+base64 带来 33% 体积膨胀，便于跨设备拷贝演示）
+import { zipSync, unzipSync, strToU8, strFromU8 } from 'fflate';
 
 const Admin = {
   modalEl: null,
@@ -760,12 +763,16 @@ const Admin = {
     const pageRows = list.slice(offset, offset + limit);
     tbody.innerHTML = pageRows.map(u => {
       const initial = (u.username || '?').charAt(0).toUpperCase();
+      // 头像统一走 Settings.renderAvatarHtml（按账户自定义头像生效）
+      const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+        ? window.Settings.renderAvatarHtml(u, { sizeClass: 'sm' })
+        : `<span class="avatar-circle sm">${initial}</span>`;
       const reg = u.createdAt ? new Date(u.createdAt).toLocaleDateString('zh-CN') : '—';
       const idShort = String(u.id).length > 12 ? String(u.id).slice(0, 8) + '…' : u.id;
       return `
         <tr data-id="${this._esc(String(u.id))}">
           <td class="col-id" title="${this._esc(String(u.id))}">${this._esc(idShort)}</td>
-          <td><span class="avatar-circle sm">${initial}</span></td>
+          <td>${avatarHtml}</td>
           <td>${this._esc(u.username)}</td>
           <td class="col-email">${this._esc(u.email || '—')}</td>
           <td><span class="role-badge role-${u.role}">${this._roleLabel(u.role)}</span></td>
@@ -1506,7 +1513,19 @@ const Admin = {
     </div>
   </div>
 
-  <h4 style="margin:20px 0 10px;"><i class="fa-solid fa-layer-group"></i> 已上传模型（${v.ALLOWED_FORMATS.length}种格式）</h4>
+  <div class="admin-c3d-listhead">
+    <h4 style="margin:0;"><i class="fa-solid fa-layer-group"></i> 已上传模型（${v.ALLOWED_FORMATS.length}种格式）</h4>
+    <div class="admin-c3d-io">
+      <button type="button" id="c3d-export" class="admin-c3d-io-btn" title="把所有已上传模型打包为 zip 备份，用于跨设备/跨浏览器恢复">
+        <i class="fa-solid fa-file-export"></i> 导出全部
+      </button>
+      <button type="button" id="c3d-import-btn" class="admin-c3d-io-btn" title="从备份 zip 恢复模型（同一条记录会跳过，不会产生重复）">
+        <i class="fa-solid fa-file-import"></i> 导入恢复
+      </button>
+      <input type="file" id="c3d-import" accept=".zip,application/zip" style="display:none" />
+      <span id="c3d-io-msg"></span>
+    </div>
+  </div>
   <div id="admin-c3d-status" class="admin-c3d-status" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:8px;background:var(--bg-surface,white);border:1px solid var(--border,#e5e7eb);font-size:.78rem;align-items:center;gap:10px;flex-wrap:wrap;">
     <span id="c3d-status-text" style="color:var(--text-secondary,#6b7280)"></span>
     <button type="button" id="c3d-backfill-btn" style="padding:4px 10px;border-radius:6px;border:1px solid var(--border,#d1d5db);background:transparent;cursor:pointer;font-size:.76rem;">
@@ -1556,6 +1575,14 @@ const Admin = {
 .admin-c3d-msg.err{color:#ef4444}
 .admin-c3d-msg.ok{color:#159a6b}
 .admin-c3d-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.admin-c3d-listhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:20px 0 10px;flex-wrap:wrap}
+.admin-c3d-io{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.admin-c3d-io-btn{padding:5px 12px;border:1px solid var(--glass-border);border-radius:6px;background:var(--bg-surface);color:var(--text-primary);font-size:.76rem;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.admin-c3d-io-btn:hover{border-color:rgba(201,182,255,.6);background:rgba(201,182,255,.08)}
+.admin-c3d-io-btn:disabled{opacity:.55;cursor:not-allowed}
+#c3d-io-msg{font-size:.74rem;color:var(--text-secondary);min-height:16px}
+#c3d-io-msg.err{color:#ef4444}
+#c3d-io-msg.ok{color:#159a6b}
       `;
       document.head.appendChild(style);
     }
@@ -1777,7 +1804,142 @@ const Admin = {
       }
     });
 
+    // ── 导出全部 / 导入恢复（跨设备演示数据备份）──────────────
+    const exportBtn = content.querySelector('#c3d-export');
+    const importBtn = content.querySelector('#c3d-import-btn');
+    const importFile = content.querySelector('#c3d-import');
+    const ioMsg = content.querySelector('#c3d-io-msg');
+
+    exportBtn?.addEventListener('click', () => this._exportCustom3d(exportBtn, ioMsg));
+    importBtn?.addEventListener('click', () => importFile?.click());
+    importFile?.addEventListener('change', () => {
+      const f = importFile.files?.[0];
+      if (f) this._importCustom3d(f, content, importFile, ioMsg);
+    });
+
     await this._refreshList(content);
+  },
+
+  // ----------------------------------------------------------
+  // 导出全部：把所有已上传 3D 模型打包为 zip
+  //   结构：manifest.json + models/<i>.<ext>（二进制独立条目）
+  //   manifest: { kind:'dreamcore-c3d-backup', version:1, exportedAt, count, models:[...] }
+  //   previewImage（dataURL）体积小，内联在 manifest，方便导入后直接还原缩略图
+  // ----------------------------------------------------------
+  async _exportCustom3d(btn, ioMsg) {
+    const setMsg = (text, cls = '') => { if (ioMsg) { ioMsg.className = cls; ioMsg.textContent = text; } };
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 导出中…'; }
+    let objUrl = '';
+    try {
+      const list = (await window.getAllCustom3dModels?.()) || [];
+      if (!list.length) { setMsg('当前没有可导出的模型', 'err'); return; }
+
+      const files = {};
+      const models = [];
+      list.forEach((m, i) => {
+        const src = m.file;
+        if (!(src instanceof ArrayBuffer)) return;       // 缺二进制则跳过（异常记录）
+        const ext = String(m.format || 'glb').toLowerCase();
+        const entry = `models/${i}.${ext}`;              // 条目名不含用户输入，避免非法字符
+        files[entry] = new Uint8Array(src);
+        models.push({
+          entry, name: m.name || `模型${i}`, format: ext,
+          size: Number(m.size) || src.byteLength,
+          triCount: Number(m.triCount) || 0,
+          productKey: String(m.productKey || ''),
+          uploadedBy: String(m.uploadedBy || 'admin'),
+          previewImage: String(m.previewImage || ''),
+          createdAt: String(m.createdAt || new Date().toISOString())
+        });
+      });
+      if (!models.length) { setMsg('模型数据缺少二进制内容，无法导出', 'err'); return; }
+
+      files['manifest.json'] = strToU8(JSON.stringify({
+        kind: 'dreamcore-c3d-backup', version: 1,
+        exportedAt: new Date().toISOString(),
+        count: models.length, models
+      }));
+
+      // level 0（store）：GLB 已是压缩二进制，再压缩收益低；直接存储导出/导入更快、体积不膨胀
+      const zip = zipSync(files, { level: 0 });
+      const blob = new Blob([zip], { type: 'application/zip' });
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const stamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+      objUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objUrl;
+      a.download = `dreamcore-c3d-backup-${stamp}.zip`;
+      document.body.appendChild(a); a.click(); a.remove();
+
+      const mb = (zip.byteLength / 1024 / 1024).toFixed(2);
+      await this._log('custom3d.export', 'custom_3d_models', '-', `导出 ${models.length} 个模型（${mb}MB）`);
+      setMsg(`✅ 已导出 ${models.length} 个模型（${mb}MB）`, 'ok');
+      if (window.showToast) showToast(`✅ 已导出 ${models.length} 个模型`, 'success');
+    } catch (err) {
+      console.error('[Admin C3D] 导出失败：', err);
+      setMsg('导出失败：' + (err && err.message || String(err)), 'err');
+    } finally {
+      if (objUrl) setTimeout(() => URL.revokeObjectURL(objUrl), 4000);
+      if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+    }
+  },
+
+  // ----------------------------------------------------------
+  // 导入恢复：解析备份 zip → 组装 records → 批量写入 IndexedDB
+  //   已存在记录（createdAt|name|size）由 db 层自动跳过，重复导入不产生副本
+  // ----------------------------------------------------------
+  async _importCustom3d(file, content, inputEl, ioMsg) {
+    const setMsg = (text, cls = '') => { if (ioMsg) { ioMsg.className = cls; ioMsg.textContent = text; } };
+    try {
+      if (!/\.zip$/i.test(file.name)) { setMsg('请选择 .zip 备份文件', 'err'); return; }
+      setMsg('解析备份…');
+      const buf = await file.arrayBuffer();
+      let entries;
+      try { entries = unzipSync(new Uint8Array(buf)); }
+      catch { setMsg('备份文件已损坏或不是有效 zip', 'err'); return; }
+
+      if (!entries['manifest.json']) { setMsg('备份缺少 manifest.json，可能不是本站备份文件', 'err'); return; }
+      let manifest;
+      try { manifest = JSON.parse(strFromU8(entries['manifest.json'])); }
+      catch { setMsg('manifest.json 解析失败', 'err'); return; }
+      if (manifest.kind !== 'dreamcore-c3d-backup') { setMsg('备份类型不匹配（kind 非法）', 'err'); return; }
+      const models = Array.isArray(manifest.models) ? manifest.models : [];
+      if (!models.length) { setMsg('备份中没有模型记录', 'err'); return; }
+
+      const records = [];
+      for (const m of models) {
+        const bytes = entries[m.entry];
+        if (!bytes) continue;
+        // 从 zip 条目复制出独立 ArrayBuffer（避免共享底层 buffer 造成越界读取）
+        const ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+        records.push({
+          name: m.name, file: ab, size: ab.byteLength,
+          format: m.format, triCount: m.triCount,
+          productKey: m.productKey, uploadedBy: m.uploadedBy,
+          previewImage: m.previewImage, createdAt: m.createdAt
+        });
+      }
+      if (!records.length) { setMsg('备份中没有可用的模型文件', 'err'); return; }
+
+      setMsg(`正在导入 ${records.length} 个模型…`);
+      const res = await (window.importCustom3dModels?.(records) || Promise.reject(new Error('导入接口不可用')));
+      if (window.Craft3D?.clearCustomModelCache) window.Craft3D.clearCustomModelCache();
+      await this._log('custom3d.import', 'custom_3d_models', '-', `导入备份：新增 ${res.added} · 跳过 ${res.skipped} · 无效 ${res.invalid}`);
+      await this._refreshList(content);
+
+      const parts = [`新增 ${res.added}`];
+      if (res.skipped) parts.push(`跳过重复 ${res.skipped}`);
+      if (res.invalid) parts.push(`无效 ${res.invalid}`);
+      setMsg(`✅ 导入完成：${parts.join(' · ')}`, 'ok');
+      if (window.showToast) showToast(`✅ 导入完成（${parts.join('，')}）`, 'success');
+    } catch (err) {
+      console.error('[Admin C3D] 导入失败：', err);
+      setMsg('导入失败：' + (err && err.message || String(err)), 'err');
+    } finally {
+      if (inputEl) inputEl.value = '';
+    }
   },
 
   // 辅助：刷新模型列表（自身 try-catch，不向上冒泡让整个后台崩）
@@ -1885,31 +2047,38 @@ const Admin = {
         if (backfillBtn) backfillBtn.style.display = 'none';
       }
       // 手动补齐按钮
-      if (backfillBtn) {
+      // 修复「点击无反应」：旧实现在自动补齐占用标志位时是「静默 return」，
+      // 用户看不到任何变化。此处改为始终给出可见反馈。
+      if (backfillBtn && missingIds.length > 0) {
+        backfillBtn.style.display = '';
         backfillBtn.onclick = async () => {
-          if (this._c3dBackfillRunning) return;
+          if (this._c3dBackfillRunning) {
+            progressEl.style.display = 'inline';
+            progressEl.textContent = '补齐进行中，请稍候…';
+            return;
+          }
           this._c3dBackfillRunning = true;
           backfillBtn.disabled = true;
           backfillBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 补齐中…';
           progressEl.style.display = 'inline';
           progressEl.textContent = `开始补齐 ${missingIds.length} 个缺失模型…`;
-          await this._backfillMissingThumbnails(missingIds, content, (msg) => {
-            progressEl.textContent = msg;
-          }).finally(() => {
+          try {
+            const res = await this._backfillMissingThumbnails(missingIds, content, (msg) => {
+              progressEl.textContent = msg;
+            });
+            progressEl.textContent = res && res.fail > 0
+              ? `补齐完成：成功 ${res.ok} · 失败 ${res.fail}（失败原因见控制台 [Admin C3D] 日志）`
+              : `补齐完成：成功 ${res?.ok ?? 0}`;
+          } catch (err) {
+            progressEl.textContent = '补齐异常：' + (err?.message || err);
+          } finally {
             this._c3dBackfillRunning = false;
             backfillBtn.disabled = false;
             backfillBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> 立即补齐缩略图';
-            setTimeout(() => { progressEl.style.display = 'none'; }, 2500);
-          });
+            setTimeout(() => { progressEl.style.display = 'none'; }, 6000);
+          }
         };
       }
-    }
-
-    // 自动补齐：有缺失且未运行 → 后台触发（不阻塞 UI）
-    if (missingIds.length > 0 && !this._c3dBackfillRunning) {
-      this._c3dBackfillRunning = true;
-      this._backfillMissingThumbnails(missingIds, content)
-        .finally(() => { this._c3dBackfillRunning = false; });
     }
   },
 
@@ -1921,16 +2090,21 @@ const Admin = {
 
     let renderer = null, pmrem = null, envTex = null, draco = null, sharedCanvas = null;
     let contextLost = false;
+    // 流程结束标志：forceContextLoss() 触发的 webglcontextlost 是异步派发的，
+    // 若不加守卫，会在流程成功结束后用「context 丢失」覆盖掉「补齐完成：成功 x / 失败 y」提示。
+    let flowDone = false;
+    // 结果计数（提前 return 时也返回 0），供按钮展示成功/失败数
+    let anyOk = false, okCount = 0, failCount = 0;
     try {
       progress(`进入补齐流程，参数 missingIds=${JSON.stringify(missingIds)}`);
       const all = await window.getAllCustom3dModels?.();
       progress(`getAllCustom3dModels 返回 ${all?.length || 0} 条`);
-      if (!all?.length) { progress('数据库无记录，提前退出'); return; }
+      if (!all?.length) { progress('数据库无记录，提前退出'); return { ok: 0, fail: 0 }; }
 
       const idSet = toStrSet(missingIds);
       const toFix = all.filter(r => idSet.has(String(r.id)) && r.file);
       progress(`匹配到 ${toFix.length} 条待补齐（其中 ${all.filter(r => idSet.has(String(r.id))).length - toFix.length} 条无 file 数据，跳过）`);
-      if (!toFix.length) { progress('没有可处理的记录，提前退出'); return; }
+      if (!toFix.length) { progress('没有可处理的记录，提前退出'); return { ok: 0, fail: 0 }; }
 
       progress('开始动态 import three.js 及其加载器…');
       const THREE = await import('three');
@@ -1952,7 +2126,8 @@ const Admin = {
       sharedCanvas.addEventListener('webglcontextlost', (e) => {
         e.preventDefault();
         contextLost = true;
-        progress('WebGL context 丢失，后续缩略图补齐中止');
+        // 仅流程进行中才上报；流程结束后的主动释放不再覆盖最终结果提示
+        if (!flowDone) progress('WebGL context 丢失，后续缩略图补齐中止');
       });
       renderer.setPixelRatio(1);
       renderer.setSize(200, 200, false);
@@ -1996,20 +2171,28 @@ const Admin = {
         new Promise((_, rej) => setTimeout(() => rej(new Error(label + ' 超时(' + ms + 'ms)')), ms))
       ]);
 
-      let anyOk = false, okCount = 0, failCount = 0;
       for (let idx = 0; idx < toFix.length; idx++) {
         const rec = toFix[idx];
         if (contextLost) { progress('context 已丢失，跳出剩余模型'); break; }
         let group = null;
         try {
-          progress(`[${idx+1}/${toFix.length}] 开始处理 ${rec.name}（id=${rec.id}, file=${(rec.file?.byteLength||0)/1024/1024}MB）`);
-          const loader = new gltfMod.GLTFLoader();
-          loader.setDRACOLoader(draco);
-          const gltf = await withTimeout(
-            new Promise((res, rej) => loader.parse(rec.file, '', g => res(g), e => rej(e))),
-            45000, '模型解析'
-          );
-          group = gltf.scene || gltf.scenes[0];
+          const fmt = String(rec.format || 'glb').toLowerCase();
+          progress(`[${idx+1}/${toFix.length}] 开始处理 ${rec.name}（id=${rec.id}, format=${fmt}, file=${(rec.file?.byteLength||0)/1024/1024}MB）`);
+          if (fmt === 'fbx') {
+            // FBX 分支：旧实现只用 GLTFLoader，导致 FBX 模型补齐一律失败。
+            // 与上传预览路径保持一致，改用 FBXLoader 解析。
+            const fbxMod = await import('three/addons/loaders/FBXLoader.js');
+            group = new fbxMod.FBXLoader().parse(rec.file, '');
+            if (!group) throw new Error('FBX 解析返回空对象');
+          } else {
+            const loader = new gltfMod.GLTFLoader();
+            loader.setDRACOLoader(draco);
+            const gltf = await withTimeout(
+              new Promise((res, rej) => loader.parse(rec.file, '', g => res(g), e => rej(e))),
+              45000, '模型解析'
+            );
+            group = gltf.scene || gltf.scenes[0];
+          }
 
           // 归一化：缩放到 1.2 单位 + 居中
           const box = new THREE.Box3().setFromObject(group);
@@ -2051,11 +2234,14 @@ const Admin = {
       } else if (anyOk) {
         progress('已写回数据库，请在 Admin 面板内 F5 刷新查看');
       }
+      return { ok: okCount, fail: failCount };
     } catch (err) {
       progress('补齐主流程异常：' + (err?.message || err));
       console.warn('[Admin C3D] 缩略图批量补齐失败：', err);
+      return { ok: okCount, fail: failCount, error: err?.message || String(err) };
     } finally {
       // 统一释放共享资源，并强制归还 WebGL context
+      flowDone = true; // 先置位：避免下方主动释放触发的 contextlost 覆盖结果提示
       try { envTex?.dispose(); } catch (_) {}
       try { pmrem?.dispose(); } catch (_) {}
       try { draco?.dispose?.(); } catch (_) {}

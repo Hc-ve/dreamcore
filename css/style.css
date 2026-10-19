@@ -966,6 +966,10 @@ body::after {
 .avatar-circle.sm { width: 28px; height: 28px; font-size: 12px; }
 .avatar-circle.lg { width: 44px; height: 44px; font-size: 18px; }
 .avatar-circle.xl { width: 88px; height: 88px; font-size: 38px; }
+/* 通用头像填充：系统 SVG / 自定义 img 都正好铺满 .avatar-circle 容器（作品作者行、
+   艺术家主页、个人资料页等各页面统一生效，避免头像变形/溢出） */
+.avatar-circle.avatar-svg-wrap > svg { width: 100%; height: 100%; display: block; border-radius: 50%; }
+.avatar-circle.avatar-img { object-fit: cover; display: block; max-width: 100%; max-height: 100%; }
 
 /* ============================================================
    3D 粒子背景
@@ -1810,6 +1814,7 @@ mark.hl { background: rgba(255,209,232,0.3); color: var(--dream-pink); padding: 
   z-index: 800;
   width: 64px; height: 64px; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  touch-action: none; /* 允许指针拖动浮标，避免移动端被滚动接管 */
   opacity: 0; transform: scale(0.6) translateY(20px); transition: all 0.5s cubic-bezier(.2,.7,.3,1);
 }
 /* 收起态：缩小 40%，变成半透明 */
@@ -1825,6 +1830,7 @@ mark.hl { background: rgba(255,209,232,0.3); color: var(--dream-pink); padding: 
   }
 }
 .ai-fab.show { opacity: 1; transform: none; }
+.ai-fab.dragging { transition: none !important; cursor: grabbing; }
 .ai-fab::before {
   content: ''; position: absolute; inset: -6px; border-radius: 50%;
   background: var(--grad-dream); opacity: 0.5; filter: blur(16px); z-index: -1;
@@ -1849,10 +1855,13 @@ mark.hl { background: rgba(255,209,232,0.3); color: var(--dream-pink); padding: 
   display: flex; flex-direction: column;
 }
 .ai-dialog.open { opacity: 1; visibility: visible; transform: none; }
-.ai-dialog.dragging { transition: none; }
+/* !important 用于压制 ink-theme.css 中 `.ai-dialog { transition: all … !important }` 的覆盖，
+   否则拖拽过程中 getBoundingClientRect 会停留在动画中间态导致"拖不动" */
+.ai-dialog.dragging { transition: none !important; }
 .ai-dialog-header {
   display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
   background: var(--grad-dream-soft); border-bottom: 1px solid var(--glass-border); cursor: move; user-select: none;
+  touch-action: none; /* 允许指针拖动对话框 */
 }
 .ai-dialog-title { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 16px; }
 .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dream-mint); box-shadow: 0 0 8px var(--dream-mint); animation: aiBreath 2s infinite; }
@@ -1868,8 +1877,10 @@ mark.hl { background: rgba(255,209,232,0.3); color: var(--dream-pink); padding: 
 .ai-msg-bubble.user { background: var(--grad-dream); color: #2a1a4e; border-top-right-radius: 4px; font-weight: 400; }
 .ai-typing-cursor { display: inline-block; width: 2px; height: 14px; background: var(--dream-pink); margin-left: 2px; vertical-align: middle; animation: cursorBlink 0.8s infinite; }
 @keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-.ai-quick { display: flex; gap: 6px; padding: 0 16px 10px; flex-wrap: wrap; }
-.ai-chip { font-family: inherit; font-size: 12px; padding: 8px 14px; min-height: 44px; border-radius: 100px; background: var(--bg-surface); border: 1px solid var(--glass-border); color: var(--text-secondary); cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; }
+/* 引导问题 chips：单行横向滚动 + 高度压缩，避免占满对话框下半区 */
+.ai-quick { display: flex; gap: 6px; padding: 0 16px 10px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+.ai-quick::-webkit-scrollbar { display: none; }
+.ai-chip { font-family: inherit; font-size: 11.5px; line-height: 1; padding: 7px 11px; min-height: 30px; border-radius: 100px; background: var(--bg-surface); border: 1px solid var(--glass-border); color: var(--text-secondary); cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; white-space: nowrap; flex: 0 0 auto; }
 .ai-chip:hover { background: rgba(201,182,255,0.15); color: var(--text-primary); }
 .ai-dialog-input { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--glass-border); }
 .ai-dialog-input input { flex: 1; background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 100px; padding: 10px 16px; color: var(--text-primary); font-family: inherit; font-size: 13px; outline: none; }
@@ -2423,6 +2434,7 @@ mark.hl { background: rgba(255,209,232,0.3); color: var(--dream-pink); padding: 
   .stat-num { font-size: 26px; }
   .ai-dialog { width: calc(100vw - 32px); right: 16px; }
   .ai-fab { bottom: 20px; right: 20px; width: 56px; height: 56px; }
+  .ai-chip { min-height: 36px; padding: 8px 13px; font-size: 12px; } /* 移动端保留可点触高度 */
   .hero-cta { flex-direction: column; align-items: center; }
   .hero-cta button { width: 100%; max-width: 280px; justify-content: center; }
   .profile-head { flex-direction: column; text-align: center; }

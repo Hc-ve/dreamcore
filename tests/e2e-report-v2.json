@@ -1,13 +1,13 @@
 {
   "meta": {
-    "startTime": "2026-10-18T09:52:11.354Z",
+    "startTime": "2026-10-19T00:53:55.853Z",
     "env": "Edge stable (chromium channel)",
     "baseURL": "http://localhost:5173/",
     "viewport": {
       "width": 1440,
       "height": 900
     },
-    "endTime": "2026-10-18T09:52:53.014Z",
+    "endTime": "2026-10-19T00:54:35.698Z",
     "consoleErrorCount": 0,
     "consoleWarnCount": 0,
     "failedRequests": 0
@@ -17,7 +17,7 @@
     "passed": 63,
     "failed": 0,
     "warnings": 0,
-    "durationMs": 41659
+    "durationMs": 39845
   },
   "bugs": [],
   "uxIssues": [],
@@ -27,193 +27,193 @@
       "hash": "",
       "name": "home",
       "title": "Dreamcore · AI+文旅文创艺术共创社区",
-      "loadMs": 1809
+      "loadMs": 1812
     },
     {
       "hash": "#/gallery",
       "name": "gallery",
       "title": "文旅画廊 · Dreamcore",
-      "loadMs": 1513
+      "loadMs": 1522
     },
     {
       "hash": "#/search?q=敦煌",
       "name": "search",
       "title": "搜索 \"敦煌\" · Dreamcore",
-      "loadMs": 1512
+      "loadMs": 1517
     },
     {
       "hash": "#/score",
       "name": "score",
       "title": "AI智能评分 · Dreamcore",
-      "loadMs": 1516
+      "loadMs": 1510
     },
     {
       "hash": "#/craft",
       "name": "craft",
       "title": "AI文创衍生品 · Dreamcore",
-      "loadMs": 1510
+      "loadMs": 1509
     },
     {
       "hash": "#/scan",
       "name": "scan",
       "title": "AI识文化 · Dreamcore",
-      "loadMs": 1514
+      "loadMs": 1512
     },
     {
       "hash": "#/tutor",
       "name": "tutor",
       "title": "AI陪练 · Dreamcore",
-      "loadMs": 1507
+      "loadMs": 1513
     },
     {
       "hash": "#/curate",
       "name": "curate",
       "title": "AI智能策展 · Dreamcore",
-      "loadMs": 1511
+      "loadMs": 1524
     },
     {
       "hash": "#/leaderboard",
       "name": "leaderboard",
       "title": "排行榜 · Dreamcore",
-      "loadMs": 1517
+      "loadMs": 1511
     },
     {
       "hash": "#/atlas",
       "name": "atlas",
       "title": "文化故事图鉴 · Dreamcore",
-      "loadMs": 1511
+      "loadMs": 1518
     },
     {
       "hash": "#/footprint",
       "name": "footprint",
       "title": "文化探索足迹 · Dreamcore",
-      "loadMs": 1511
+      "loadMs": 1519
     },
     {
       "hash": "#/pricing",
       "name": "pricing",
       "title": "定价方案 · Dreamcore",
-      "loadMs": 1516
+      "loadMs": 1512
     },
     {
       "hash": "#/scenic",
       "name": "scenic",
       "title": "景区推荐 · Dreamcore",
-      "loadMs": 1508
+      "loadMs": 1513
     },
     {
       "hash": "#/ai-disclosure",
       "name": "ai-disclosure",
       "title": "AI 生成披露 · Dreamcore",
-      "loadMs": 1511
+      "loadMs": 1517
     },
     {
       "hash": "#/partner",
       "name": "partner",
       "title": "合伙人申请 · Dreamcore",
-      "loadMs": 1506
+      "loadMs": 1510
     },
     {
       "hash": "#/admin",
       "name": "admin",
       "title": "管理后台 · Dreamcore",
-      "loadMs": 1517
+      "loadMs": 1508
     },
     {
       "hash": "#/edit",
       "name": "edit",
       "title": "AI修图工作台 · Dreamcore",
-      "loadMs": 1522
+      "loadMs": 1505
     },
     {
       "hash": "#/profile",
       "name": "profile",
       "title": "个人中心 · Dreamcore",
-      "loadMs": 1524
+      "loadMs": 1520
     },
     {
       "hash": "#/settings?tab=appearance",
       "name": "settings",
       "title": "设置 · Dreamcore",
-      "loadMs": 1513
+      "loadMs": 1514
     }
   ],
   "perf": [
     {
       "route": "home",
-      "navigateMs": 1809
+      "navigateMs": 1812
     },
     {
       "route": "gallery",
-      "navigateMs": 1513
-    },
-    {
-      "route": "search",
-      "navigateMs": 1512
-    },
-    {
-      "route": "score",
-      "navigateMs": 1516
-    },
-    {
-      "route": "craft",
-      "navigateMs": 1510
-    },
-    {
-      "route": "scan",
-      "navigateMs": 1514
-    },
-    {
-      "route": "tutor",
-      "navigateMs": 1507
-    },
-    {
-      "route": "curate",
-      "navigateMs": 1511
-    },
-    {
-      "route": "leaderboard",
-      "navigateMs": 1517
-    },
-    {
-      "route": "atlas",
-      "navigateMs": 1511
-    },
-    {
-      "route": "footprint",
-      "navigateMs": 1511
-    },
-    {
-      "route": "pricing",
-      "navigateMs": 1516
-    },
-    {
-      "route": "scenic",
-      "navigateMs": 1508
-    },
-    {
-      "route": "ai-disclosure",
-      "navigateMs": 1511
-    },
-    {
-      "route": "partner",
-      "navigateMs": 1506
-    },
-    {
-      "route": "admin",
-      "navigateMs": 1517
-    },
-    {
-      "route": "edit",
       "navigateMs": 1522
     },
     {
-      "route": "profile",
+      "route": "search",
+      "navigateMs": 1517
+    },
+    {
+      "route": "score",
+      "navigateMs": 1510
+    },
+    {
+      "route": "craft",
+      "navigateMs": 1509
+    },
+    {
+      "route": "scan",
+      "navigateMs": 1512
+    },
+    {
+      "route": "tutor",
+      "navigateMs": 1513
+    },
+    {
+      "route": "curate",
       "navigateMs": 1524
     },
     {
-      "route": "settings",
+      "route": "leaderboard",
+      "navigateMs": 1511
+    },
+    {
+      "route": "atlas",
+      "navigateMs": 1518
+    },
+    {
+      "route": "footprint",
+      "navigateMs": 1519
+    },
+    {
+      "route": "pricing",
+      "navigateMs": 1512
+    },
+    {
+      "route": "scenic",
       "navigateMs": 1513
+    },
+    {
+      "route": "ai-disclosure",
+      "navigateMs": 1517
+    },
+    {
+      "route": "partner",
+      "navigateMs": 1510
+    },
+    {
+      "route": "admin",
+      "navigateMs": 1508
+    },
+    {
+      "route": "edit",
+      "navigateMs": 1505
+    },
+    {
+      "route": "profile",
+      "navigateMs": 1520
+    },
+    {
+      "route": "settings",
+      "navigateMs": 1514
     }
   ],
   "consoleErrors": []

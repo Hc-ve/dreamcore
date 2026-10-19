@@ -31,7 +31,12 @@ const Profile = {
   _build() {
     if (this.modalEl) this.modalEl.remove();
     const user = window.currentUser;
-    const initial = (user.username || '?').charAt(0).toUpperCase();
+    const displayName = (user.nickname || '').trim() || user.username || '用户';
+    // 头像：读用户记录 / 账户级设置（Bug #2：自定义头像此前在个人中心不生效）
+    const avatar = user.avatar || (window.Settings && typeof window.Settings.getSetting === 'function' ? window.Settings.getSetting('avatar') : null);
+    const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+      ? window.Settings.renderAvatarHtml({ avatar, username: user.username, nickname: user.nickname }, { sizeClass: 'xl' })
+      : `<span class="avatar-circle xl">${(user.username || '?').charAt(0).toUpperCase()}</span>`;
     const regDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('zh-CN') : '—';
 
     const overlay = document.createElement('div');
@@ -42,13 +47,14 @@ const Profile = {
         <button class="modal-close" data-close aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
         <div class="profile-head">
           <div class="profile-avatar-wrap">
-            <span class="avatar-circle xl">${initial}</span>
+            ${avatarHtml}
             <div class="profile-avatar-glow"></div>
           </div>
           <div class="profile-info">
-            <h2 class="profile-name">${this._esc(user.username)}
+            <h2 class="profile-name">${this._esc(displayName)}
               ${user.isAdmin ? '<span class="profile-badge">管理员</span>' : ''}
             </h2>
+            ${user.bio ? `<p style="font-size:.85rem;color:var(--text-secondary);margin:2px 0 6px;line-height:1.5;">${this._esc(user.bio)}</p>` : ''}
             <p class="profile-email"><i class="fa-regular fa-envelope"></i> ${this._esc(user.email || '未设置邮箱')}</p>
             <p class="profile-reg"><i class="fa-regular fa-calendar"></i> 加入于 ${regDate}</p>
           </div>
@@ -198,13 +204,16 @@ const Profile = {
     content.innerHTML = '<div class="profile-following-list"></div>';
     const list = content.querySelector('.profile-following-list');
     followingList.forEach(user => {
-      const initial = (user.username || '?').charAt(0).toUpperCase();
+      const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+        ? window.Settings.renderAvatarHtml(user, { sizeClass: '' })
+        : `<span class="avatar-circle">${(user.username || '?').charAt(0).toUpperCase()}</span>`;
+      const displayName = (user.nickname || '').trim() || user.username || '用户';
       const item = document.createElement('div');
       item.className = 'following-item';
       item.innerHTML = `
-        <span class="avatar-circle">${initial}</span>
+        ${avatarHtml}
         <div class="following-item-info">
-          <div class="following-item-name">${this._esc(user.username)}</div>
+          <div class="following-item-name">${this._esc(displayName)}</div>
           <div class="following-item-meta">
             <span><i class="fa-regular fa-images"></i> ${this._fmtNum(user.worksCount || 0)} 作品</span>
             <span><i class="fa-solid fa-heart"></i> ${this._fmtNum(user.followersCount || 0)} 粉丝</span>
@@ -214,12 +223,12 @@ const Profile = {
           <i class="fa-solid fa-check"></i> 已关注
         </button>
       `;
-      // 点击用户打开艺术家主页
+      // 点击用户 → 进入该用户的个人资料页（统一路由：#/profile-<id>）
       item.addEventListener('click', (e) => {
         if (e.target.closest('.following-unfollow-btn')) return;
         if (typeof Sound !== 'undefined') Sound.playSound('click');
         this._close();
-        if (window.Artist) Artist.openByUserId(user.id);
+        window.location.hash = `#/profile-${encodeURIComponent(user.id)}`;
       });
       // 取消关注按钮
       const unfollowBtn = item.querySelector('.following-unfollow-btn');

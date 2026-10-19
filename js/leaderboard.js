@@ -267,6 +267,14 @@ const Leaderboard = {
     }
 
     const me = this._findMyRow(rows);
+
+    // 头像：一次性读 users 表，按 userId 关联到每行（云端 UUID 亦支持）；
+    // 无 userId 的虚拟艺术家回退首字母。避免逐行 getUserById 造成 N 次查询。
+    if (window.Settings && typeof window.Settings.buildUserMap === 'function') {
+      const userMap = await window.Settings.buildUserMap();
+      rows.forEach(r => { r.user = (r.userId != null) ? (userMap.get(String(r.userId)) || null) : null; });
+    }
+
     const podium = rows.slice(0, 3);
     const rest = rows.slice(3, 50);
 
@@ -298,13 +306,17 @@ const Leaderboard = {
 
   _podiumItem(r, place) {
     const initial = (r.name || '?').charAt(0).toUpperCase();
+    // 头像统一走 Settings.renderAvatarHtml（有 users 记录则显示其自定义头像）
+    const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+      ? window.Settings.renderAvatarHtml(r.user || { username: r.name }, { sizeClass: '' })
+      : `<span class="avatar-circle">${this._esc(initial)}</span>`;
     // 印章：一/二/三（替代 emoji 奖牌，accessibility 读屏为汉字）
     const medal = { 1: '一', 2: '二', 3: '三' }[place];
     const medalAria = { 1: '冠军', 2: '亚军', 3: '季军' }[place];
     return `
       <div class="lb-podium-item p${place}" data-key="${this._esc(r.key)}" role="button" tabindex="0" aria-label="查看 ${this._esc(r.name)} 主页">
         <div class="lb-podium-medal" role="img" aria-label="${medalAria}">${medal}</div>
-        <div class="lb-podium-avatar"><span class="avatar-circle">${this._esc(initial)}</span></div>
+        <div class="lb-podium-avatar">${avatarHtml}</div>
         <div class="lb-podium-name">${this._esc(r.name)}${this._isMe(r) ? ' <em class="lb-me-tag">我</em>' : ''}</div>
         <div class="lb-podium-grade" style="--grade-color:${GRADE_META[r.topGrade].color}">${GRADE_META[r.topGrade].label}</div>
         <div class="lb-podium-stats">${r.works} 作品 · ${this._fmt(r.likes)} 获赞</div>
@@ -315,6 +327,10 @@ const Leaderboard = {
 
   _listRow(r) {
     const initial = (r.name || '?').charAt(0).toUpperCase();
+    // 头像统一走 Settings.renderAvatarHtml（有 users 记录则显示其自定义头像）
+    const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+      ? window.Settings.renderAvatarHtml(r.user || { username: r.name }, { sizeClass: '' })
+      : `<span class="avatar-circle">${this._esc(initial)}</span>`;
     const trend = r.trend === 'up'
       ? `<span class="lb-trend up"><i class="fa-solid fa-caret-up" aria-hidden="true"></i>${r.trendDelta || ''}</span>`
       : r.trend === 'down'
@@ -325,7 +341,7 @@ const Leaderboard = {
     return `
       <div class="lb-row${this._isMe(r) ? ' me' : ''}" data-key="${this._esc(r.key)}" role="button" tabindex="0" aria-label="查看 ${this._esc(r.name)} 主页">
         <span class="lb-rank">${r.rank}</span>
-        <span class="lb-avatar"><span class="avatar-circle">${this._esc(initial)}</span></span>
+        <span class="lb-avatar">${avatarHtml}</span>
         <span class="lb-name">${this._esc(r.name)}${this._isMe(r) ? ' <em class="lb-me-tag">我</em>' : ''}</span>
         <span class="lb-cell lb-c-works" title="作品数"><i class="fa-regular fa-images" aria-hidden="true"></i> ${r.works}</span>
         <span class="lb-cell lb-c-likes" title="获赞数"><i class="fa-solid fa-heart" aria-hidden="true"></i> ${this._fmt(r.likes)}</span>
@@ -339,33 +355,48 @@ const Leaderboard = {
 
   _onRowClick(key) {
     const all = this._itemsCache || [];
-    // 从缓存反查作者身份
+    // 从缓存反查作者身份。userId 可能是云端 UUID 字符串，必须全程按字符串处理
+    //（旧实现用 Number(key.slice(1)) 会把 UUID 变成 NaN，导致云端用户主页打不开）
     let userId = null, name = null;
-    if (key && key.charAt(0) === 'u') userId = Number(key.slice(1));
-    else if (key && key.indexOf('n:') === 0) name = decodeURIComponent(key.slice(2));
-    if (!name) {
-      const a = all.find(x => (('u' + (x.userId || '')) === key && key.charAt(0) === 'u') || (('n:' + (x.author || '匿名')) === key && key.charAt(0) === 'n'));
-      name = a ? a.author : null;
+    const matched = all.find(x =>
+      (key && key.charAt(0) === 'u' && ('u' + (x.userId || '')) === key) ||
+      (key && key.indexOf('n:') === 0 && ('n:' + (x.author || '匿名')) === key)
+    );
+    if (matched) {
+      userId = matched.userId != null ? matched.userId : null;
+      name = matched.author || null;
+    } else if (key && key.indexOf('n:') === 0) {
+      name = decodeURIComponent(key.slice(2));
+    } else if (key && key.charAt(0) === 'u') {
+      userId = key.slice(1); // 兜底：键去掉 'u' 前缀即为 userId（含 UUID）
     }
     this.close();
     setTimeout(() => {
-      if (window.openArtistPage) window.openArtistPage(userId || name || '未知');
+      // 有 userId → 进入其个人资料页；仅虚拟艺术家 → 打开艺术家主页
+      if (userId != null && userId !== '') {
+        window.location.hash = '#/profile-' + encodeURIComponent(userId);
+      } else if (window.openArtistPage) {
+        window.openArtistPage(name || '未知');
+      }
     }, 260);
   },
 
   _findMyRow(rows) {
     const u = window.currentUser;
     if (!u) return null;
-    return rows.find(r =>
-      (r.userId && Number(r.userId) === Number(u.id)) ||
-      (!r.userId && r.name === u.username)
-    ) || null;
+    return rows.find(r => this._rowIsUser(r, u)) || null;
   },
 
   _isMe(r) {
     const u = window.currentUser;
     if (!u) return false;
-    return (r.userId && Number(r.userId) === Number(u.id)) || (!r.userId && r.name === u.username);
+    return this._rowIsUser(r, u);
+  },
+
+  // userId 与 currentUser.id 统一按字符串比较（兼容本地数字 id 与云端 UUID）
+  _rowIsUser(r, u) {
+    if (r.userId != null && r.userId !== '') return String(r.userId) === String(u.id);
+    return r.name === u.username;
   },
 
   _fmt(n) {

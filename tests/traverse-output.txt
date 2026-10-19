@@ -1,0 +1,460 @@
+﻿
+===== home (/) =====
+  Title: Dreamcore · AI+文旅文创艺术共创社区
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== gallery (#/gallery) =====
+  Title: 文旅画廊 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== atlas (#/atlas) =====
+  Title: 文化故事图鉴 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== leaderboard (#/leaderboard) =====
+  Title: 排行榜 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [navigated] Dreamcore → #gallery (停止此页后续点击)
+  ✅ No errors
+
+===== footprint (#/footprint) =====
+  Title: 文化探索足迹 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ❌ 1 errors/warnings:
+    [console.warning] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. 
+
+===== scenic (#/scenic) =====
+  ❌ FATAL: page.screenshot: Timeout 30000ms exceeded.
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+
+
+===== scan (#/scan) =====
+  Title: AI识文化 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== craft (#/craft) =====
+  ❌ FATAL: page.screenshot: Timeout 30000ms exceeded.
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+
+
+===== tutor (#/tutor) =====
+  Title: AI陪练 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== publish (#/publish) =====
+  Title: 页面未找到 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== settings (#/settings) =====
+  Title: 设置 · Dreamcore
+  H1: 当AI遇见文旅让传统美学数字新生
+  Canvas: 1440x900
+  Interactables found: 25
+  [SKIP] 跳转到主要内容: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 搜索作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 发布作品: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI识文化: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 文化图鉴: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 探索足迹: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 景区推荐: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] AI评分: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI修图: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI文创: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI陪练: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] AI策展: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 合伙人计划: locator.click: Element is not visible
+Call log:
+[2m  - wait
+  [SKIP] 创作者排行榜: locator.click: Element is outside of the viewport
+Call log:
+
+  [SKIP] 个人中心: locator.click: Element is outside of the viewport
+Call log:
+
+  ✅ No errors
+
+===== FINAL SUMMARY =====
+  home           ✅ clean
+  gallery        ✅ clean
+  atlas          ✅ clean
+  leaderboard    ✅ clean
+  footprint      ⚠️ 1 errs
+  scenic         💀 FATAL
+  scan           ✅ clean
+  craft          💀 FATAL
+  tutor          ✅ clean
+  publish        ✅ clean
+  settings       ✅ clean
+
+  Routes: 11
+  Total errors/warnings: 1
+  Clicks: 161, failed: 121
+  Output dir: docs/ui-audit/qa-traverse/

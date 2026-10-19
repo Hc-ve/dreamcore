@@ -597,7 +597,11 @@ function runRequest(storeName, mode, callback) {
     const tx = dbInstance.transaction(storeName, mode);
     const store = tx.objectStore(storeName);
     const req = callback(store);
-    if (req) {
+    if (req && typeof req.then === 'function') {
+      // 回调为 async 函数：其内部已自行 await 完所有 IDB 请求，
+      // 直接以回调的返回值/异常为准（避免把 Promise 误当 IDBRequest 挂 onsuccess 导致永久挂起）
+      req.then(resolve, reject);
+    } else if (req) {
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     } else {
@@ -885,24 +889,41 @@ async function ensureLocalUserForCloudUser(cu) {
   const id = _keepId(cu.id);
   const existing = await runRequest('users', 'readonly', store => store.get(id)).catch(() => null);
   if (existing) return existing;
-  // 用户名唯一索引：同名不同 id 时跳过，避免 ConstraintError
+
+  // 用户名唯一索引冲突处理：
+  // 种子数据会创建一个本地 admin（自增数字 id）；云端用户用 UUID id 登录时，
+  // 二者用户名同名但 id 不同。旧实现遇到同名直接 return null（静默跳过），
+  // 导致云端用户始终拿不到本地 users 记录 —— 随后 updateUser(uuid) 抛
+  // 「用户不存在」，头像/昵称/简介永远写不进 users 表（历史 Bug #2 根因）。
+  // 正确做法：把同名旧记录「重键」到云端 id（delete 旧键 + put 新键），
+  // 既消除唯一索引冲突，又保留旧记录中的本地字段（头像/bio/计数等）。
   let conflict = null;
   try { conflict = await getUserByUsername(cu.username); } catch (e) { /* 忽略 */ }
-  if (conflict) return conflict.id === id ? conflict : null;
+  if (conflict && String(conflict.id) === String(id)) return conflict;
+
+  const base = conflict ? { ...conflict } : {};
+  delete base.id; // keyPath 不可就地修改，必须 delete 旧键 + put 新键
   const record = {
+    ...base,
     id,
-    username: cu.username || '用户',
-    email: cu.email || '',
-    passwordHash: '',
-    avatar: null,
-    createdAt: cu.createdAt || new Date().toISOString(),
+    username: cu.username || base.username || '用户',
+    email: cu.email || base.email || '',
+    passwordHash: base.passwordHash || '',
+    avatar: base.avatar || null,
+    createdAt: base.createdAt || cu.createdAt || new Date().toISOString(),
     isAdmin: !!cu.isAdmin,
-    bio: cu.bio || '',
-    followersCount: 0,
-    followingCount: 0,
-    worksCount: 0
+    role: cu.role || (cu.isAdmin ? 'admin' : 'user'),
+    // 优先采用云端权威资料（metadata），其次沿用旧记录的本地资料
+    nickname: base.nickname || cu.nickname || '',
+    bio: cu.bio || base.bio || '',
+    followersCount: base.followersCount || 0,
+    followingCount: base.followingCount || 0,
+    worksCount: base.worksCount || 0
   };
-  await runRequest('users', 'readwrite', store => store.put(record));
+  await runRequest('users', 'readwrite', store => {
+    if (conflict && String(conflict.id) !== String(id)) store.delete(conflict.id);
+    store.put(record);
+  });
   return record;
 }
 
@@ -2321,7 +2342,7 @@ function addCustom3dModel({ name, file, size, format, triCount, productKey, uplo
     if (s.length >= 2000 && s.startsWith('data:image/')) {
       safePreview = s;
     } else {
-      console.warn('[DB C3D] 拒绝写入可疑 previewImage（长度 ' + s.length + '），将在后台自动补齐');
+      console.warn('[DB C3D] 拒绝写入可疑 previewImage（长度 ' + s.length + '），可在后台用「立即补齐缩略图」重建');
     }
   }
 
@@ -2421,6 +2442,65 @@ function deleteCustom3dModel(id) {
   }
   id = Number(id);
   return runRequest('custom_3d_models', 'readwrite', store => store.delete(id));
+}
+
+// 导入记录净化：与 addCustom3dModel 同源的校验（格式/大小/面数），
+// 但放宽 productKey（备份里允许存在未绑定模型），并保留原 createdAt。
+function _sanitizeImportedC3d(r) {
+  if (!r || typeof r !== 'object') return null;
+  const fmt = String(r.format || '').toLowerCase();
+  if (!CUSTOM_3D_VALIDATION.ALLOWED_FORMATS.includes(fmt)) return null;
+  const file = r.file;
+  if (!(file instanceof ArrayBuffer)) return null;
+  const sz = file.byteLength;                       // 以真实字节为准（防 metadata 被篡改）
+  if (!(sz > 0) || sz > CUSTOM_3D_VALIDATION.MAX_SIZE) return null;
+  const tri = Number(r.triCount) || 0;
+  if (tri > CUSTOM_3D_VALIDATION.MAX_TRI) return null;
+  const preview = String(r.previewImage || '');
+  const safePreview = preview.length >= 2000 && preview.startsWith('data:image/') ? preview : '';
+  return {
+    name: String(r.name || `导入模型-${new Date().toISOString().slice(0, 10)}`).slice(0, 80),
+    file, size: sz, format: fmt, triCount: tri,
+    productKey: String(r.productKey || ''),
+    uploadedBy: String(r.uploadedBy || 'import'),
+    previewImage: safePreview,
+    createdAt: String(r.createdAt || new Date().toISOString())
+  };
+}
+
+// importCustom3dModels(records) —— 批量恢复（备份导入）
+//   · 逐条走 _sanitizeImportedC3d 校验；保留原 createdAt（列表顺序/绑定语义不被导入打乱）
+//   · 去重键 createdAt|name|size：已存在则跳过，避免重复导入产生副本
+//   · 返回 { added, skipped, invalid }
+function importCustom3dModels(records) {
+  if (!_hasCustom3dStore()) {
+    return Promise.reject(new Error('数据库版本过低，请刷新页面升级（custom_3d_models 表尚未就绪）'));
+  }
+  const list = Array.isArray(records) ? records : [];
+  const keyOf = (r) => `${r.createdAt || ''}|${r.name || ''}|${Number(r.size) || 0}`;
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction('custom_3d_models', 'readwrite');
+    const store = tx.objectStore('custom_3d_models');
+    const existing = new Set();
+    let added = 0, skipped = 0, invalid = 0;
+    const cur = store.openCursor();
+    cur.onsuccess = (ev) => {
+      const c = ev.target.result;
+      if (c) { existing.add(keyOf(c.value)); c.continue(); return; }
+      // 游标遍历完毕 → 逐条校验并写入（同一事务内追加请求，事务保持存活至全部完成）
+      for (const r of list) {
+        const rec = _sanitizeImportedC3d(r);
+        if (!rec) { invalid++; continue; }
+        if (existing.has(keyOf(rec))) { skipped++; continue; }
+        store.add(rec);
+        existing.add(keyOf(rec));
+        added++;
+      }
+      tx.oncomplete = () => resolve({ added, skipped, invalid });
+    };
+    cur.onerror = () => reject(cur.error);
+    tx.onerror = () => reject(tx.error);
+  });
 }
 
 // 暴露到全局（ES Module 向后兼容）
@@ -2546,6 +2626,7 @@ window.getCustom3dModelsMeta = getCustom3dModelsMeta;
 window.getCustom3dModelByProductKey = getCustom3dModelByProductKey;
 window.updateCustom3dModel = updateCustom3dModel;
 window.deleteCustom3dModel = deleteCustom3dModel;
+window.importCustom3dModels = importCustom3dModels;
 window.CUSTOM_3D_VALIDATION = CUSTOM_3D_VALIDATION;
 
 // ES Module export
@@ -2669,5 +2750,6 @@ export {
   getCustom3dModelByProductKey,
   updateCustom3dModel,
   deleteCustom3dModel,
+  importCustom3dModels,
   CUSTOM_3D_VALIDATION
 };

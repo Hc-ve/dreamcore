@@ -573,6 +573,45 @@ const AI = {
     document.body.appendChild(fab);
     this.fabEl = fab;
 
+    // 浮标支持拖拽（阈值 >4px 才算拖拽，避免与"点击开合"冲突）
+    let fx = 0, fy = 0, fsx = 0, fsy = 0, fw = 0, fh = 0, fabMoved = false;
+    const onFabMove = (e) => {
+      const dx = e.clientX - fsx, dy = e.clientY - fsy;
+      if (!fabMoved && Math.hypot(dx, dy) > 4) fabMoved = true;
+      if (!fabMoved) return;
+      this._applyPos(fab, fx + dx, fy + dy, fw, fh);
+    };
+    const onFabUp = () => {
+      fab.classList.remove('dragging');
+      fab.style.transition = '';
+      document.removeEventListener('pointermove', onFabMove);
+      document.removeEventListener('pointerup', onFabUp);
+      document.removeEventListener('pointercancel', onFabUp);
+      if (fabMoved) {
+        // 拖拽后浏览器仍会补发一次 click：捕获阶段吞掉，避免误触发精灵互动 / 开合对话
+        const swallow = (ev) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+          fab.removeEventListener('click', swallow, true);
+        };
+        fab.addEventListener('click', swallow, true);
+      }
+    };
+    fab.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const rect = fab.getBoundingClientRect();
+      fx = rect.left; fy = rect.top;
+      fw = rect.width; fh = rect.height;
+      fsx = e.clientX; fsy = e.clientY;
+      fabMoved = false;
+      // 内联 transition:none 压制 .ai-fab 自带的 all .5s 过渡，保证跟手
+      fab.style.transition = 'none';
+      fab.classList.add('dragging');
+      document.addEventListener('pointermove', onFabMove);
+      document.addEventListener('pointerup', onFabUp);
+      document.addEventListener('pointercancel', onFabUp);
+    });
+
     fab.addEventListener('click', (e) => {
       if (!e.target.closest('.ai-sprite')) {
         this.toggle(e);
@@ -735,44 +774,68 @@ const AI = {
   // ============================================================
   _bindDrag() {
     const handle = this.dialogEl.querySelector('#ai-drag-handle');
-    let startX = 0, startY = 0, origLeft = 0, origTop = 0;
+    if (!handle || handle._aiDragBound) return; // 防重复绑定
+    handle._aiDragBound = true;
+
+    let startX = 0, startY = 0, origLeft = 0, origTop = 0, gw = 0, gh = 0;
 
     const onPointerDown = (e) => {
-      if (e.target.closest('.ai-icon-btn')) return;
+      if (e.button !== 0) return;                     // 仅响应左键
+      if (e.target.closest('.ai-icon-btn')) return;   // 头部按钮不参与拖拽
       e.preventDefault();
       const rect = this.dialogEl.getBoundingClientRect();
       startX = e.clientX; startY = e.clientY;
       origLeft = rect.left; origTop = rect.top;
+      gw = rect.width; gh = rect.height;              // 尺寸只在开始取一次，拖拽中不再测量
+      // 内联 transition:none 可压制 ink-theme 中 `transition: all … !important` 的覆盖；
+      // 否则 rect 会停留在动画中间态，位置会被写回原值（表现为"拖不动"）
+      this.dialogEl.style.transition = 'none';
       this.dialogEl.classList.add('dragging');
       document.addEventListener('pointermove', onPointerMove);
       document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('pointercancel', onPointerUp);
     };
     const onPointerMove = (e) => {
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      this.dialogEl.style.left = (origLeft + dx) + 'px';
-      this.dialogEl.style.top = (origTop + dy) + 'px';
-      this.dialogEl.style.right = 'auto';
-      this.dialogEl.style.bottom = 'auto';
-      this._clampPosition();
+      this._applyPos(this.dialogEl,
+        origLeft + (e.clientX - startX),
+        origTop + (e.clientY - startY),
+        gw, gh);
     };
     const onPointerUp = () => {
       this.dialogEl.classList.remove('dragging');
+      this.dialogEl.style.transition = '';
       document.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerUp);
     };
     handle.addEventListener('pointerdown', onPointerDown);
   },
 
+  /**
+   * 把浮层定位到指定 left/top 并钳制在视口内（8px 边距）
+   * @param {HTMLElement} el 目标元素
+   * @param {number} left 期望左坐标
+   * @param {number} top 期望上坐标
+   * @param {number} w 元素宽度（拖拽开始时固定，勿在拖拽中重新测量）
+   * @param {number} h 元素高度（同上）
+   */
+  _applyPos(el, left, top, w, h) {
+    const maxL = Math.max(8, window.innerWidth - w - 8);
+    const maxT = Math.max(8, window.innerHeight - h - 8);
+    el.style.left = Math.min(Math.max(left, 8), maxL) + 'px';
+    el.style.top = Math.min(Math.max(top, 8), maxT) + 'px';
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+  },
+
   _clampPosition() {
-    const rect = this.dialogEl.getBoundingClientRect();
-    let left = rect.left, top = rect.top;
-    if (left < 8) left = 8;
-    if (top < 8) top = 8;
-    if (left + rect.width > window.innerWidth - 8) left = window.innerWidth - rect.width - 8;
-    if (top + rect.height > window.innerHeight - 8) top = window.innerHeight - rect.height - 8;
-    this.dialogEl.style.left = left + 'px';
-    this.dialogEl.style.top = top + 'px';
+    // 用 style 中的目标坐标 + offsetWidth/Height（不受 transform 影响）计算，
+    // 避免 getBoundingClientRect 读到过渡动画的中间态而把位置写回去
+    const left = parseFloat(this.dialogEl.style.left);
+    const top = parseFloat(this.dialogEl.style.top);
+    if (!Number.isFinite(left) || !Number.isFinite(top)) return;
+    this._applyPos(this.dialogEl, left, top,
+      this.dialogEl.offsetWidth, this.dialogEl.offsetHeight);
   },
 
   // ============================================================
@@ -1252,7 +1315,8 @@ const AI = {
     clearInterval(this.typingTimer);
     this.typingTimer = setInterval(() => {
       if (i < text.length) {
-        bubble.textContent = text.slice(0, i + 1);
+        // 打字过程同样去掉 markdown 星号，避免逐字播放时闪现 `*`
+        bubble.textContent = text.slice(0, i + 1).replace(/\*/g, '');
         const cursor = document.createElement('span');
         cursor.className = 'ai-typing-cursor';
         bubble.appendChild(cursor);
@@ -1277,12 +1341,19 @@ const AI = {
    */
   _renderBubbleContent(bubble, text) {
     if (!bubble) return;
-    const safe = this._esc(text == null ? '' : text);
+    let s = this._esc(text == null ? '' : text);
     // 解析 [text](url) 模式为 <a class="ai-link-btn"> 元素
-    const html = safe.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label, url) => {
+    s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label, url) => {
       return `<a class="ai-link-btn" href="${url}" data-href="${url}">${label}</a>`;
-    }).replace(/\n/g, '<br>');
-    bubble.innerHTML = html;
+    });
+    // 轻量 markdown 渲染：**粗体** → <strong>、*斜体* → <em>（先转，避免星号外露）
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+         .replace(/(^|[^*\n])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+    // 行首列表符 * / - 归一化为 •（此时裸 `* 文本` 也会被识别）
+    s = s.replace(/(^|\n)[ \t]*[*-][ \t]+/g, '$1• ');
+    // 兜底：清除残留星号，确保回复里不再出现 `*`
+    s = s.replace(/\*/g, '');
+    bubble.innerHTML = s.replace(/\n/g, '<br>');
     // 给链接按钮绑定 click：以 hash 路由跳转
     bubble.querySelectorAll('.ai-link-btn').forEach(a => {
       a.addEventListener('click', (e) => {

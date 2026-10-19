@@ -1,0 +1,12 @@
+﻿node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Execution context was destroyed, most likely because of a navigation.
+    at E:\a\6a578b50553ee2fa56364236\tests\_e2e-full.mjs:359:31 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.21.0
+

@@ -1,0 +1,97 @@
+﻿
+═══════════════════════════════════════════════
+Dreamcore E2E 测试 — 2026/10/18 00:24:59
+═══════════════════════════════════════════════
+
+── 1. 首页 ──
+  ❌ [home] 页面加载 < 3s — 3003ms
+  ✅ [home] 导航栏存在
+  ✅ [home] Hero 区存在
+  ✅ [home] 画廊作品卡片 ≥ 6 — count=12
+  ✅ [home] 页脚存在
+  ✅ [home] Hero 首屏元素不重叠 — h=1002.9375px
+
+── 2. 画廊 ──
+  ✅ [gallery] 画廊作品 ≥ 12 — count=12
+  ✅ [gallery] 筛选器存在 — count=7
+  ✅ [gallery] 点击作品弹出详情
+
+── 3. 搜索 ──
+  ⚠️ [search] 搜索弹窗打开
+
+── 4. AI评分 ──
+  ✅ [score] overlay 背景不透明（消除首页透底）
+  ✅ [score] modal-box 存在 — title="AI 智能评分"
+
+── 5. AI文创 ──
+  ✅ [craft] modal-box 存在 — title="选择作品 · AI文创"
+
+── 6. AI识文化 ──
+  ✅ [scan] 上传区域存在
+
+── 7. AI陪练 ──
+  ✅ [tutor] 聊天区域存在
+
+── 8. 文化图鉴 ──
+  ✅ [atlas] 图鉴内容加载 — chars=2276
+
+── footprint ──
+  ✅ [footprint] 路由加载无白屏
+
+── leaderboard ──
+  ✅ [leaderboard] 路由加载无白屏
+
+── scenic ──
+  ✅ [scenic] 路由加载无白屏
+
+── profile ──
+  ✅ [profile] 路由加载无白屏
+
+── 13. 定价方案 ──
+  ✅ [pricing] __legal_host 渲染
+  ✅ [pricing] 三档方案卡片
+  ✅ [pricing] CTA 按钮存在
+
+── 14. AI披露 ──
+  ✅ [ai-disclosure] __legal_host 渲染
+  ✅ [ai-disclosure] 内容完整
+
+── 15. 设置页 ──
+  ✅ [settings] __settings_host 全屏渲染
+  ✅ [settings] Tab ≥ 4 — tabs=6
+  ✅ [settings] Profile Card ≥ 3 — cards=5
+  ✅ [settings] 未登录显示状态卡
+
+── 16. 设置页深色模式切换 ──
+  ✅ [settings-dark] data-theme=dark — data-theme="dark"
+  ✅ [settings-dark] settings 背景非纯白（深色适配） — bg=rgb(20, 17, 14)
+  ✅ [settings-dark] 朱砂强调色保持 — accent=#d4564c
+
+── 17. 设置页通知/隐私/关于 tab ──
+  ✅ [settings-notify] 通知 tab 有内容
+  ✅ [settings-privacy] 隐私与安全 tab 有内容
+  ✅ [settings-about] 关于 tab 有内容
+
+── 18. 404 页面 ──
+  ✅ [404] __notfound_host 渲染
+  ✅ [404] 有返回首页引导 — text="返回首页"
+  ✅ [404] 至少 2 个引导按钮 — count=3
+
+── 19. 滚动流畅度 ──
+node : node:internal/modules/run_main:107
+At line:15 char:2678
++ ...  E:\a\6a578b50553ee2fa56364236; node tests/_e2e-full.mjs 2>&1 | Out-F ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (node:internal/modules/run_main:107:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Execution context was destroyed, most likely because of a navigation.
+    at E:\a\6a578b50553ee2fa56364236\tests\_e2e-full.mjs:359:31 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.21.0

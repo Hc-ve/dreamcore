@@ -1,0 +1,315 @@
+﻿llamafactory-cli.exe : [INFO|configuration_utils.py:778] 2026-10-18 19:37:12,697 >> loading configuration file e:\a\6a5
+78b50553ee2fa56364236\training-env\models\Qwen2.5-1.5B-Instruct\config.json
+At line:16 char:1
++ & 'E:\anaconda\envs\dreamcraft\Scripts\llamafactory-cli.exe' export `
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([INFO|configura...uct\config.json:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[INFO|configuration_utils.py:856] 2026-10-18 19:37:12,702 >> Model config Qwen2Config {
+  "architectures": [
+    "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "hidden_act": "silu",
+  "hidden_size": 1536,
+  "initializer_range": 0.02,
+  "intermediate_size": 8960,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 32768,
+  "max_window_layers": 21,
+  "model_type": "qwen2",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 2,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000.0,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.8.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+[INFO|configuration_utils.py:778] 2026-10-18 19:37:13,016 >> loading configuration file e:\a\6a578b50553ee2fa56364236\t
+raining-env\models\Qwen2.5-1.5B-Instruct\config.json
+[INFO|configuration_utils.py:856] 2026-10-18 19:37:13,018 >> Model config Qwen2Config {
+  "architectures": [
+    "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "hidden_act": "silu",
+  "hidden_size": 1536,
+  "initializer_range": 0.02,
+  "intermediate_size": 8960,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 32768,
+  "max_window_layers": 21,
+  "model_type": "qwen2",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 2,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000.0,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.8.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+[INFO|configuration_utils.py:778] 2026-10-18 19:37:13,018 >> loading configuration file e:\a\6a578b50553ee2fa56364236\t
+raining-env\models\Qwen2.5-1.5B-Instruct\config.json
+[INFO|configuration_utils.py:856] 2026-10-18 19:37:13,018 >> Model config Qwen2Config {
+  "architectures": [
+    "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "hidden_act": "silu",
+  "hidden_size": 1536,
+  "initializer_range": 0.02,
+  "intermediate_size": 8960,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 32768,
+  "max_window_layers": 21,
+  "model_type": "qwen2",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 2,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000.0,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.8.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+[INFO|configuration_utils.py:778] 2026-10-18 19:37:13,326 >> loading configuration file e:\a\6a578b50553ee2fa56364236\t
+raining-env\models\Qwen2.5-1.5B-Instruct\config.json
+[INFO|configuration_utils.py:856] 2026-10-18 19:37:13,327 >> Model config Qwen2Config {
+  "architectures": [
+    "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "hidden_act": "silu",
+  "hidden_size": 1536,
+  "initializer_range": 0.02,
+  "intermediate_size": 8960,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 32768,
+  "max_window_layers": 21,
+  "model_type": "qwen2",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 2,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000.0,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.8.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+[WARNING|logging.py:340] 2026-10-18 19:37:13,327 >> `torch_dtype` is deprecated! Use `dtype` instead!
+[INFO|2026-10-18 19:37:13] llamafactory.model.model_utils.kv_cache:144 >> KV cache is enabled for faster generation.
+[INFO|modeling_utils.py:766] 2026-10-18 19:37:14,023 >> loading weights file e:\a\6a578b50553ee2fa56364236\training-env
+\models\Qwen2.5-1.5B-Instruct\model.safetensors
+[INFO|modeling_utils.py:839] 2026-10-18 19:37:14,023 >> Will use dtype=torch.bfloat16 as defined in model's config obje
+ct
+[INFO|configuration_utils.py:1086] 2026-10-18 19:37:14,024 >> Generate config GenerationConfig {
+  "bos_token_id": 151643,
+  "eos_token_id": 151645,
+  "output_attentions": false,
+  "output_hidden_states": false,
+  "use_cache": true
+}
+
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 338/338 [00:00<00:00, 9429.29it/s]
+[INFO|configuration_utils.py:1037] 2026-10-18 19:37:19,283 >> loading configuration file e:\a\6a578b50553ee2fa56364236\
+training-env\models\Qwen2.5-1.5B-Instruct\generation_config.json
+[INFO|configuration_utils.py:1086] 2026-10-18 19:37:19,284 >> Generate config GenerationConfig {
+  "bos_token_id": 151643,
+  "do_sample": true,
+  "eos_token_id": [
+    151645,
+    151643
+  ],
+  "pad_token_id": 151643,
+  "repetition_penalty": 1.1,
+  "temperature": 0.7,
+  "top_k": 20,
+  "top_p": 0.8
+}
+
+[INFO|2026-10-18 19:37:19] llamafactory.model.model_utils.attention:144 >> Using torch SDPA for faster training and inference.
+[INFO|2026-10-18 19:37:22] llamafactory.model.adapter:144 >> Merged 1 adapter(s).
+[INFO|2026-10-18 19:37:22] llamafactory.model.adapter:144 >> Loaded adapter(s): e:\a\6a578b50553ee2fa56364236\training-env\LlamaFactory-main\saves\dreamcraft-story-1.5b-lora-v5
+[INFO|2026-10-18 19:37:22] llamafactory.model.loader:144 >> all params: 1,543,714,304
+[INFO|2026-10-18 19:37:22] llamafactory.train.tuner:144 >> Convert model dtype to: torch.bfloat16.
+[INFO|configuration_utils.py:542] 2026-10-18 19:37:22,611 >> Configuration saved in e:\a\6a578b50553ee2fa56364236\train
+ing-env\models\dreamcraft-1.5b-merged-story-v5\config.json
+[INFO|configuration_utils.py:875] 2026-10-18 19:37:22,612 >> Configuration saved in e:\a\6a578b50553ee2fa56364236\train
+ing-env\models\dreamcraft-1.5b-merged-story-v5\generation_config.json
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Writing model shards: 100%|██████████| 1/1 [00:41<00:00, 41.04s/it]
+Writing model shards: 100%|██████████| 1/1 [00:41<00:00, 41.04s/it]
+[INFO|modeling_utils.py:3501] 2026-10-18 19:38:03,666 >> Model weights saved in e:\a\6a578b50553ee2fa56364236\training-
+env\models\dreamcraft-1.5b-merged-story-v5\model.safetensors
+[INFO|tokenization_utils_base.py:3281] 2026-10-18 19:38:03,667 >> chat template saved in e:\a\6a578b50553ee2fa56364236\
+training-env\models\dreamcraft-1.5b-merged-story-v5\chat_template.jinja
+[INFO|tokenization_utils_base.py:2114] 2026-10-18 19:38:03,667 >> tokenizer config file saved in e:\a\6a578b50553ee2fa5
+6364236\training-env\models\dreamcraft-1.5b-merged-story-v5\tokenizer_config.json
+[INFO|2026-10-18 19:38:03] llamafactory.train.tuner:144 >> Ollama modelfile saved in e:\a\6a578b50553ee2fa56364236\training-env\models\dreamcraft-1.5b-merged-story-v5\Modelfile

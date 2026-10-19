@@ -76,19 +76,16 @@ export default defineConfig(({ mode }) => {
   server: {
     port: 5173,
     open: true,
-    // 代理配置：将 TTS 后端 API 请求转发到 Node.js 服务
-    // /api/ai/* 优先于 /api/* 命中，转发到 Netlify dev 云函数（AI 推理代理）
+    // 代理配置：/api/* 落到本地 UV 预处理 BFF（server/index.mjs，端口 3001）
+    // 注意：/api/ai、/api/auth、/api/sync-artwork 由上方 aiProxyDev 中间件优先拦截，
+    // 复用 netlify functions handler（开发期后端内嵌在 Vite 内，无需另起进程）。
+    // 历史上这里曾有 '/tts' → 3001 的转发，指向已删除的遗留 Edge-TTS express 服务；
+    // 现 TTS 已统一走云端 CosyVoice（POST /api/ai/tts），故该规则一并移除。
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false
-      },
-      '/tts': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/tts/, '/api/tts')
       }
     }
   },

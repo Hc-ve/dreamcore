@@ -131,6 +131,8 @@ function closeAtlas() {
   const el = overlayEl;
   overlayEl = null;
   currentThemeId = null;
+  // 关闭图鉴浮层不会改变 hash（无 hashchange），须主动停止可能仍在播放的语音讲解
+  if (window.TTSPlayer && window.TTSPlayer.stop) window.TTSPlayer.stop();
   el.classList.remove('open');
   if (window.ModalScrollLock) ModalScrollLock.unlock();
   if (typeof Sound !== 'undefined') Sound.playSound('close');

@@ -1,0 +1,55 @@
+[
+  {
+    "name": "publish-modal",
+    "errs": [
+      "[debug] [vite] connecting...",
+      "[debug] [vite] connected.",
+      "[info] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113",
+      "[fatal] page.screenshot: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n"
+    ]
+  },
+  {
+    "name": "gallery-filter",
+    "errs": [
+      "[debug] [vite] connecting...",
+      "[debug] [vite] connected.",
+      "[info] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113",
+      "[fatal] page.screenshot: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n"
+    ]
+  },
+  {
+    "name": "atlas-detail",
+    "errs": [
+      "[debug] [vite] connecting...",
+      "[debug] [vite] connected.",
+      "[info] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113"
+    ]
+  },
+  {
+    "name": "drawer-theme",
+    "errs": [
+      "[debug] [vite] connecting...",
+      "[debug] [vite] connected.",
+      "[info] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113",
+      "[fatal] page.screenshot: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n"
+    ]
+  },
+  {
+    "name": "scenic-content",
+    "errs": [
+      "[debug] [vite] connecting...",
+      "[debug] [vite] connected.",
+      "[info] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113",
+      "[reqfail] https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css net::ERR_TIMED_OUT",
+      "[error] Failed to load resource: net::ERR_TIMED_OUT"
+    ]
+  },
+  {
+    "name": "craft-404-diagnose",
+    "errs": [
+      "[debug] [vite] connecting...",
+      "[debug] [vite] connected.",
+      "[info] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113"
+    ]
+  }
+]

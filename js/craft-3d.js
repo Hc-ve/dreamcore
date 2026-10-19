@@ -995,14 +995,17 @@ export async function renderCustom(container, customModel, textureCanvas, produc
   }
 
   // ====== BFF UV 预处理（混元 3D 输出的 GLB → 自动按 form3d 定制 UV） ======
-  // 策略版本号 —— 和后端 form3d-strategies.mjs 的 STRATEGIES_VERSION 保持同步
-  // 每次后端策略表有结构性变化就 +1，前端比较版本号，不一致则强制重新处理
+  // 策略版本号 —— 前端独立计数器（与后端 form3d-strategies.mjs 的 STRATEGIES_VERSION 是两套编号，勿混用）
+  // 后端策略表发生"结构性变化"（layout / 新增策略 / 厚度 / sentinel 规则）时，必须同步把本常量 +1，
+  // 前端据此判定缓存过期并强制重新预处理。
   // v16: 禁用 mesh 拆分（破坏边界法线连续性 + 杯把几何脱落），改用单一 mesh + sentinel UV + canvas 右上角 paper 色
   // v18: 修复非 mug 模型白模 —— wrapThisFace 条件 cylindricalWrap=false 时也要正常 wrap
   // v17: mug cap 判定 ay>0.5+yPct极端 + 双面建模内壁位置辅助判定
   const BFF_STRATEGY_VERSION = 26;
-  // 🚨 强制重新处理 —— 每次发布新版本都忽略缓存
-  const FORCE_REPROCESS = true;
+  // 缓存开关：false = 首次处理后把结果写回 customModel（file / uvProcessed / _bffVersion），
+  // 同一会话内再次预览直接复用，不再把 MB 级 GLB 反复上传给 BFF 重算（单次处理约 300-450ms + 上传耗时）。
+  // 仅当 customModel.uvProcessed !== true 或 _bffVersion !== BFF_STRATEGY_VERSION 时才重新处理。
+  const FORCE_REPROCESS = false;
   const needReprocess = FORCE_REPROCESS ||
     customModel.uvProcessed !== true ||
     customModel._bffVersion !== BFF_STRATEGY_VERSION;

@@ -973,7 +973,7 @@ const Gallery = {
             <div class="lb-cat">${catLabel}</div>
             <h2 class="lb-title">${this._esc(art.title)}</h2>
             <div class="lb-author" data-author="${this._esc(art.author)}" data-userid="${art.userId || ''}">
-              <span class="avatar-circle sm">${this._esc(art.author.charAt(0))}</span>
+              <span class="avatar-circle sm">${this._esc((art.author || '?').charAt(0))}</span>
               <div>
                 <div class="lb-author-name">${this._esc(art.author)}</div>
                 <div class="lb-date">${this._esc(art.createdAt || '')}</div>
@@ -1071,6 +1071,20 @@ const Gallery = {
     // 渲染评论
     this._renderCommentList(comments);
 
+    // 作者头像/昵称回灌：作品记录只存 author 名字，自定义头像与昵称需从 users 记录读取
+    // （Bug #2：此前作者行硬编码"用户名首字符"，用户设置的自定义头像在他人视角完全不生效）
+    if (art.userId) {
+      try {
+        const au = (typeof window.getUserById === 'function') ? await window.getUserById(art.userId) : null;
+        if (au && window.Settings && typeof window.Settings.renderAvatarHtml === 'function') {
+          const slot = lb.querySelector('.lb-author .avatar-circle');
+          if (slot) slot.outerHTML = window.Settings.renderAvatarHtml(au, { sizeClass: 'sm' });
+          const nameEl = lb.querySelector('.lb-author-name');
+          if (nameEl && au.nickname) nameEl.textContent = au.nickname;
+        }
+      } catch (_) { /* 回灌失败不影响灯箱其余功能 */ }
+    }
+
     // 绑定事件
     this._bindLightboxEvents(lb, art);
   },
@@ -1078,16 +1092,23 @@ const Gallery = {
   // ----------------------------------------------------------
   // 渲染评论列表
   // ----------------------------------------------------------
-  _renderCommentList(comments) {
+  async _renderCommentList(comments) {
     const list = document.getElementById('lb-comment-list');
     if (!list) return;
     if (!comments || comments.length === 0) {
       list.innerHTML = '<div class="lb-no-comment">还没有评论，成为第一个发声的人吧</div>';
       return;
     }
+    // 评论记录只存 userId + username，头像需按账户解析：一次性读 users 表建映射，
+    // 避免逐条查询（评论者自定义头像据此生效）
+    const users = (window.Settings && typeof window.Settings.buildUserMap === 'function')
+      ? await window.Settings.buildUserMap() : new Map();
+    const avatarOf = (c) => (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+      ? window.Settings.renderAvatarHtml(users.get(String(c.userId)) || { username: c.username }, { sizeClass: 'sm' })
+      : `<span class="avatar-circle sm">${this._esc((c.username || '?').charAt(0))}</span>`;
     list.innerHTML = comments.map(c => `
       <div class="comment-item">
-        <span class="avatar-circle sm">${this._esc((c.username || '?').charAt(0))}</span>
+        ${avatarOf(c)}
         <div class="comment-body">
           <div class="comment-head">
             <span class="comment-user">${this._esc(c.username)}</span>
@@ -1129,21 +1150,22 @@ const Gallery = {
       });
     });
 
-    // 点击作者区域打开艺术家主页
+    // 点击作者区域 → 进入该用户的个人资料页
+    // （Bug #3 修复：此前先 closeLightbox 再 Artist.openByUserId，用户记录查不到时静默
+    //   return → 灯箱已关、弹窗未开，表现为"错误返回主界面"。改为路由跳转，稳定可达。）
     const authorEl = lb.querySelector('.lb-author');
     if (authorEl) {
       authorEl.addEventListener('click', () => {
         if (typeof Sound !== 'undefined') Sound.playSound('click');
         const userId = authorEl.dataset.userid;
         const authorName = authorEl.dataset.author;
-        if (window.Artist) {
-          this.closeLightbox();
-          if (userId) {
-            // 云端用户 id 为 UUID 字符串，不能 Number 强转（会变 NaN）
-            Artist.openByUserId(userId);
-          } else {
-            Artist.openByAuthorName(authorName);
-          }
+        this.closeLightbox();
+        if (userId) {
+          // 云端用户 id 为 UUID 字符串，encode 后再拼接，避免特殊字符破坏路由
+          window.location.hash = `#/profile-${encodeURIComponent(userId)}`;
+        } else if (window.Artist) {
+          // 无 userId 的种子作品 → 回退到按作者名的艺术家主页
+          Artist.openByAuthorName(authorName);
         }
       });
     }
@@ -1515,8 +1537,8 @@ const Gallery = {
         <h2 class="ap-title">${title || '选择一件作品'}</h2>
         <p class="ap-sub">选择作品后进入 AI 工作台</p>
         <div class="ap-tabs" role="tablist">
-          <button class="ap-tab ${window.currentUser ? 'active' : ''}" data-tab="mine" role="tab">我的作品</button>
-          <button class="ap-tab ${window.currentUser ? '' : 'active'}" data-tab="hot" role="tab">热门作品</button>
+          <button class="ap-tab active" data-tab="mine" role="tab">我的作品</button>
+          <button class="ap-tab" data-tab="hot" role="tab">热门作品</button>
         </div>
         <div class="ap-grid" id="ap-grid"><div class="ap-loading"><i class="fa-solid fa-spinner fa-spin"></i> 加载中…</div></div>
       </div>
@@ -1587,8 +1609,10 @@ const Gallery = {
         renderGrid(r.list, r.emptyMsg);
       });
     });
-    const defaultTab = window.currentUser ? 'mine' : 'hot';
-    loadList(defaultTab).then(r => renderGrid(r.list, r.emptyMsg));
+    // 该选择器的语义是「选择我的作品」（AI评分/修图/文创均作用于自己的作品），
+    // 因此默认停在「我的作品」Tab。未登录时该 Tab 如实展示登录引导，
+    // 绝不回退到全局热门作品（与回归①一致）。
+    loadList('mine').then(r => renderGrid(r.list, r.emptyMsg));
   },
 
   // --- 卡片AI评分摘要HTML ---

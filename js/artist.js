@@ -39,12 +39,16 @@ const Artist = {
     this.currentArtist = {
       id: artistUser ? artistUser.id : null,
       name: authorName,
+      username: authorName,
+      nickname: (artistUser && artistUser.nickname) || '',
+      avatar: (artistUser && artistUser.avatar) || null,
       bio: `梦境艺术家，专注于创造独特的视觉体验。`,
       worksCount: artworks.length,
       totalLikes: totalLikes,
       followersCount: followersCount,
       followingCount: followingCount,
-      isVirtual: true
+      isVirtual: true,
+      user: artistUser || null
     };
     this.currentArtworks = artworks;
     this._build();
@@ -56,7 +60,11 @@ const Artist = {
   // ----------------------------------------------------------
   async openByUserId(userId) {
     const user = await getUserById(userId);
-    if (!user) return;
+    if (!user) {
+      // 不再静默 return 造成"点了没反应"的死胡同（Bug #3 的诱因之一）
+      if (window.showToast) showToast('未找到该用户资料', 'warn');
+      return;
+    }
 
     const artworks = await getUserArtworks(userId);
     const totalLikes = await getUserTotalLikes(userId);
@@ -72,7 +80,10 @@ const Artist = {
 
     this.currentArtist = {
       id: user.id,
-      name: user.username,
+      name: user.nickname || user.username,
+      username: user.username,
+      nickname: user.nickname || '',
+      avatar: user.avatar || null,
       email: user.email,
       bio: user.bio || '这个人很懒，什么都没留下…',
       worksCount: artworks.length,
@@ -98,6 +109,13 @@ const Artist = {
     const user = window.currentUser;
     const isSelf = user && !artist.isVirtual && user.id === artist.id;
 
+    // 头像：读用户记录里的 avatar（自定义头像/系统头像），不再硬编码首字符色块（Bug #2）
+    const avatarHtml = (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+      ? window.Settings.renderAvatarHtml(
+          { avatar: artist.avatar || (artist.user && artist.user.avatar), username: artist.username || artist.name, nickname: artist.nickname },
+          { sizeClass: 'xl artist-avatar' })
+      : `<span class="avatar-circle xl artist-avatar">${initial}</span>`;
+
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay artist-modal';
     overlay.id = 'artist-modal';
@@ -107,7 +125,7 @@ const Artist = {
 
         <div class="artist-head">
           <div class="artist-avatar-wrap">
-            <span class="avatar-circle xl artist-avatar">${initial}</span>
+            ${avatarHtml}
             <div class="artist-avatar-glow"></div>
           </div>
           <div class="artist-info">
@@ -152,6 +170,21 @@ const Artist = {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay || e.target.closest('[data-close]')) this._close();
     });
+
+    // 非本人的头像 → 点击进入该用户的个人资料页（Bug #3：点击任意用户头像都可达资料页）
+    if (!isSelf && artist.id != null) {
+      const avWrap = overlay.querySelector('.artist-avatar-wrap');
+      if (avWrap) {
+        avWrap.style.cursor = 'pointer';
+        avWrap.title = '查看个人资料页';
+        avWrap.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (typeof Sound !== 'undefined') Sound.playSound('click');
+          this._close();
+          window.location.hash = `#/profile-${encodeURIComponent(artist.id)}`;
+        });
+      }
+    }
 
     // 渲染作品
     this._renderWorks();

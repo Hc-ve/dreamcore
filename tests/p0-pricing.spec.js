@@ -100,7 +100,14 @@ test.describe('P0-3 商业模式演示页 #/pricing', () => {
     await expect(success.locator('.pp-order-no')).toContainText(/DC-2026-\d{4}/);
     await expect(success).toContainText('演示环境·不产生真实订单');
 
-    // 完成按钮关闭下单弹窗，会员页仍在
+    // 完成按钮关闭下单弹窗，会员页仍在。
+    // 注：上一步点击 #pp-submit-btn 后指针停在其旧位置；因 loading→success 两步中
+    //     弹窗内容高度变化，#pp-done-btn 可能恰好让底边落在指针 ~1.3px 内——
+    //     `.btn-primary:hover{transform:translateY(-2px) scale(1.03)}` 使下边缘上移
+    //     →指针脱离→hover 取消→回落→再进入，形成逐帧振荡，Playwright 稳定性检查
+    //     永不通过并 30s 超时（"element is not stable"，仅窄视口 Mobile 复现）。
+    //     先把指针移出弹窗范围，让元素静止后再正常点击即可消除该抖动带。
+    await page.mouse.move(0, 0);
     await modal.locator('#pp-done-btn').click();
     await modal.waitFor({ state: 'detached', timeout: 5000 });
     await expect(page.locator('#pricing-page')).toBeVisible();

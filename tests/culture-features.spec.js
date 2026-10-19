@@ -515,7 +515,7 @@ test.describe('智慧导览 #/scenic', () => {
     await expect(overlay.locator('#sn-plan-btn')).toContainText('重新规划');
   });
 
-  test('无关联主题景区（殷墟）：无创作 CTA，讲解走 AI 联网（mock）', async ({ page }) => {
+  test('无关联主题景区（殷墟）：无图鉴 CTA 但保留景区文创 CTA，讲解走 AI 联网（mock）', async ({ page }) => {
     await clearStorage(page.context());
     await mockCultureStory(page, {
       name: '殷墟',
@@ -532,8 +532,12 @@ test.describe('智慧导览 #/scenic', () => {
     await overlay.locator('.sn-detail-name').waitFor({ timeout: 10000 });
     await expect(overlay.locator('.sn-detail-name')).toContainText('殷墟');
     await overlay.locator('.sn-source-badge.ai').waitFor({ timeout: 10000 });
-    await expect(overlay.locator('#sn-craft-btn')).toHaveCount(0);
+    // 无 themeId → 不出现「去图鉴深入了解」
     await expect(overlay.locator('#sn-atlas-btn')).toHaveCount(0);
+    // 但殷墟已收录于 data/scenic-craft-map.js（style=guofeng / category=home），
+    // 规则为「有主题 OR 有景区文创映射时显示创作 CTA」，故此处应保留景区文创入口（文案回退为景区名）
+    await expect(overlay.locator('#sn-craft-btn')).toBeVisible();
+    await expect(overlay.locator('#sn-craft-btn')).toContainText('殷墟');
   });
 
   test('「去图鉴深入了解」CTA 跳转图鉴详情', async ({ page }) => {

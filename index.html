@@ -220,11 +220,13 @@
   <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap" />
 </noscript>
 
-<!-- Font Awesome 6 图标 - 延迟加载 -->
-<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" />
+<!-- Font Awesome 6 图标 — 已自托管到 public/vendor/fontawesome（约 1MB），
+     不再依赖 cdnjs 外部 CDN（实测本机超时会导致全站图标丢失）；断网/弱网演示也能正常显示。
+     回滚：把下面 3 处 href 换回 https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css 即可 -->
+<link rel="preload" as="style" href="/vendor/fontawesome/css/all.min.css" />
+<link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" media="print" onload="this.media='all'" />
 <noscript>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
 </noscript>
 
 <!-- Three.js 和 GSAP 已通过 npm 安装，由 Vite 打包引入（见 main.js）-->
@@ -460,8 +462,8 @@
       <button id="footer-login" type="button">登录 / 注册</button>
       <a href="#/pricing">会员权益</a>
       <a href="#/ai-disclosure">AI 内容说明</a>
-      <a href="/privacy.html">隐私政策</a>
-      <a href="/terms.html">用户协议</a>
+      <a href="#/privacy">隐私政策</a>
+      <a href="#/terms">用户协议</a>
     </nav>
     <div class="footer-copy">© 2026 Dreamcore · AI+文旅文创艺术共创社区 · 所有作品版权归原作者所有</div>
   </div>

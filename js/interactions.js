@@ -119,15 +119,21 @@ async function handleComment(artworkId, content) {
 // 渲染评论列表（独立函数，供 profile 等模块复用）
 // ----------------------------------------------------------
 function renderComments(artworkId) {
-  return getComments(artworkId).then(comments => {
+  return getComments(artworkId).then(async comments => {
     const list = document.getElementById('lb-comment-list');
     if (!list) return comments;
     if (!comments || comments.length === 0) {
       list.innerHTML = '<div class="lb-no-comment">还没有评论，成为第一个发声的人吧</div>';
     } else {
+      // 评论记录只存 userId + username，头像一次性读 users 表按账户解析
+      const users = (window.Settings && typeof window.Settings.buildUserMap === 'function')
+        ? await window.Settings.buildUserMap() : new Map();
+      const avatarOf = (c) => (window.Settings && typeof window.Settings.renderAvatarHtml === 'function')
+        ? window.Settings.renderAvatarHtml(users.get(String(c.userId)) || { username: c.username }, { sizeClass: 'sm' })
+        : `<span class="avatar-circle sm">${_esc((c.username || '?').charAt(0))}</span>`;
       list.innerHTML = comments.map(c => `
         <div class="comment-item">
-          <span class="avatar-circle sm">${_esc((c.username || '?').charAt(0))}</span>
+          ${avatarOf(c)}
           <div class="comment-body">
             <div class="comment-head">
               <span class="comment-user">${_esc(c.username)}</span>
