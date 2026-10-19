@@ -11,7 +11,7 @@
  *   - ollama 直接 spawn ollama.exe 而非跑 ps1，纳入子进程管理
  */
 
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -21,24 +21,76 @@ const ROOT = path.resolve(__dirname, '..');
 const IS_WIN = process.platform === 'win32';
 
 // ─── 服务定义 ────────────────────────────────────────────────────────
-// ollama.exe 路径（绝对路径，避免 CWD 偏移）
-const OLLAMA_DIR = path.join(ROOT, 'training-env');
-const OLLAMA_EXE = path.join(OLLAMA_DIR, 'ollama', IS_WIN ? 'ollama.exe' : 'ollama');
-const OLLAMA_MODELS = path.join(OLLAMA_DIR, 'ollama-models');
+// 自研模型（dreamcraft-1.5b:v6 文创 + dreamcraft-story-1.5b:v5 讲解）存放在该目录，
+// 必须通过 OLLAMA_MODELS 传给 ollama 才可见；否则会退化成"看不到任何模型"的空实例。
+const OLLAMA_MODELS = path.join(ROOT, 'training-env', 'ollama-models');
+
+// ollama.exe 多候选定位：项目内置目录 → 官方安装目录 → PATH
+function resolveOllamaExe() {
+  const exeName = IS_WIN ? 'ollama.exe' : 'ollama';
+  const candidates = [
+    path.join(ROOT, 'training-env', 'ollama', exeName),
+    process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Programs', 'Ollama', exeName),
+    process.env.ProgramFiles && path.join(process.env.ProgramFiles, 'Ollama', exeName),
+  ].filter(Boolean);
+  for (const c of candidates) if (fs.existsSync(c)) return c;
+  try {
+    const r = spawnSync(IS_WIN ? 'where.exe' : 'which', ['ollama'], { encoding: 'utf8' });
+    const hit = (r.stdout || '')
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .find((s) => s && fs.existsSync(s));
+    if (hit) return hit;
+  } catch { /* PATH 中未安装 → 落空 */ }
+  return null;
+}
+
+const OLLAMA_EXE = resolveOllamaExe();
+
+// 已运行的 ollama 能否看到本项目模型（官方桌面版可能用默认空模型目录抢占 11434）
+function ollamaSeesModels(exe) {
+  if (!exe) return false;
+  try {
+    const r = spawnSync(exe, ['list'], {
+      encoding: 'utf8',
+      timeout: 20000,
+      env: { ...process.env, OLLAMA_MODELS },
+    });
+    return /dreamcraft/i.test(r.stdout || '');
+  } catch { return false; }
+}
 
 const isPortOpen = (port) =>
   new Promise((resolve) => {
     import('node:net').then((net) => {
       const s = net.connect({ port });
-      s.once('connect', () => { s.destroy(); resolve(true); });
-      s.once('error', () => resolve(false));
+      s.on('connect', () => { s.destroy(); resolve(true); });
+      s.on('error', () => resolve(false));
     });
   });
 
-// ollama 是否已在运行（端口 11434 已监听）
+// ollama 就绪判定：不仅要端口通，还要能看到 Dreamcore 模型
 const ollamaUp = await isPortOpen(11434);
-if (ollamaUp) {
-  console.log('[ollama] 11434 已被占用，跳过启动（需手动处理若为僵死进程）');
+const ollamaReady = ollamaUp && ollamaSeesModels(OLLAMA_EXE);
+let needStartOllama = !!OLLAMA_EXE;
+
+if (ollamaReady) {
+  needStartOllama = false;
+  console.log('[ollama] 11434 已就绪（Dreamcore 模型可见），复用现有实例');
+} else if (ollamaUp) {
+  // 端口被占但看不到本项目模型 → 判定为占坑的空实例，回收后由本脚本重启
+  console.log('[ollama] 11434 被占用但看不到 Dreamcore 模型，回收旧进程后重启');
+  for (const img of (IS_WIN ? ['ollama.exe', 'ollama app.exe'] : ['ollama'])) {
+    spawnSync(IS_WIN ? 'taskkill' : 'pkill',
+      IS_WIN ? ['/IM', img, '/F', '/T'] : ['-f', img],
+      { stdio: 'ignore' });
+  }
+  for (let i = 0; i < 20 && (await isPortOpen(11434)); i++) {
+    await new Promise((r) => setTimeout(r, 500));
+  }
+} else if (!OLLAMA_EXE) {
+  needStartOllama = false;
+  console.log('[ollama] 未找到 ollama 可执行文件，跳过启动（AI 将走云端降级链）');
 }
 
 // UV BFF 是否已在运行（默认 3001，可被 PORT 环境变量覆盖）
@@ -69,7 +121,7 @@ const services = [
   },
 ];
 
-if (!ollamaUp && fs.existsSync(OLLAMA_EXE)) {
+if (needStartOllama && OLLAMA_EXE) {
   services.push({
     name: 'ollama',
     cmd: OLLAMA_EXE,
@@ -78,12 +130,11 @@ if (!ollamaUp && fs.existsSync(OLLAMA_EXE)) {
     env: {
       ...process.env,
       OLLAMA_MODELS: OLLAMA_MODELS,
-      OLLAMA_KEEP_ALIVE: '12h',
+      OLLAMA_KEEP_ALIVE: '12h',   // 不要加 KV 量化/FlashAttention（会拉低合规率）
     },
+    shell: false,   // 绝对路径 exe，交给 shell 反而有引号/空格风险
     skip: false,
   });
-} else if (!ollamaUp && !fs.existsSync(OLLAMA_EXE)) {
-  console.log('[ollama] 未找到 ' + OLLAMA_EXE + '，跳过启动');
 }
 
 // ─── 并行启动 ───────────────────────────────────────────────────────
@@ -108,7 +159,8 @@ for (const svc of services) {
     cwd: svc.cwd,
     env: svc.env,
     stdio: ['ignore', 'pipe', 'pipe'],
-    shell: IS_WIN, // Windows 下必须 shell:true 才能正确解析 PATH
+    // npm/npm.cmd 需要 shell 解析 PATH；ollama 是绝对路径 exe，走 shell:false
+    shell: svc.shell === undefined ? IS_WIN : svc.shell,
     windowsHide: false,
   });
 
@@ -151,4 +203,10 @@ if (IS_WIN) {
   process.on('SIGBREAK', exitHandler);
 }
 
-console.log('\n全部服务已拉起。按 Ctrl+C 终止所有进程。\n');
+const ollamaLine = ollamaReady ? '复用已运行实例' : (OLLAMA_EXE ? '已启动' : '未找到，跳过');
+console.log('\n' + '─'.repeat(60));
+console.log('全部服务已拉起，按 Ctrl+C 终止所有进程');
+console.log(`  前端页面  http://localhost:5173/        （浏览器会自动打开）`);
+console.log(`  UV BFF    http://localhost:${UV_PORT}/api/uv/process`);
+console.log(`  ollama    http://127.0.0.1:11434        （${ollamaLine}，模型目录 training-env/ollama-models）`);
+console.log('─'.repeat(60) + '\n');

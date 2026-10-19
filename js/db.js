@@ -630,6 +630,45 @@ function getAllArtworks() {
   });
 }
 
+// ============================================================
+// 作品可见性（单一事实来源）
+// 本地 status 四态：pending 待审核 / published 已发布 / rejected 已下架 / deleted 逻辑删除
+//   · 对外公开可见（画廊/搜索/榜单/策展/他人主页）：仅 published
+//   · 作者本人可见（个人中心我的作品）：排除 rejected / deleted（保留 pending，作者能看到"审核中"）
+//   · 历史存量数据无 status 字段 → 视为公开可见
+// 读取侧统一走 getPublicArtworks()/getUserArtworks()，避免各页面自行过滤导致视图不一致
+// ============================================================
+const ARTWORK_STATUS = {
+  PENDING: 'pending',
+  PUBLISHED: 'published',
+  REJECTED: 'rejected',   // 后台下架
+  DELETED: 'deleted'      // 逻辑删除（归档，可恢复）
+};
+
+// 本地状态 → 云端枚举（与 supabase/schema.sql 的 check(draft/published/offline) 对齐）
+const CLOUD_STATUS_MAP = {
+  pending: 'draft',
+  published: 'published',
+  rejected: 'offline',
+  deleted: 'offline'
+};
+
+// 对外公开可见判定
+function isPublicArtwork(a) {
+  return !!a && (!a.status || a.status === ARTWORK_STATUS.PUBLISHED);
+}
+
+// 作者本人可见判定（后台下架/逻辑删除后不再出现在个人中心）
+function isOwnerVisibleArtwork(a) {
+  return !!a && a.status !== ARTWORK_STATUS.REJECTED && a.status !== ARTWORK_STATUS.DELETED;
+}
+
+// 仅返回对外公开可见的作品（对外读取侧的统一入口）
+async function getPublicArtworks() {
+  const all = await getAllArtworks();
+  return all.filter(isPublicArtwork);
+}
+
 // 获取单个作品
 async function getArtworkById(id) {
   id = Number(id);
@@ -772,10 +811,11 @@ async function updateArtwork(id, data) {
 }
 
 // 获取指定用户发布的作品（严格按 userId 匹配，杜绝把同名种子作品误算作用户作品）
+// 可见性收口：后台下架(rejected)/逻辑删除(deleted)的作品不再出现在个人中心与他人主页
 async function getUserArtworks(userId) {
   const all = await getAllArtworks();
   const uid = _keepId(userId);
-  return all.filter(a => _keepId(a.userId) === uid && a.userId != null);
+  return all.filter(a => _keepId(a.userId) === uid && a.userId != null && isOwnerVisibleArtwork(a));
 }
 
 // 获取指定作者名的作品（用于种子数据中的作者）
@@ -2517,6 +2557,10 @@ window.addArtwork = addArtwork;
 window.deleteArtwork = deleteArtwork;
 window.updateArtwork = updateArtwork;
 window.getUserArtworks = getUserArtworks;
+// 作品可见性收口（对外读取侧统一入口 + 状态常量/云端映射）
+window.getPublicArtworks = getPublicArtworks;
+window.ARTWORK_STATUS = ARTWORK_STATUS;
+window.CLOUD_STATUS_MAP = CLOUD_STATUS_MAP;
 window.getArtworksByAuthorName = getArtworksByAuthorName;
 window.getArtworksByTag = getArtworksByTag;
 window.getAllUsers = getAllUsers;
@@ -2644,6 +2688,12 @@ export {
   deleteArtwork,
   updateArtwork,
   getUserArtworks,
+  // 作品可见性收口（对外读取侧统一入口 + 状态常量/云端映射）
+  getPublicArtworks,
+  isPublicArtwork,
+  isOwnerVisibleArtwork,
+  ARTWORK_STATUS,
+  CLOUD_STATUS_MAP,
   getArtworksByAuthorName,
   getArtworksByTag,
   getAllUsers,

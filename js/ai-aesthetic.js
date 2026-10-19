@@ -25,7 +25,7 @@ import { icons as _ICONS } from './icons.js';
 import {
   getArtworkById,
   updateArtwork,
-  getAllArtworks,
+  getPublicArtworks,
   addAestheticScore,
   getAestheticScoresByArtwork,
   updateAestheticScore,
@@ -418,7 +418,8 @@ async function findSimilarWorks(artworkId, limit = 5) {
     composition: 6, lighting: 6, color: 6, clarity: 6, theme: 6
   };
 
-  const allArtworks = await getAllArtworks();
+  // 对外展示：相似作品候选仅取公开可见作品（下架/逻辑删除/待审核不出现）
+  const allArtworks = await getPublicArtworks();
   // 排除自身
   const candidates = allArtworks.filter(a => Number(a.id) !== Number(artworkId));
 

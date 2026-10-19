@@ -6,7 +6,7 @@
 // 入口: #/leaderboard 路由 / 首页 Hero 按钮 / 移动端菜单 / 个人中心
 // ============================================================
 
-import { getAllArtworks, getAestheticScoresByArtwork } from './db.js';
+import { getPublicArtworks, getAestheticScoresByArtwork } from './db.js';
 
 // 等级元数据（与全站评级规范一致：SSS/SS/S 金 / A 粉紫 / B 天蓝 / C 灰白）
 const GRADE_META = {
@@ -132,7 +132,8 @@ const Leaderboard = {
   // ----------------------------------------------------------
   async _collect() {
     if (this._itemsCache) return this._itemsCache;
-    const artworks = (await getAllArtworks()) || [];
+    // 榜单为对外展示：仅统计公开可见作品（下架/逻辑删除/待审核不参与排名）
+    const artworks = (await getPublicArtworks()) || [];
     const lists = await Promise.all(artworks.map(a =>
       getAestheticScoresByArtwork(a.id).catch(() => [])
     ));

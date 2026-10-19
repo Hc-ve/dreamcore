@@ -7,7 +7,7 @@
 // 足迹联动：识别命中主题 → recordFootprint('scan') + culture:footprint 事件
 // ============================================================
 
-import { getAllArtworks, recordFootprint, saveMemory } from './db.js';
+import { getPublicArtworks, recordFootprint, saveMemory } from './db.js';
 import { getThemeById, matchArtworksByTheme } from '../data/culture-knowledge.js';
 
 let overlayEl = null;
@@ -404,7 +404,8 @@ async function _goCraft() {
   // 匹配画廊中该主题的作品作为文创底图
   let artworkId = null;
   try {
-    const all = await getAllArtworks();
+    // 对外展示：仅从公开可见作品中选文创底图（下架/逻辑删除/待审核不参与）
+    const all = await getPublicArtworks();
     const matched = matchArtworksByTheme(all, themeId);
     if (matched.length > 0) {
       // 优先高清高清度高的作品（views 高 → 更可能代表性）

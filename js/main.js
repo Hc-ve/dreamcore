@@ -316,10 +316,10 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   // v11：加载自定义 3D 模型 cache（品类切换时优先加载运营上传的自定义 glb，无绑定 fallback 程序化模板）
-  try {
-    const { loadCustomModelsCache } = await import('../js/craft-3d.js');
-    await loadCustomModelsCache();
-  } catch (e) { /* 不阻塞启动，cache 失败则全 fallback 程序化 builder */ }
+  // 不 await：仅预热 cache，失败/未就绪时品类切换会走程序化 fallback，不应阻塞首屏
+  import('../js/craft-3d.js')
+    .then(({ loadCustomModelsCache }) => loadCustomModelsCache())
+    .catch(() => { /* 不阻塞启动，cache 失败则全 fallback 程序化 builder */ });
 
   // M4 应用站点设置（管理后台可配置：站点名称/公告）
   try {
@@ -332,8 +332,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   } catch (e) { /* 设置应用失败不阻塞启动 */ }
 
   // 检查登录状态 & 更新导航
+  // 注意：登录态已在 Settings.init() 内 await Auth.checkAuthState() 恢复（见 settings.js init），
+  // 此处不再重复请求云端（原重复调用每次额外 2 次 Supabase 往返 ≈1.5s，是首屏变慢的主因之一）
   if (window.Auth) {
-    await Auth.checkAuthState();
     Auth.updateNavForUser();
     Auth.showWelcomeIfFirstVisit();
   }

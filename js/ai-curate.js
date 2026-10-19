@@ -10,7 +10,7 @@
 //   1. 纯原生 DOM + Canvas 2D，不引入第三方 UI/绘图库
 //   2. AI 生成内容显式标注"✨ AI辅助生成"（DOM 徽章 + Canvas 水印）
 //   3. 离开路由时完整清理（Canvas / 事件监听器 / RAF）
-// 依赖：./db.js（curated_halls CRUD + getAllArtworks + getArtworkById）
+// 依赖：./db.js（curated_halls CRUD + getPublicArtworks + getArtworkById）
 // ============================================================
 
 import {
@@ -19,7 +19,7 @@ import {
   getCuratedHallsByTheme,
   updateCuratedHall,
   deleteCuratedHall,
-  getAllArtworks,
+  getPublicArtworks,
   getArtworkById
 } from './db.js';
 
@@ -142,7 +142,7 @@ function esc(s) {
 /**
  * 主题聚类：将作品按主题关键词匹配度分组
  * 基于作品 tags / description / title 中的关键词匹配 + AI 评分维度
- * @param {Array} artworks - getAllArtworks() 返回的作品列表
+ * @param {Array} artworks - getPublicArtworks() 返回的作品列表
  * @param {string} themeKey - CURATE_THEMES key
  * @returns {Array} 匹配该主题的作品列表（按匹配度降序）
  */
@@ -191,7 +191,8 @@ async function generateHalls(options = {}) {
 
   let artworks = [];
   try {
-    artworks = await getAllArtworks();
+    // 对外展示：策展馆仅从公开可见作品中取材（下架/逻辑删除/待审核不入展）
+    artworks = await getPublicArtworks();
   } catch (err) {
     console.error('[AI-Curate] 加载作品失败:', err);
     throw new Error('加载作品库失败');

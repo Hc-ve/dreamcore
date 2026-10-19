@@ -65,6 +65,24 @@ export default defineConfig(({ mode }) => {
           res.end(JSON.stringify({ error: '云端同步服务异常: ' + (e.message || e) }));
         }
       });
+      // 作品状态变更回写云端（开发环境）：拦截 /api/update-artwork-status
+      // 后台改状态/删除时回写 Supabase artworks.status，彻底解决换端不一致
+      server.middlewares.use('/api/update-artwork-status', async (req, res) => {
+        try {
+          if (req.method === 'OPTIONS') { res.statusCode = 204; res.end(); return; }
+          let body = '';
+          for await (const chunk of req) body += chunk;
+          const { handler } = await import('./netlify/functions/update-artwork-status.mjs');
+          const out = await handler({ httpMethod: req.method, path: '/api/update-artwork-status' + (req.url || ''), body });
+          res.statusCode = out.statusCode || 200;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(out.body);
+        } catch (e) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(JSON.stringify({ error: '云端状态回写服务异常: ' + (e.message || e) }));
+        }
+      });
     }
   };
 

@@ -13,7 +13,7 @@
 // 数据源：data/scenic-spots.js（26 景区 × 4-6 景点）+ culture-knowledge.js
 // ============================================================
 
-import { getAllArtworks, recordFootprint, getFootprintsByUser, addScenicGuide, getScenicGuidesByArea } from './db.js';
+import { getPublicArtworks, recordFootprint, getFootprintsByUser, addScenicGuide, getScenicGuidesByArea } from './db.js';
 import { getThemeById, hasFactCard, matchArtworksByTheme } from '../data/culture-knowledge.js';
 import { THEME_LOCATIONS, CULTURE_BADGES } from '../data/culture-badges.js';
 import { SCENIC_AREAS, SCENIC_AREA_COUNT, SCENIC_SPOT_COUNT, getAreaById } from '../data/scenic-spots.js';
@@ -986,7 +986,8 @@ async function _goCraft(theme, story, area) {
   let artworkId = null;
   let all = [];
   try {
-    all = await getAllArtworks();
+    // 对外展示：仅从公开可见作品中选文创底图（下架/逻辑删除/待审核不参与）
+    all = await getPublicArtworks();
     if (theme) {
       const matched = matchArtworksByTheme(all, theme.themeId);
       if (matched.length > 0) {

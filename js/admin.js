@@ -383,7 +383,12 @@ const Admin = {
     if (!ok) return;
     let done = 0, fail = 0;
     for (const id of ids) {
-      try { await updateArtwork(id, { status }); done++; } catch { fail++; }
+      try {
+        await updateArtwork(id, { status });
+        done++;
+        // 回写云端（best-effort，不阻塞）
+        try { window.CloudMigrate?.updateArtworkStatusToCloud?.(id, status); } catch (_) {}
+      } catch { fail++; }
     }
     await this._log(`artwork.batch.${status === 'published' ? 'publish' : 'reject'}`, 'artwork', ids.join(','),
       `批量${label} ${done} 个作品（失败 ${fail} 个）`);
@@ -421,7 +426,16 @@ const Admin = {
       for (const id of ids) {
         const art = this.artworksCache.find(a => a.id === id);
         if (art) names.push(art.title);
-        try { await deleteArtwork(id, { soft: isSoft }); done++; } catch { fail++; }
+        const cloudId = art && art.cloudId; // 删除前捕获
+        try {
+          await deleteArtwork(id, { soft: isSoft });
+          done++;
+          // 回写云端（best-effort，不阻塞）
+          try {
+            if (isHard) window.CloudMigrate?.deleteArtworkFromCloud?.(cloudId);
+            else window.CloudMigrate?.updateArtworkStatusToCloud?.(id, 'deleted');
+          } catch (_) {}
+        } catch { fail++; }
       }
       await this._log(`artwork.batch.${isSoft ? 'archive' : 'delete'}`, 'artwork', ids.join(','),
         `批量${isSoft ? '归档' : '删除'} ${done} 个作品${fail ? `（失败 ${fail} 个）` : ''}`);
@@ -546,6 +560,8 @@ const Admin = {
     if (!art) return;
     try {
       await updateArtwork(artworkId, { status });
+      // 回写云端：status 是服务端权威字段，避免换端/清缓存后下架"复活"（best-effort，不阻塞）
+      try { window.CloudMigrate?.updateArtworkStatusToCloud?.(artworkId, status); } catch (_) {}
       await this._log('artwork.review', 'artwork', artworkId,
         `「${art.title}」${status === 'published' ? '审核通过并上架' : '下架'}`);
       if (window.showToast) showToast(status === 'published' ? '已审核通过并上架' : '作品已下架', 'success');
@@ -613,6 +629,8 @@ const Admin = {
         };
         try {
           await updateArtwork(artworkId, data);
+          // 回写云端状态（best-effort，不阻塞）
+          try { window.CloudMigrate?.updateArtworkStatusToCloud?.(artworkId, data.status); } catch (_) {}
           await this._log('artwork.update', 'artwork', artworkId, `编辑「${title}」（分类 ${this._catLabel(selected)} / 状态 ${this._statusLabel(data.status)}）`);
           if (window.showToast) showToast('作品已更新', 'success');
           if (typeof Sound !== 'undefined') Sound.playSound('success');
@@ -654,8 +672,14 @@ const Admin = {
       const isSoft = !!e.target.closest('[data-soft]');
       const isHard = !!e.target.closest('[data-hard]');
       if (!isSoft && !isHard) return;
+      const cloudId = art.cloudId; // 删除前捕获，本地删除后无法再查到
       try {
         await deleteArtwork(artworkId, { soft: isSoft });
+        // 回写云端：逻辑删除→状态置 offline；物理删除→删云端行（best-effort，不阻塞）
+        try {
+          if (isHard) window.CloudMigrate?.deleteArtworkFromCloud?.(cloudId);
+          else window.CloudMigrate?.updateArtworkStatusToCloud?.(artworkId, 'deleted');
+        } catch (_) {}
         await this._log(`artwork.${isSoft ? 'archive' : 'delete'}`, 'artwork', artworkId,
           `${isSoft ? '逻辑删除（归档）' : '物理删除（级联清理）'}「${art.title}」`);
         if (window.showToast) showToast(isSoft ? '已归档，可恢复' : '已彻底删除', 'success');

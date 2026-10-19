@@ -4,7 +4,8 @@
 //       M7 智能搜索增强: 语义搜索 + 标签云 + AI 评分筛选
 // ============================================================
 
-import { getAestheticScoresByArtwork } from './db.js';
+// 作品可见性统一入口：搜索只暴露对外公开可见的作品（下架/删除/待审核不可见）
+import { getAestheticScoresByArtwork, getPublicArtworks } from './db.js';
 import { DIMENSIONS } from './ai-aesthetic.js';
 
 const Search = {
@@ -31,7 +32,7 @@ const Search = {
       });
       navInput.addEventListener('focus', async () => {
         if (this.allArtworks.length === 0) {
-          this.allArtworks = await getAllArtworks();
+          this.allArtworks = await getPublicArtworks();
         }
       });
     }
@@ -40,7 +41,7 @@ const Search = {
   async showSearchBar() {
     if (typeof Sound !== 'undefined') Sound.playSound('pop');
     // 每次打开都刷新 IndexedDB —— 用户发布/删除/编辑作品后 Search 必须感知变化
-    this.allArtworks = await getAllArtworks();
+    this.allArtworks = await getPublicArtworks();
     const overlay = document.getElementById('search-modal');
     if (overlay) {
       if (!this.isOpen) {

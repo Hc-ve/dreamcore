@@ -8,6 +8,8 @@
 // 同步成功的本地作品打 cloudMigrated 标记（幂等可重跑）
 // ============================================================
 import { supabase, supabaseEnabled } from './supabase-client.js';
+// 本地四态 → 云端三态映射（draft/published/offline），与 db.js 单一事实来源对齐
+import { CLOUD_STATUS_MAP } from '../db.js';
 
 // ------------------------------------------------------------
 // 收集本地评分/评论并调用服务端同步通道
@@ -71,6 +73,38 @@ async function _syncViaServer(a, accessToken) {
     throw new Error('云端同步失败: ' + msg);
   }
   return out;
+}
+
+// ------------------------------------------------------------
+// 取当前云端会话的 access_token（未登录 → null）
+// ------------------------------------------------------------
+async function _getAccessToken() {
+  if (!supabaseEnabled || !supabase) return null;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: sessionData } = await supabase.auth.getSession();
+  return (sessionData && sessionData.session && sessionData.session.access_token) || null;
+}
+
+// ------------------------------------------------------------
+// 状态变更回写云端（经 /api/update-artwork-status 服务端通道）
+// @returns {Promise<{ok?:boolean, skipped?:boolean, failed?:boolean, reason?:string, error?:string}>}
+// ------------------------------------------------------------
+async function _writeStatusToCloud(payload) {
+  const accessToken = await _getAccessToken();
+  if (!accessToken) return { skipped: true, reason: 'cloud-session-missing' };
+  const res = await fetch('/api/update-artwork-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ access_token: accessToken, ...payload })
+  });
+  let out = null;
+  try { out = await res.json(); } catch (_) { /* 非 JSON 响应 */ }
+  if (!res.ok || !out || !out.ok) {
+    const msg = out && out.error ? out.error : ('HTTP ' + res.status);
+    throw new Error(msg);
+  }
+  return { ok: true, cloudId: out.cloudId, status: out.status, op: out.op };
 }
 
 const CloudMigrate = {
@@ -151,6 +185,47 @@ const CloudMigrate = {
     } catch (e) {
       // 静默降级：演示环境断网/云端异常时发布体验不受影响
       console.warn('[CloudMigrate] 云端同步失败（不影响本地发布）:', e && e.message || e);
+      return { failed: true, error: e && e.message || String(e) };
+    }
+  },
+
+  /**
+   * 后台改状态 → 回写云端 artworks.status（best-effort）
+   * fire-and-forget：失败仅 console.warn，绝不阻塞后台操作主流程；
+   * 未上云（无 cloudId）/未登录云端 → 静默跳过。
+   * @param {number|string} artworkId 本地作品 id
+   * @param {'pending'|'published'|'rejected'|'deleted'} status 本地状态
+   */
+  async updateArtworkStatusToCloud(artworkId, status) {
+    try {
+      if (artworkId == null) return { skipped: true, reason: 'no-artwork-id' };
+      const a = await window.getArtworkById(artworkId);
+      if (!a) return { skipped: true, reason: 'artwork-not-found' };
+      if (!a.cloudId) return { skipped: true, reason: 'not-migrated' };
+      const cloudStatus = CLOUD_STATUS_MAP[status];
+      if (!cloudStatus) return { skipped: true, reason: 'unknown-status' };
+      const r = await _writeStatusToCloud({ cloudId: a.cloudId, op: 'status', status: cloudStatus });
+      if (r.ok) console.log('[CloudMigrate] 状态已回写云端:', a.title || '未命名', '→', cloudStatus);
+      return r;
+    } catch (e) {
+      console.warn('[CloudMigrate] 云端状态回写失败（不影响本地后台操作）:', e && e.message || e);
+      return { failed: true, error: e && e.message || String(e) };
+    }
+  },
+
+  /**
+   * 物理删除 → 同步删除云端 artworks 行（best-effort）
+   * 注意：必须在本地删除前捕获 cloudId（本地删除后无法再查到）。
+   * @param {string} cloudId 云端作品 id（本地作品的 cloudId）
+   */
+  async deleteArtworkFromCloud(cloudId) {
+    try {
+      if (!cloudId) return { skipped: true, reason: 'no-cloud-id' };
+      const r = await _writeStatusToCloud({ cloudId, op: 'delete' });
+      if (r.ok) console.log('[CloudMigrate] 云端作品已删除:', cloudId);
+      return r;
+    } catch (e) {
+      console.warn('[CloudMigrate] 云端删除失败（不影响本地后台操作）:', e && e.message || e);
       return { failed: true, error: e && e.message || String(e) };
     }
   }

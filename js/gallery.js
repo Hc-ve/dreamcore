@@ -9,6 +9,8 @@
 import SharePoster from './share-poster.js';
 // P1-2 文化 SVG 图标（替换 emoji 评级，跨平台一致）
 import { icons as _ICONS } from './icons.js';
+// 作品可见性统一入口：画廊只渲染对外公开可见的作品（下架/删除/待审核不可见）
+import { getPublicArtworks } from './db.js';
 
 const Gallery = {
   // 全部作品缓存
@@ -270,7 +272,7 @@ const Gallery = {
   // ----------------------------------------------------------
   async loadArtworks(category = 'all', page = 1) {
     this.currentCategory = category;
-    this.allArtworks = await getAllArtworks()
+    this.allArtworks = await getPublicArtworks()
     if(typeof this._attachAestheticScores==='function')await this._attachAestheticScores();;
     this._applySortAndFilter();
   },
@@ -297,8 +299,8 @@ const Gallery = {
   _applySortAndFilter() {
     let list = [...this.allArtworks];
 
-    // M4 内容审核：仅展示已发布作品（待审核/已下架在管理后台可见）
-    list = list.filter(a => !a.status || a.status === 'published');
+    // M4 内容审核：可见性过滤已统一收口在 db.js 的 getPublicArtworks()
+    // （仅 published；待审核/已下架/逻辑删除在管理后台可见）——此处不再重复过滤
 
     // 按分类筛选
     if (this.currentCategory !== 'all') {
@@ -466,7 +468,7 @@ const Gallery = {
     if (gallery) gallery.scrollIntoView({ behavior: 'smooth' });
     // 重新加载
     if (this.allArtworks.length === 0) {
-      this.allArtworks = await getAllArtworks();
+      this.allArtworks = await getPublicArtworks();
     }
     this._applySortAndFilter();
   },
@@ -892,8 +894,8 @@ const Gallery = {
     // 找到在当前列表中的索引
     const idx = this.lightboxList.findIndex(a => a.id === Number(artworkId));
     if (idx === -1) {
-      // 不在当前列表，从全部作品中查找
-      const all = await getAllArtworks();
+      // 不在当前列表，从对外公开可见的作品中查找
+      const all = await getPublicArtworks();
       this.lightboxList = all;
     }
     this.lightboxIndex = this.lightboxList.findIndex(a => a.id === Number(artworkId));

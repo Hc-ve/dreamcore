@@ -23,6 +23,7 @@
     "dashscope-sdk-official": "^1.26.0",
     "fflate": "^0.8.3",
     "gsap": "^3.12.5",
+    "pptxgenjs": "^4.0.1",
     "puppeteer-core": "^24.43.1",
     "qrcode": "^1.5.4",
     "three": "^0.160.0",

@@ -8,7 +8,7 @@
 //   画廊浏览不点亮（gallery 灯箱只做主题引导提示，见 themeHint()）
 // ============================================================
 
-import { getAllArtworks, recordFootprint } from './db.js';
+import { getPublicArtworks, recordFootprint } from './db.js';
 import { CULTURE_THEMES, EXTENDED_THEMES, getThemeById, matchThemeByText, matchArtworksByTheme, hasFactCard } from '../data/culture-knowledge.js';
 import { CULTURE_BADGES } from '../data/culture-badges.js';
 // P1-2 emoji→SVG 映射（data 文件保留 emoji，渲染层替换）
@@ -211,7 +211,8 @@ async function _openDetail(themeId) {
   // 关联作品
   let works = [];
   try {
-    const all = await getAllArtworks();
+    // 对外展示：仅关联公开可见作品（下架/逻辑删除/待审核不出现）
+    const all = await getPublicArtworks();
     works = matchArtworksByTheme(all, themeId).slice(0, 6);
   } catch (e) { /* 画廊读取失败不阻塞 */ }
 

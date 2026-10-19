@@ -20,3 +20,25 @@ training-env/*.zip
 
 # 构建产物
 dist/
+
+# 路演交付物与生成素材（体积大，不随代码库分发）
+竞赛材料/
+bp/
+bp-preparation/
+bp-workbench/
+ppt-final-assets/
+ppt制作素材库/
+.trae-html-share-packages/
+启动服务器/
+文创设计参考/模型/模型导出/
+PPT演示-前置筹备规划.html
+Dreamcore-路演PPT-v1.0.html
+Dreamcore-路演PPT-v1.0.pptx
+申报书-六大模块填写.html
+
+# 运行日志与测试产物
+logs/
+test-results/
+
+# Office 临时锁文件
+~$*.pptx
