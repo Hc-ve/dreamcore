@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dreamcore 演示视频 · 功能演示顺序流程图</title>
+<style>
+  :root{
+    --paper:#faf7f2;
+    --card:#ffffff;
+    --ink:#1f1b18;
+    --ink-2:#575049;
+    --ink-3:#8b827a;
+    --line:#d9d0c4;
+    --accent:#a8261f;          /* 主站红 */
+    --indigo:#2d4a6b;          /* 游 */
+    --purple:#6b46c1;          /* 创 */
+    --teal:#0f766e;            /* 产 */
+    --rose:#be185d;            /* 销 */
+    --amber:#b45309;           /* 技术与教学 */
+    --shadow:0 6px 22px rgba(60,45,30,.10);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:40px 26px 64px;
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB","Source Han Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 8% -8%, #f6e9e4 0%, transparent 55%),
+      radial-gradient(1100px 620px at 96% 4%, #ece6f7 0%, transparent 52%),
+      linear-gradient(180deg,#faf7f2 0%,#f4eef7 100%);
+    background-attachment:fixed;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1480px;margin:0 auto;}
+
+  /* ---------- 页头 ---------- */
+  header.top{margin-bottom:26px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;letter-spacing:.14em;font-weight:700;color:var(--accent);
+    background:rgba(168,38,31,.08);border:1px solid rgba(168,38,31,.22);
+    padding:5px 12px;border-radius:999px;margin-bottom:14px;
+  }
+  h1{
+    margin:0 0 10px;font-size:31px;line-height:1.22;letter-spacing:-.4px;font-weight:800;
+  }
+  h1 .grad{
+    background:linear-gradient(120deg,var(--accent) 0%,#7c3aed 55%,#be185d 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .subtitle{margin:0;color:var(--ink-2);font-size:14.5px;max-width:1000px;}
+  .meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px;}
+  .chip{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:6px 13px;font-size:12.5px;color:var(--ink-2);box-shadow:0 2px 8px rgba(60,45,30,.05);
+  }
+  .chip b{color:var(--ink);font-weight:700;}
+
+  /* ---------- 区块标题 ---------- */
+  .section{margin-top:38px;}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .section-head::before{content:"";width:5px;height:20px;border-radius:3px;background:var(--accent);}
+  .section-head h2{margin:0;font-size:18.5px;font-weight:800;letter-spacing:-.2px;}
+  .section-head .note{font-size:12.5px;color:var(--ink-3);}
+
+  /* ---------- 起点 / 终点 ---------- */
+  .cap{
+    display:flex;align-items:center;gap:12px;justify-content:center;
+    padding:13px 22px;border-radius:999px;font-weight:800;font-size:15px;
+    color:#fff;box-shadow:var(--shadow);
+  }
+  .cap small{font-weight:600;opacity:.9;font-size:12.5px;}
+  .cap.start{background:linear-gradient(120deg,#2d4a6b,#6b46c1);}
+  .cap.end{background:linear-gradient(120deg,#a8261f,#be185d);}
+
+  /* ---------- 五幕泳道 ---------- */
+  .lanes{
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:34px;
+    margin:20px 0 0;
+  }
+  .lane{position:relative;display:flex;flex-direction:column;}
+  .lane:not(:first-child)::before{
+    content:"➜";position:absolute;left:-27px;top:34px;
+    font-size:19px;color:var(--line);font-weight:700;
+  }
+  .lane-head{
+    border-radius:12px;padding:11px 13px;margin-bottom:16px;color:#fff;
+    display:flex;flex-direction:column;gap:2px;box-shadow:var(--shadow);
+  }
+  .lane-head .act{font-size:11px;letter-spacing:.12em;font-weight:700;opacity:.92;}
+  .lane-head h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.2px;}
+  .lane-head .time{font-size:11.5px;opacity:.92;font-variant-numeric:tabular-nums;}
+  .lane[data-act="1"] .lane-head{background:linear-gradient(135deg,var(--indigo),#45688c);}
+  .lane[data-act="2"] .lane-head{background:linear-gradient(135deg,var(--purple),#8b5cf6);}
+  .lane[data-act="3"] .lane-head{background:linear-gradient(135deg,var(--teal),#14919b);}
+  .lane[data-act="4"] .lane-head{background:linear-gradient(135deg,var(--rose),#db2777);}
+  .lane[data-act="5"] .lane-head{background:linear-gradient(135deg,var(--amber),#d97706);}
+
+  .lane-body{display:flex;flex-direction:column;}
+
+  /* 节点 + 竖向连接线 */
+  .node{
+    position:relative;background:var(--card);border-radius:var(--radius);
+    border:1px solid var(--line);box-shadow:var(--shadow);
+    padding:12px 13px 12px 15px;
+  }
+  .node::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;}
+  .lane[data-act="1"] .node::before{background:var(--indigo);}
+  .lane[data-act="2"] .node::before{background:var(--purple);}
+  .lane[data-act="3"] .node::before{background:var(--teal);}
+  .lane[data-act="4"] .node::before{background:var(--rose);}
+  .lane[data-act="5"] .node::before{background:var(--amber);}
+  .node + .node{margin-top:30px;}
+  .node + .node::after{
+    content:"";position:absolute;left:50%;top:-30px;height:30px;width:2px;
+    background:var(--line);transform:translateX(-50%);
+  }
+  .node + .node .arrow{
+    display:block;position:absolute;left:50%;top:-25px;transform:translateX(-50%);
+    font-size:11px;color:var(--line);line-height:1;
+  }
+  .node .idx{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:21px;height:21px;padding:0 5px;border-radius:6px;
+    background:#f3eee7;color:var(--ink-2);font-size:11.5px;font-weight:800;
+    margin-right:7px;font-variant-numeric:tabular-nums;
+  }
+  .node .name{font-size:14px;font-weight:800;letter-spacing:-.1px;}
+  .node .route{
+    display:inline-block;margin:5px 0 0;font-family:"Consolas","Cascadia Mono",monospace;
+    font-size:11.5px;color:#7c3aed;background:rgba(124,58,237,.08);
+    border:1px solid rgba(124,58,237,.18);border-radius:6px;padding:1px 6px;
+  }
+  .node .desc{margin:6px 0 0;font-size:12.3px;color:var(--ink-2);}
+  .node .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .tag{
+    font-size:10.5px;font-weight:700;letter-spacing:.02em;
+    padding:2px 7px;border-radius:999px;border:1px solid transparent;
+  }
+  .tag.scene{background:rgba(45,74,107,.10);color:#2d4a6b;border-color:rgba(45,74,107,.22);}
+  .tag.tech{background:rgba(107,70,193,.10);color:#6b46c1;border-color:rgba(107,70,193,.22);}
+  .tag.teach{background:rgba(180,83,9,.10);color:#b45309;border-color:rgba(180,83,9,.22);}
+  .tag.biz{background:rgba(15,118,110,.10);color:#0f766e;border-color:rgba(15,118,110,.22);}
+  .tag.comp{background:rgba(190,24,93,.09);color:#be185d;border-color:rgba(190,24,93,.2);}
+  .star{color:var(--accent);font-weight:800;}
+
+  /* ---------- 完整遍历链 ---------- */
+  .chain{
+    display:flex;flex-wrap:wrap;align-items:center;gap:8px 6px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;box-shadow:var(--shadow);
+  }
+  .step{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:7px 12px;border-radius:9px;font-size:12.5px;font-weight:700;
+    border:1px solid var(--line);background:#fbf9f6;color:var(--ink);
+  }
+  .step .r{font-weight:600;font-size:11px;color:var(--ink-3);font-family:"Consolas",monospace;}
+  .step.explore{border-color:rgba(45,74,107,.3);background:rgba(45,74,107,.06);}
+  .step.create{border-color:rgba(107,70,193,.3);background:rgba(107,70,193,.06);}
+  .step.other{border-color:var(--line);}
+  .sep{color:var(--line);font-weight:800;font-size:14px;}
+  .grp{
+    flex-basis:100%;display:flex;align-items:center;gap:8px;
+    margin:6px 0 2px;font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--ink-3);
+  }
+  .grp::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  /* ---------- 录制提示条 ---------- */
+  .tips{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px;
+  }
+  .tip{
+    background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:12px;padding:13px 15px;box-shadow:var(--shadow);
+  }
+  .tip h4{margin:0 0 6px;font-size:13.5px;font-weight:800;}
+  .tip p{margin:0;font-size:12.3px;color:var(--ink-2);}
+  .tip.warn{border-left-color:#d97706;}
+  .tip.ok{border-left-color:var(--teal);}
+
+  footer{margin-top:34px;color:var(--ink-3);font-size:12px;text-align:center;}
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width:1180px){
+    .lanes{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 28px;}
+    .lane:not(:first-child)::before{content:"▼";left:0;right:0;top:-22px;text-align:center;font-size:12px;}
+    .lane:nth-child(odd)::before{content:"";}
+  }
+  @media (max-width:760px){
+    body{padding:26px 16px 48px;}
+    h1{font-size:24px;}
+    .lanes{grid-template-columns:minmax(0,1fr);gap:22px;}
+    .lane:not(:first-child)::before{content:"▼";left:0;right:0;top:-20px;text-align:center;font-size:12px;}
+    .tips{grid-template-columns:minmax(0,1fr);}
+    .cap{font-size:13.5px;padding:11px 16px;}
+  }
+
+  /* ---------- 打印 ---------- */
+  @media print{
+    @page{size:A4 landscape;margin:9mm;}
+    body{padding:0;background:#fff;background-image:none;}
+    .wrap{max-width:none;}
+    .node,.lane-head,.chain,.tip,.cap{box-shadow:none;}
+    .section{break-inside:avoid;}
+    .lane{break-inside:avoid;}
+    header.top{margin-bottom:14px;}
+    h1{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="eyebrow">演示视频 · 遍历流程</span>
+    <h1><span class="grad">Dreamcore</span> 功能演示顺序流程图</h1>
+    <p class="subtitle">
+      以「<b>游 → 创 → 产 → 销</b>」闭环为主线安排录屏遍历：先让 AI 看懂文化，再把一张照片变成一套文创方案，
+      接着打通「可下单、可交付」的落地闭环，最后回落到社区流通；收尾用「AI 教学陪练 + 自持模型全链路」承接教学辅助价值与技术路径。
+    </p>
+    <div class="meta">
+      <span class="chip">项目：<b>Dreamcore · AI+文旅文创艺术共创社区</b></span>
+      <span class="chip">赛道：<b>「AI+」交叉融合实践赛道（AI+文旅文创）</b></span>
+      <span class="chip">时长：<b>正片 5–6 分钟 + 90 秒快剪</b></span>
+      <span class="chip">团队：<b>何超臣、杨续</b></span>
+    </div>
+  </header>
+
+  <!-- ===================== 第一视图：成片分镜 ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <h2>一、成片分镜流程图（剪辑后·按叙事）</h2>
+      <span class="note">横向看「幕」，纵向看「镜头顺序」；节点下方标签对应评审四看点。</span>
+    </div>
+
+    <div class="cap start">🎬 开场 · 首页 <small>#/</small> &nbsp;|&nbsp; <small>0:00–0:25 · 一句话定位 + 数据亮点（1664 条训练集 / 验收 100% / 400+ 用例）</small></div>
+
+    <div class="lanes">
+
+      <!-- 第一幕：游 -->
+      <div class="lane" data-act="1">
+        <div class="lane-head">
+          <span class="act">第一幕</span>
+          <h3>游 · 文化体验</h3>
+          <span class="time">0:25 – 1:40</span>
+        </div>
+        <div class="lane-body">
+          <div class="node"><span class="arrow">▼</span>
+            <span class="idx">1</span><span class="name">文化图鉴</span>
+            <span class="route">#/atlas</span>
+            <p class="desc">12 个人工校对文化主题 + 36 个 AI 扩展地标，内容带来源与标注。</p>
+            <div class="tags"><span class="tag teach">教学·文化通识</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">2</span><span class="name">AI 识文化</span>
+            <span class="route">#/scan</span>
+            <p class="desc">拍照/上传文物建筑 → 识别文化主体 → 生成讲解，<b>数字人 + TTS 语音播报出声</b>。</p>
+            <div class="tags"><span class="tag scene">应用场景</span><span class="tag teach">教学价值</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">3</span><span class="name">探索足迹</span>
+            <span class="route">#/footprint</span>
+            <p class="desc">读图鉴 / 创作 / 识图点亮 48 主题足迹徽章，进度地图（无 key 降级徽章墙，属正常）。</p>
+            <div class="tags"><span class="tag scene">应用场景</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">4</span><span class="name">景区推荐</span>
+            <span class="route">#/scenic</span>
+            <p class="desc">48 个景区卡片流 + AI 讲解 + TTS + 「用此主题创作文创」引流。</p>
+            <div class="tags"><span class="tag scene">应用场景</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二幕：创 -->
+      <div class="lane" data-act="2">
+        <div class="lane-head">
+          <span class="act">第二幕</span>
+          <h3>创 · AI 创作工具链</h3>
+          <span class="time">1:40 – 3:40</span>
+        </div>
+        <div class="lane-body">
+          <div class="node"><span class="arrow">▼</span>
+            <span class="idx">5</span><span class="name">智能评分</span>
+            <span class="route">#/score</span>
+            <p class="desc">多模态五维美学评分 + 六级定级，作品质量评估。</p>
+            <div class="tags"><span class="tag scene">应用场景</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">6</span><span class="name">AI 修图工作台</span>
+            <span class="route">#/edit</span>
+            <p class="desc">MediaPipe <b>手势 / 姿态</b>交互式调参 + AI 超分与画面优化。</p>
+            <div class="tags"><span class="tag tech">技术路径·端上 AI</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">7</span><span class="name">AI 文创生成 <span class="star">★</span></span>
+            <span class="route">#/craft</span>
+            <p class="desc"><b>一键生成</b> 9 字段结构化方案（约 1.6s，标注「DreamCraft-1.5B」模型来源）+ 版式构图引擎 + 图生图重绘分镜。</p>
+            <div class="tags"><span class="tag tech">技术路径·自持模型</span><span class="tag scene">应用场景</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">8</span><span class="name">3D 文创定制</span>
+            <span class="route">craft-3d</span>
+            <p class="desc">Three.js 杯子/书签/台历 GLB 实时预览，UV 预处理由本地 BFF（:3001）承担。</p>
+            <div class="tags"><span class="tag biz">产业转化</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第三幕：产 -->
+      <div class="lane" data-act="3">
+        <div class="lane-head">
+          <span class="act">第三幕</span>
+          <h3>产 · 落地闭环</h3>
+          <span class="time">3:40 – 4:40</span>
+        </div>
+        <div class="lane-body">
+          <div class="node"><span class="arrow">▼</span>
+            <span class="idx">9</span><span class="name">文创商品下单</span>
+            <span class="route">商品 → 订单</span>
+            <p class="desc">文创商品定价 → 下单 → 订单生产状态流转（演示环境·不产生真实订单）。</p>
+            <div class="tags"><span class="tag biz">产业转化</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">10</span><span class="name">会员权益 / 定价</span>
+            <span class="route">#/pricing</span>
+            <p class="desc">免费版 / 创作会员 <b>¥259</b> / 景区定制 <b>¥5,980（B 端）</b>，含成本测算（0 元/次 vs 7.2 元/次）。</p>
+            <div class="tags"><span class="tag biz">产业转化</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">11</span><span class="name">运营看板</span>
+            <span class="route">#/dashboard</span>
+            <p class="desc">面向景区 / 博物馆的运营数据看板演示。</p>
+            <div class="tags"><span class="tag biz">产业转化</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第四幕：销 -->
+      <div class="lane" data-act="4">
+        <div class="lane-head">
+          <span class="act">第四幕</span>
+          <h3>销 · 社区流通</h3>
+          <span class="time">4:40 – 5:20</span>
+        </div>
+        <div class="lane-body">
+          <div class="node"><span class="arrow">▼</span>
+            <span class="idx">12</span><span class="name">作品画廊</span>
+            <span class="route">#/</span>
+            <p class="desc">瀑布流 + 粒子氛围背景 + 主题切换（首页即画廊）。</p>
+            <div class="tags"><span class="tag scene">应用场景</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">13</span><span class="name">作品详情 · 互动</span>
+            <span class="route">作品详情</span>
+            <p class="desc">点赞 / 收藏 / 评论 / 关注，作者头像跳转个人主页。</p>
+            <div class="tags"><span class="tag scene">社区闭环</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">14</span><span class="name">排行榜</span>
+            <span class="route">#/leaderboard</span>
+            <p class="desc">日榜 / 周榜 / 月榜 / 总榜，综合作品与互动多维评分。</p>
+            <div class="tags"><span class="tag scene">社区闭环</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">15</span><span class="name">个人中心 + 分享</span>
+            <span class="route">#/profile</span>
+            <p class="desc">作品集 / 收藏 / 关注 / 统计 + 分享海报（二维码），创意被看见。</p>
+            <div class="tags"><span class="tag scene">社区闭环</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第五幕：技术与教学 -->
+      <div class="lane" data-act="5">
+        <div class="lane-head">
+          <span class="act">第五幕</span>
+          <h3>技术与教学 · 立住亮点</h3>
+          <span class="time">5:20 – 6:20</span>
+        </div>
+        <div class="lane-body">
+          <div class="node"><span class="arrow">▼</span>
+            <span class="idx">16</span><span class="name">AI 摄影教学陪练 <span class="star">★</span></span>
+            <span class="route">#/tutor</span>
+            <p class="desc">「小梦」陪练精灵：构图法则 / 作品改进 / 摄影史 / 非遗文化四类教学模式，联动 AI 评分推荐修图。</p>
+            <div class="tags"><span class="tag teach">教学价值 ★</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">17</span><span class="name">自持模型全链路 <span class="star">★</span></span>
+            <span class="route">蒸馏→LoRA→GGUF→ollama</span>
+            <p class="desc">qwen-max 蒸馏 → LoRA 微调（单卡 76 分钟）→ F16 GGUF → 本地推理约 1.6s/条；验收 20/20 = 100%；四级降级链保可用。</p>
+            <div class="tags"><span class="tag tech">技术路径 ★</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">18</span><span class="name">管理后台</span>
+            <span class="route">#/admin</span>
+            <p class="desc">10 个管理模块 · 统一权限矩阵 · 操作审计留痕（工程化质量保障）。</p>
+            <div class="tags"><span class="tag tech">工程化</span></div>
+          </div>
+          <div class="node">
+            <span class="idx">19</span><span class="name">AI 内容合规标识</span>
+            <span class="route">#/ai-disclosure</span>
+            <p class="desc">AI 生成内容显式标识与来源说明，对齐《AI 生成合成内容标识办法》。</p>
+            <div class="tags"><span class="tag comp">合规</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="cap end" style="margin-top:20px;">🎬 结尾 · 价值总结 <small>6:20–6:40 · 教学辅助价值 + 产业转化潜力 一句话收束</small></div>
+  </section>
+
+  <!-- ===================== 第二视图：完整遍历链 ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <h2>二、完整遍历顺序（不剪辑版 · 现场演示 / 问辩备用）</h2>
+      <span class="note">严格照主导航结构走：文化探索组 → 创作工坊组 → 社区与商业化入口。</span>
+    </div>
+
+    <div class="chain">
+      <span class="step other">首页 <span class="r">#/</span></span><span class="sep">→</span>
+      <span class="grp">文化探索 ▾</span>
+      <span class="step explore">文化图鉴 <span class="r">#/atlas</span></span><span class="sep">→</span>
+      <span class="step explore">景区推荐 <span class="r">#/scenic</span></span><span class="sep">→</span>
+      <span class="step explore">探索足迹 <span class="r">#/footprint</span></span><span class="sep">→</span>
+      <span class="grp">创作工坊 ▾</span>
+      <span class="step create">AI 识文化 <span class="r">#/scan</span></span><span class="sep">→</span>
+      <span class="step create">智能评分 <span class="r">#/score</span></span><span class="sep">→</span>
+      <span class="step create">AI 修图 <span class="r">#/edit</span></span><span class="sep">→</span>
+      <span class="step create">AI 文创 <span class="r">#/craft</span></span><span class="sep">→</span>
+      <span class="step create">AI 陪练 <span class="r">#/tutor</span></span><span class="sep">→</span>
+      <span class="step create">智能策展 <span class="r">#/curate</span></span><span class="sep">→</span>
+      <span class="step create">合伙人申请 <span class="r">#/partner</span></span><span class="sep">→</span>
+      <span class="grp">社区与商业化</span>
+      <span class="step other">作品详情</span><span class="sep">→</span>
+      <span class="step other">排行榜 <span class="r">#/leaderboard</span></span><span class="sep">→</span>
+      <span class="step other">个人中心 <span class="r">#/profile</span></span><span class="sep">→</span>
+      <span class="step other">发布 / 分享海报</span><span class="sep">→</span>
+      <span class="step other">会员权益 <span class="r">#/pricing</span></span><span class="sep">→</span>
+      <span class="step other">运营看板 <span class="r">#/dashboard</span></span><span class="sep">→</span>
+      <span class="step other">管理后台 <span class="r">#/admin</span></span><span class="sep">→</span>
+      <span class="step other">AI 内容说明 <span class="r">#/ai-disclosure</span></span>
+    </div>
+  </section>
+
+  <!-- ===================== 录制提示 ===================== -->
+  <section class="section">
+    <div class="section-head"><h2>三、录制提示（与顺序配套）</h2></div>
+    <div class="tips">
+      <div class="tip ok">
+        <h4>开拍前 30 分钟</h4>
+        <p>启动 <code>npm run dev</code>（:5173）+ <code>npm run server:uv</code>（:3001）+ 本地 ollama 自持模型；用<b>已有作品/收藏/足迹的账号</b>登录；预置作品、评论点赞、足迹进度、订单。</p>
+      </div>
+      <div class="tip warn">
+        <h4>三个必防坑</h4>
+        <p>① 自持模型未启动 → 结果标注「降级」，技术亮点失效；② 首次访问欢迎弹窗拦截点击（开场拍 2 秒后点「开始探索」）；③ 图生图重绘可达数十秒 → 用已生成好的结果，别在镜头里干等。</p>
+      </div>
+      <div class="tip">
+        <h4>画面与声音</h4>
+        <p>1440×900 或 1920×1080、缩放 100%、隐藏书签栏、关通知、无痕窗口；TTS 讲解需进音轨；建议后期配音 + 字幕，不开 DevTools、不露控制台报错。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Dreamcore 项目组 · 演示视频遍历流程图 · 生成于 2026-10-19</footer>
+</div>
+</body>
+</html>

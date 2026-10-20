@@ -23,6 +23,7 @@ dist/
 
 # 路演交付物与生成素材（体积大，不随代码库分发）
 竞赛材料/
+提交包/
 bp/
 bp-preparation/
 bp-workbench/
